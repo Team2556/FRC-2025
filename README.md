@@ -1,5 +1,5 @@
 # RobotPython2025
- Fresh start ; created for the 2025 season; transition to python
+ Fresh start; created for the 2025 season; transition to python
 
 
  # FRC Robot Project
