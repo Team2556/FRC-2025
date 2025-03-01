@@ -50,7 +50,7 @@ This repository contains the code for our FRC robot using Python, PyRobot, and W
     python src/robot.py
 
 # Repository Structure
-- We plan to use the following structure.
+- We plan to use the following structure. (Or do we really?)
     <!-- ├── src/
     │   ├── ?maybe? __init__.py
     │   ├── robot.py
