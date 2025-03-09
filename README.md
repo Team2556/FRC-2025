@@ -1,5 +1,5 @@
-# RobotPython2024
- Fresh start ; created for the 2025 season; transition to python
+# RobotPython2025
+ Fresh start; created for the 2025 season; transition to python
 
 
  # FRC Robot Project
@@ -50,7 +50,7 @@ This repository contains the code for our FRC robot using Python, PyRobot, and W
     python src/robot.py
 
 # Repository Structure
-- We plan to use the following structure.
+- We plan to use the following structure. (Or do we really?)
     <!-- ├── src/
     │   ├── ?maybe? __init__.py
     │   ├── robot.py
