@@ -265,7 +265,7 @@ class Override_DriveConstant: ...
 class AlgaeConstants:
     kIntakeCANAddress1 = CAN_Address.TWENTYTWO  # TODO: Correct the CAN Addresses pls
     kIntakeCANAddress2 = CAN_Address.TWENTYTHREE
-    kAlgaeArmLowerLimitSwitchChannel = Rio_DIO.Five
+    kAlgaeArmLowerLimitSwitchChannel = Rio_DIO.FIVE
     kAlgaeLimitSwitchChannel = (
         Rio_DIO.FIVE
     )  #TODO: remove/ update code that uses this -- not in design (yet) So it doesn't input when limit switch activated
