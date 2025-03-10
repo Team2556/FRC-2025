@@ -4,10 +4,40 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
+# NOTE: Please use the following naming conventions:
+# Subsystems are: name + "Subsystem"
+# Commands are: name + "Command"
+# Command modules are: name + "Commands" (in camel case)
+# Enable variables are in MACRO_CASE just like constants
+# Constant classes are: name + "Constants" (also in camel case)
+
+# If you wish to change any of these, be sure to change all 
+# instances of the rule unless you're really desperate on time
+
 import commands2
 import commands2.button
 import commands2.cmd
 from commands2.sysid import SysIdRoutine
+
+# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
+from subsystems import (
+    algaeSubsystem,
+    coralSubsystem,
+    pneumaticSubsystem,
+    elevatorSubsystem,
+)
+
+from commands import (
+    algaeCommands,
+    coralCommands,
+    elevatorCommands,
+)
+
+from constants import (
+    ElevatorConstants, 
+    AlgaeConstants, 
+    CoralConstants
+)
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -52,6 +82,27 @@ class RobotContainer:
         self._joystick = commands2.button.CommandXboxController(0)
 
         self.drivetrain = TunerConstants.create_drivetrain()
+        
+        # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
+        
+        self.ENABLE_ALGAE = False
+        self.ENABLE_ELEVATOR = False
+        self.ENABLE_CORAL = False
+        self.ENABLE_CLIMB = False
+        
+        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE
+        
+        if self.ENABLE_ALGAE:
+            self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
+            
+        if self.ENABLE_ELEVATOR:
+            self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
+            
+        if self.ENABLE_CORAL:
+            self.coralSubsystem = coralSubsystem.CoralTrack()
+            
+        if self.ENABLE_CLIMB:
+            ...
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -114,6 +165,64 @@ class RobotContainer:
         self.drivetrain.register_telemetry(
             lambda state: self._logger.telemeterize(state)
         )
+        
+        # WARNING: ONLY ADD COMMAND INPUT STUFF TO ROBOT CONTAINER
+        # NOTE: ITS UP TO YOU TO DECIDE WHETHER ANYTHING BELONGS HERE OR SOMEWHERE ELSE
+        
+        if self.ENABLE_ALGAE and self.ENABLE_ELEVATOR: # TODO: Not done with this
+            # x = commands2.CommandScheduler()   
+            # x.registerSubsystem(self.algae)
+                
+            # Declare Algae Sequential commands
+            AlgaeL2Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevator, ElevatorConstants.kAlgaeLv2),
+                commands2.ParallelCommandGroup(
+                    algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotReefIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algae, 1 * AlgaeConstants.kIntakeMultiplier)
+                ),
+                commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
+                # TODO: Back up the robot a bit
+                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
+                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+            )
+            
+            AlgaeL3Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevator, ElevatorConstants.kAlgaeLv3),
+                commands2.ParallelCommandGroup(
+                    algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotReefIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algae, 1 * AlgaeConstants.kIntakeMultiplier)
+                ),
+                commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
+                # TODO: Back up the robot a bit
+                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
+                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+            )
+            
+            AlgaeGroundIntakeCommand = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevator, ElevatorConstants.kAlgaeGroundIntake),
+                commands2.ParallelCommandGroup(
+                    algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotGroundIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algae, 1 * AlgaeConstants.kIntakeMultiplier)
+                ),
+                commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
+                # TODO: Back up the robot a bit
+                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
+                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+            )
+            
+            AlgaeProcessingCommand = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevator, ElevatorConstants.kAlgaeProcess),
+                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotProcessingValue),
+                algaeCommands.AlgaeIntakeCommand(self.algae, -1 * AlgaeConstants.kIntakeMultiplier),
+                commands2.WaitCommand(AlgaeConstants.kTimeItTakesToProcess),
+                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
+                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+            )
+            
+            AlgaeIdleCommand = commands2.SequentialCommandGroup(
+                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
+                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+            )
 
     def getAutonomousCommand(self) -> commands2.Command:
         """Use this to pass the autonomous command to the main {@link Robot} class.
