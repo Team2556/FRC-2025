@@ -85,7 +85,7 @@ class RobotContainer:
         
         # Command Scheduler is needed to run periodic() function on subsystems
         self.scheduler = commands2.CommandScheduler()   
-        self.scheduler.registerSubsystem(self.algae)
+        # self.scheduler.registerSubsystem(self.algae)  why doing this?
         
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
         
