@@ -1,3 +1,5 @@
+'''Commands that set elevator to a position and increment elevator up or down'''
+
 from commands2 import Command
 from wpilib import XboxController, SmartDashboard
 from wpimath.controller import PIDController
@@ -17,7 +19,7 @@ class SetElevatorCommand(Command):
         self.position = position
         
     def initialize(self):
-        self.elevatorSubsystem.update_setpoint(self.position)
+        self.elevatorSubsystem.update_setpoint(self.position, incremental=False)
         self.elevatorSubsystem.moveElevator()
     
     def isFinished(self):
@@ -25,7 +27,7 @@ class SetElevatorCommand(Command):
         return (value <= self.position + ElevatorConstants.kTargetValueAccuracy
             and value >= self.position - ElevatorConstants.kTargetValueAccuracy)
         
-class IncrementElevatorCommand(Command): # Not done with this
+class IncrementElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, amount):
         self.elevatorSubsystem = elevatorSubsystem
         self.addRequirements(self.elevatorSubsystem)
@@ -36,6 +38,5 @@ class IncrementElevatorCommand(Command): # Not done with this
         self.elevatorSubsystem.moveElevator()
     
     def isFinished(self):
-        value = self.elevatorSubsystem.elevmotor_left.get_position()
-        return (value <= self.position + ElevatorConstants.kTargetValueAccuracy
-            and value >= self.position - ElevatorConstants.kTargetValueAccuracy)
+        # This just increments so it should automatically finish (but we can add a timer if otherwise)
+        return True

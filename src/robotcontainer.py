@@ -83,6 +83,10 @@ class RobotContainer:
 
         self.drivetrain = TunerConstants.create_drivetrain()
         
+        # Command Scheduler is needed to run periodic() function on subsystems
+        self.scheduler = commands2.CommandScheduler()   
+        self.scheduler.registerSubsystem(self.algae)
+        
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
         
         self.ENABLE_ALGAE = False
@@ -169,59 +173,56 @@ class RobotContainer:
         # WARNING: ONLY ADD COMMAND INPUT STUFF TO ROBOT CONTAINER
         # NOTE: ITS UP TO YOU TO DECIDE WHETHER ANYTHING BELONGS HERE OR SOMEWHERE ELSE
         
-        if self.ENABLE_ALGAE and self.ENABLE_ELEVATOR: # TODO: Not done with this
-            # x = commands2.CommandScheduler()   
-            # x.registerSubsystem(self.algae)
-                
+        if self.ENABLE_ALGAE and self.ENABLE_ELEVATOR:
             # Declare Algae Sequential commands
             AlgaeL2Command = commands2.SequentialCommandGroup(
-                elevatorCommands.SetElevatorCommand(self.elevator, ElevatorConstants.kAlgaeLv2),
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2),
                 commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotReefIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algae, 1 * AlgaeConstants.kIntakeMultiplier)
+                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
                 ),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
-                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
-                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
             
             AlgaeL3Command = commands2.SequentialCommandGroup(
-                elevatorCommands.SetElevatorCommand(self.elevator, ElevatorConstants.kAlgaeLv3),
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3),
                 commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotReefIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algae, 1 * AlgaeConstants.kIntakeMultiplier)
+                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
                 ),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
-                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
-                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
             
             AlgaeGroundIntakeCommand = commands2.SequentialCommandGroup(
-                elevatorCommands.SetElevatorCommand(self.elevator, ElevatorConstants.kAlgaeGroundIntake),
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeGroundIntake),
                 commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotGroundIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algae, 1 * AlgaeConstants.kIntakeMultiplier)
+                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotGroundIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
                 ),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
-                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
-                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
             
             AlgaeProcessingCommand = commands2.SequentialCommandGroup(
-                elevatorCommands.SetElevatorCommand(self.elevator, ElevatorConstants.kAlgaeProcess),
-                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotProcessingValue),
-                algaeCommands.AlgaeIntakeCommand(self.algae, -1 * AlgaeConstants.kIntakeMultiplier),
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeProcess),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotProcessingValue),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, -1 * AlgaeConstants.kIntakeMultiplier),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToProcess),
-                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
-                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
             
             AlgaeIdleCommand = commands2.SequentialCommandGroup(
-                algaeCommands.AlgaeIntakeCommand(self.algae, 0),
-                algaeCommands.AlgaePivotCommand(self.algae, AlgaeConstants.kPivotIdleValue),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
 
     def getAutonomousCommand(self) -> commands2.Command:
