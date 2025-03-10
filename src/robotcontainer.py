@@ -37,6 +37,26 @@ from commands import (
 from constants import (
     ElevatorConstants, 
     AlgaeConstants, 
+    CoralConstants
+)
+
+# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
+from subsystems import (
+    algaeSubsystem,
+    coralSubsystem,
+    pneumaticSubsystem,
+    elevatorSubsystem,
+)
+
+from commands import (
+    algaeCommands,
+    coralCommands,
+    elevatorCommands,
+)
+
+from constants import (
+    ElevatorConstants, 
+    AlgaeConstants, 
     CoralConstants,
     ClimbConstants,
 )
@@ -174,40 +194,6 @@ class RobotContainer:
         # pressing {CTRL+C} will stop the program
 
         self.drivetrain = TunerConstants.create_drivetrain()
-        
-        # Command Scheduler is needed to run periodic() function on subsystems
-        self.scheduler = commands2.CommandScheduler()   
-        self.scheduler.registerSubsystem(self.algae)
-        
-        # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
-        
-        self.ENABLE_ALGAE = False
-        self.ENABLE_ELEVATOR = False
-        self.ENABLE_CORAL = False
-        self.ENABLE_CLIMB = False
-        
-        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE
-        
-        if self.ENABLE_ALGAE:
-            self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
-            
-        if self.ENABLE_ELEVATOR:
-            self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
-            
-        if self.ENABLE_CORAL:
-            self.coralSubsystem = coralSubsystem.CoralTrack()
-            
-        if self.ENABLE_CLIMB:
-            ...
-
-        self._auto_chooser = AutoBuilder.buildAutoChooser("SetOdo_DriverWallRtFeeder")
-        SmartDashboard.putData("Auto Mode", self._auto_chooser)
-
-        # Vision
-        self.limelight = limelightSubsystem.LimelightSubsystem()
-        for port in np.arange(start=5800, stop=5809):
-            wpinet.PortForwarder.getInstance().add(port, "limelight.local", port)
-
 
         # Configure the button bindings
         self.configureButtonBindings()
