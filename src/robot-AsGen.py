@@ -4,20 +4,13 @@
 # Open Source Software; you can modify and/or share it under the terms of
 # the WPILib BSD license file in the root directory of this project.
 #
+
 import wpilib
 import commands2
 import typing
-from wpimath.geometry import Pose2d, Transform2d, Rotation2d, Translation2d
-from wpilib import SmartDashboard, DriverStation, Field2d
-from pathplannerlib.auto import AutoBuilder
-from pathplannerlib.logging import PathPlannerLogging
-from phoenix6.utils import fpga_to_current_time
-
-from robotUtils.limelight import LimelightHelpers
-
-
 
 from robotcontainer import RobotContainer
+
 
 class MyRobot(commands2.TimedCommandRobot):
     """
@@ -37,21 +30,6 @@ class MyRobot(commands2.TimedCommandRobot):
         # autonomous chooser on the dashboard.
         self.container = RobotContainer()
 
-        #region Glass field viewer
-        self.field = Field2d()
-        SmartDashboard.putData("Field", self.field)
-        #endregion Glass field viewer
-        # Logging callback for current robot pose
-        PathPlannerLogging.setLogCurrentPoseCallback(lambda pose: self.field.setRobotPose(pose))
-
-        # Logging callback for target robot pose
-        PathPlannerLogging.setLogTargetPoseCallback(lambda pose: self.field.getObject('target pose').setPose(pose))
-
-        # Logging callback for the active path, this is sent as a list of poses
-        PathPlannerLogging.setLogActivePathCallback(lambda poses: self.field.getObject('path').setPoses(poses))
-        
-
- 
     def robotPeriodic(self) -> None:
         """This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
         that you want ran during disabled, autonomous, teleoperated and test.
@@ -59,21 +37,11 @@ class MyRobot(commands2.TimedCommandRobot):
         This runs after the mode specific periodic functions, but before LiveWindow and
         SmartDashboard integrated updating."""
 
-
         # Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
         # commands, running already-scheduled commands, removing finished or interrupted commands,
         # and running subsystem periodic() methods.  This must be called from the robot's periodic
         # block in order for anything in the Command-based framework to work.
         commands2.CommandScheduler.getInstance().run()
-        
-        self.container._max_speed = SmartDashboard.getNumber("Max Speed",0.0)
-        
-        self.container.invertBlueRedDrive = 1
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self.container.invertBlueRedDrive = -1
-
- 
-        
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
@@ -81,18 +49,11 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def disabledPeriodic(self) -> None:
         """This function is called periodically when disabled"""
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed: 
-            AutoBuilder._shouldFlipPath = lambda: True
-        else:
-            AutoBuilder._shouldFlipPath = lambda: False
         pass
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
         self.autonomousCommand = self.container.getAutonomousCommand()
-        LimelightHelpers.set_imu_mode('limelight-four', mode=0)
-        SmartDashboard.putNumber('LL4 IMU mode', LimelightHelpers.get_limelight_NTDouble("limelight-four",  "imumode_set"))
-
 
         if self.autonomousCommand:
             self.autonomousCommand.schedule()
@@ -105,11 +66,9 @@ class MyRobot(commands2.TimedCommandRobot):
         # This makes sure that the autonomous stops running when
         # teleop starts running. If you want the autonomous to
         # continue until interrupted by another command, remove
-        # this line or comment it out.        
+        # this line or comment it out.
         if self.autonomousCommand:
             self.autonomousCommand.cancel()
-        LimelightHelpers.set_imu_mode('limelight-four', mode=0)
-        SmartDashboard.putNumber('LL4 IMU mode', LimelightHelpers.get_limelight_NTDouble("limelight-four",  "imumode_set"))
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""
