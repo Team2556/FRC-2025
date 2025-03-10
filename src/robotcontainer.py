@@ -15,7 +15,7 @@ from generated.tuner_constants import TunerConstants
 from constants import RobotDimensions, ElevatorConstants
 from subsystems import (
     ElevatorSubsystem,
-    coralSubsystem,
+    #coralSubsystem,
     limelightSubsystem,
     pneumaticSubsystem,
     ultrasonic, #ClimbSubsystem
