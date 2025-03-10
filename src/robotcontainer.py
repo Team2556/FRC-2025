@@ -4,11 +4,62 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
+# NOTE: Please use the following naming conventions:
+# Subsystems are: name + "Subsystem"
+# Commands are: name + "Command"
+# Command modules are: name + "Commands" (in camel case)
+# Enable variables are in MACRO_CASE just like constants
+# Constant classes are: name + "Constants" (also in camel case)
+
+# If you wish to change any of these, be sure to change all 
+# instances of the rule unless you're really desperate on time
+
 import commands2
 
 import commands2.button, commands2.cmd
 import numpy as np
 from commands2.sysid import SysIdRoutine
+
+# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
+from subsystems import (
+    algaeSubsystem,
+    coralSubsystem,
+    pneumaticSubsystem,
+    elevatorSubsystem,
+)
+
+from commands import (
+    algaeCommands,
+    coralCommands,
+    elevatorCommands,
+)
+
+from constants import (
+    ElevatorConstants, 
+    AlgaeConstants, 
+    CoralConstants,
+    ClimbConstants,
+)
+
+# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
+from subsystems import (
+    algaeSubsystem,
+    coralSubsystem,
+    pneumaticSubsystem,
+    elevatorSubsystem,
+)
+
+from commands import (
+    algaeCommands,
+    coralCommands,
+    elevatorCommands,
+)
+
+from constants import (
+    ElevatorConstants, 
+    AlgaeConstants, 
+    CoralConstants
+)
 
 from constants import ClimbConstants
 from generated.tuner_constants import TunerConstants
@@ -123,40 +174,40 @@ class RobotContainer:
         # pressing {CTRL+C} will stop the program
 
         self.drivetrain = TunerConstants.create_drivetrain()
-
-        self.coralENABLE = False
-        if self.coralENABLE:
-            self.coral_track = coralSubsystem.CoralTrack()
+        
+        # Command Scheduler is needed to run periodic() function on subsystems
+        self.scheduler = commands2.CommandScheduler()   
+        self.scheduler.registerSubsystem(self.algae)
+        
+        # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
+        
+        self.ENABLE_ALGAE = False
+        self.ENABLE_ELEVATOR = False
+        self.ENABLE_CORAL = False
+        self.ENABLE_CLIMB = False
+        
+        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE
+        
+        if self.ENABLE_ALGAE:
+            self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
             
-        pneumaticENABLE = False
-        if pneumaticENABLE:
-            self.pneumaticsHub = pneumaticSubsystem.PneumaticSubsystem()
-
-        # self.climb = ClimbSubsystem.ClimbSubsystem()
-        # self.one_motor = oneMotor.OneMotor(
-        #     motor=[TalonFX(constants.CAN_Address.FOURTEEN),TalonFX(constants.CAN_Address.FIFTEEN)]   )
-        # section elevator
-        self.ENABLE_ELEVATOR = True
         if self.ENABLE_ELEVATOR:
-            self.elevator = ElevatorSubsystem.ElevatorSubsystem()
-            self._reset_zero_point_here = self.elevator.reset_zero_point_here()
-            self._elevator_motors_break = self.elevator.elevator_motors_break
-        # endsection elevator
+            self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
+            
+        if self.ENABLE_CORAL:
+            self.coralSubsystem = coralSubsystem.CoralTrack()
+            
+        if self.ENABLE_CLIMB:
+            ...
+
+        self._auto_chooser = AutoBuilder.buildAutoChooser("SetOdo_DriverWallRtFeeder")
+        SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
         # Vision
         self.limelight = limelightSubsystem.LimelightSubsystem()
         for port in np.arange(start=5800, stop=5809):
             wpinet.PortForwarder.getInstance().add(port, "limelight.local", port)
 
-        # self.coral_command = coralCommand.CoralCommand(
-        #     self.coral_track, self.pneumaticsHub, self.elevator, self.timer
-        # )
-
-        # Path follower
-        self._auto_chooser = AutoBuilder.buildAutoChooser("SetOdo_DriverWallRtFeeder")
-        SmartDashboard.putData("Auto Mode", self._auto_chooser)
-
-        
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -342,6 +393,61 @@ class RobotContainer:
         self.drivetrain.register_telemetry(
             lambda state: self._logger.telemeterize(state)
         )
+        
+        # WARNING: ONLY ADD COMMAND INPUT STUFF TO ROBOT CONTAINER
+        # NOTE: ITS UP TO YOU TO DECIDE WHETHER ANYTHING BELONGS HERE OR SOMEWHERE ELSE
+        
+        if self.ENABLE_ALGAE and self.ENABLE_ELEVATOR:
+            # Declare Algae Sequential commands
+            AlgaeL2Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2),
+                commands2.ParallelCommandGroup(
+                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
+                ),
+                commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
+                # TODO: Back up the robot a bit
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
+            )
+            
+            AlgaeL3Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3),
+                commands2.ParallelCommandGroup(
+                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
+                ),
+                commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
+                # TODO: Back up the robot a bit
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
+            )
+            
+            AlgaeGroundIntakeCommand = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeGroundIntake),
+                commands2.ParallelCommandGroup(
+                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotGroundIntakingValue),
+                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
+                ),
+                commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
+                # TODO: Back up the robot a bit
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
+            )
+            
+            AlgaeProcessingCommand = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeProcess),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotProcessingValue),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, -1 * AlgaeConstants.kIntakeMultiplier),
+                commands2.WaitCommand(AlgaeConstants.kTimeItTakesToProcess),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
+            )
+            
+            AlgaeIdleCommand = commands2.SequentialCommandGroup(
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
+            )
 
     def getAutonomousCommand(self) -> commands2.Command:
         """Use this to pass the autonomous command to the main {@link Robot} class.
