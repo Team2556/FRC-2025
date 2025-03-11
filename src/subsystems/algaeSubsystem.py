@@ -121,11 +121,11 @@ class AlgaeSubsystem(Subsystem):
         # self.intakeMotor.setVoltage(speed * voltage)
         # self.intakeMotor.set(speed)
         
-    def getCurrent(self) -> bool:
+    def getCurrent(self) -> int:
         '''Gets the current of the intaking motor. 
             Useful for stopping the motor if it's trying to intake an algae further than it can'''  
         # TODO: Figure out if this is actually the correct function to use
-        self.intakeMotor.get_supply_current().value
+        return self.intakeMotor.get_supply_current().value
     
     def getLimitSwitchActive(self, toggleLimitSwitch=True) -> bool:
         '''Returns true if limit switch is active (and toggleLimitSwitch is also true)'''
@@ -154,14 +154,14 @@ class AlgaeSubsystem(Subsystem):
     def updateSmartDashboard(self):
         '''Put all SmartDashboard stuff for this subsystem here'''
         self.updatePIDvalues(
-            SmartDashboard.getNumber("Algae/Pivot P"),
-            SmartDashboard.getNumber("Algae/Pivot I"),
-            SmartDashboard.getNumber("Algae/Pivot D"),
-            SmartDashboard.getNumber("Algae/Pivot G"),
+            SmartDashboard.getNumber("Algae/Pivot P", self.PIDconfig.slot0.k_p),
+            SmartDashboard.getNumber("Algae/Pivot I", self.PIDconfig.slot0.k_i),
+            SmartDashboard.getNumber("Algae/Pivot D", self.PIDconfig.slot0.k_d),
+            SmartDashboard.getNumber("Algae/Pivot G", self.PIDconfig.slot0.k_g),
         )
         # Output values
-        SmartDashboard.putString("Algae/Pivot Position", self.pivotMotor.get_position())
-        SmartDashboard.putString("Algae/Intake Speed", self.intakeMotor.get())
+        SmartDashboard.putString("Algae/Pivot Position", self.pivotMotor.get_position().__str__())
+        SmartDashboard.putString("Algae/Intake Speed", self.intakeMotor.get().__str__())
         SmartDashboard.putBoolean("Algae/Limit Switch", self.limitSwitch.get())
         
         # Tuning values
