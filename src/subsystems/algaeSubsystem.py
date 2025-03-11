@@ -168,7 +168,7 @@ class AlgaeSubsystem(Subsystem):
         AlgaeConstants.kAmpValueToDetectIfMotorStalled = SmartDashboard.getNumber("Algae/Amp Value to Detect if Stalled", AlgaeConstants.kAmpValueToDetectIfMotorStalled)
         AlgaeConstants.kTargetValueAccuracy = SmartDashboard.getNumber("Algae/Target Value Accuracy", AlgaeConstants.kTargetValueAccuracy)
         AlgaeConstants.kPivotMaxHeight = SmartDashboard.getNumber("Algae/Pivot Max Height", AlgaeConstants.kPivotMaxHeight)
-        AlgaeConstants.kPivotMinHeigh = SmartDashboard.getNumber("Algae/Pivot Min Height", AlgaeConstants.kPivotMinHeight)
+        AlgaeConstants.kPivotMinHeight = SmartDashboard.getNumber("Algae/Pivot Min Height", AlgaeConstants.kPivotMinHeight)
         AlgaeConstants.kPivotReefIntakingValue = SmartDashboard.getNumber("Algae/Pivot Reef Intaking Value", AlgaeConstants.kPivotReefIntakingValue)
         AlgaeConstants.kPivotGroundIntakingValue = SmartDashboard.getNumber("Algae/Pivot Ground Intaking Value", AlgaeConstants.kPivotGroundIntakingValue)
         AlgaeConstants.kPivotProcessingValue = SmartDashboard.getNumber("Algae/Pivot Processing Value", AlgaeConstants.kPivotProcessingValue)

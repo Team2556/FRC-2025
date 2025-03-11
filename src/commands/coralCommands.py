@@ -1,6 +1,6 @@
 '''Has a command for discharging and a default command for intaking'''
 
-from commands2 import Command
+from commands2 import Command, InterruptionBehavior
 from wpilib import Timer
 
 from subsystems import coralSubsystem, pneumaticSubsystem, elevatorSubsystem
@@ -67,12 +67,38 @@ class CoralDefaultCommand(Command):
             self.coralSubsystem.disable_motor()
             
 # for testing
-class TestCommand(Command):
+class TestScoreLeftCommand(Command):
     '''For testing yay'''
     def __init__(self, coralTrack: coralSubsystem.CoralTrack):
         # Declare subsystems and add requirements
         self.coralTrack = coralTrack
         self.addRequirements(self.coralTrack)
         
+        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
+        
+        self.timer = Timer()
+        self.timer.start()
+        
     def execute(self):
-        self.coralTrack.set_motor(-0.1)
+        self.coralTrack.set_motor(-CoralConstants.kDischargeMultiplier)
+        
+    def isFinished(self):
+        return self.timer.get() > 1
+    
+class TestScoreRightCommand(Command):
+    '''For testing yay'''
+    def __init__(self, coralTrack: coralSubsystem.CoralTrack):
+        # Declare subsystems and add requirements
+        self.coralTrack = coralTrack
+        self.addRequirements(self.coralTrack)
+        
+        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
+        
+        self.timer = Timer()
+        self.timer.start()
+        
+    def execute(self):
+        self.coralTrack.set_motor(CoralConstants.kDischargeMultiplier)
+        
+    def isFinished(self):
+        return self.timer.get() > 1

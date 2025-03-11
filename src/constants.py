@@ -301,7 +301,7 @@ class CoralConstants:
     kRightBreakerLight = Rio_DIO.ONE
     
     kIntakeMultiplier = 0.03
-    kDischargeMultiplier = 0.08
+    kDischargeMultiplier = 0.12
     
     kSolenoidPulseDuration = 0.5
     kTimeBetweenLeavingBeamBreaksAndDischargingCoral = 0.3
