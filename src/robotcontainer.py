@@ -20,25 +20,6 @@ import commands2.button, commands2.cmd
 import numpy as np
 from commands2.sysid import SysIdRoutine
 
-# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
-from subsystems import (
-    algaeSubsystem,
-    coralSubsystem,
-    pneumaticSubsystem,
-    elevatorSubsystem,
-)
-
-from commands import (
-    algaeCommands,
-    coralCommands,
-    elevatorCommands,
-)
-
-from constants import (
-    ElevatorConstants, 
-    AlgaeConstants, 
-    CoralConstants
-)
 
 # NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
 from subsystems import (
@@ -59,26 +40,6 @@ from constants import (
     AlgaeConstants, 
     CoralConstants,
     ClimbConstants,
-)
-
-# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
-from subsystems import (
-    algaeSubsystem,
-    coralSubsystem,
-    pneumaticSubsystem,
-    elevatorSubsystem,
-)
-
-from commands import (
-    algaeCommands,
-    coralCommands,
-    elevatorCommands,
-)
-
-from constants import (
-    ElevatorConstants, 
-    AlgaeConstants, 
-    CoralConstants
 )
 
 from constants import ClimbConstants
@@ -182,6 +143,8 @@ class RobotContainer:
         if self.ultrasonicENABLE:
             self.ultrasonic = ultrasonic.Ultrasonic()
 
+        self.elevator = elevatorSubsystem.ElevatorSubsystem()
+
         self._logger = Telemetry(self._max_speed)
 
         # This one's probably used for moving
@@ -262,6 +225,7 @@ class RobotContainer:
         )
 
         # self.one_motor.setDefaultCommand(DriveOneMotorCommand(self.one_motor, self._joystick2))
+        self.ENABLE_ELEVATOR=True
         if self.ENABLE_ELEVATOR:
             self.elevator.setDefaultCommand(
                 LiftElevatorCommand(self.elevator, self._joystick2)
