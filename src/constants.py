@@ -220,6 +220,7 @@ class ElevatorConstants():
         
         ScaredSafetyFactor = 200 # Set ScaredSafetyFactor to 1 once we get SUPER confident
         # All the elevator levels to do stuff
+        kCoralIntakePosition = 0.05 / ScaredSafetyFactor
         kCoralLv1 = 0.1 / ScaredSafetyFactor # Height in meters
         kCoralLv2 = 0.32 / ScaredSafetyFactor # 556
         kCoralLv3 = 0.5588 / ScaredSafetyFactor

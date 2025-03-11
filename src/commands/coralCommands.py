@@ -49,19 +49,32 @@ class DischargeCoralCommand(Command):
 
 class CoralDefaultCommand(Command):
     '''The default command for coral... it does all the centering'''
+    def __init__(self, coralSubsystem: coralSubsystem.CoralTrack):
+        # Declare subsystems and add requirements
+        self.coralSubsystem = coralSubsystem
+        self.addRequirements(self.coralSubsystem)
+        
+    def execute(self):
+        # Look guys it's Aidan's original code v4
+        is_Left = self.coralSubsystem.left_detector.get()
+        is_Right = self.coralSubsystem.right_detector.get()
+
+        if is_Left and not is_Right:
+            self.coralSubsystem.set_motor(1 * CoralConstants.kIntakeMultiplier)
+        elif is_Right and not is_Left:
+            self.coralSubsystem.set_motor(-1 * CoralConstants.kIntakeMultiplier)
+        else:
+            self.coralSubsystem.disable_motor()
+            
+# for testing
+class TestCommand(Command):
+    '''For testing yay'''
     def __init__(self, coralTrack: coralSubsystem.CoralTrack):
         # Declare subsystems and add requirements
         self.coralTrack = coralTrack
         self.addRequirements(self.coralTrack)
         
-    def execute(self):
-        # Look guys it's Aidan's original code v4
-        is_Left = self.coralTrack.left_detector.get()
-        is_Right = self.coralTrack.right_detector.get()
-
-        if is_Left and not is_Right:
-            self.coralTrack.set_motor(1 * CoralConstants.kIntakeMultiplier)
-        elif is_Right and not is_Left:
-            self.coralTrack.set_motor(-1 * CoralConstants.kIntakeMultiplier)
-        else:
-            self.coralTrack.disable_motor()
+        self.coralTrack.set_motor(0.1)
+        
+    def end(self):
+        self.coralTrack.set_motor(0)

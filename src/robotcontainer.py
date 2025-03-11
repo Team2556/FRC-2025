@@ -80,31 +80,33 @@ class RobotContainer:
         self._logger = Telemetry(self._max_speed)
 
         self._joystick = commands2.button.CommandXboxController(0)
+        self._joystick2 = commands2.button.CommandXboxController(1) # FOR TESTING
 
         self.drivetrain = TunerConstants.create_drivetrain()
         
-        # Command Scheduler is needed to run periodic() function on subsystems
-        self.scheduler = commands2.CommandScheduler()   
-        self.scheduler.registerSubsystem(self.algaeSubsystem) # why doing this?
-        # So periodic() in algae subsystem runs... sorry for the name typo
-        
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
         
-        self.ENABLE_ALGAE = False
-        self.ENABLE_ELEVATOR = False
-        self.ENABLE_CORAL = False
-        self.ENABLE_CLIMB = False
+        self.ENABLE_ALGAE = True
+        self.ENABLE_ELEVATOR = True
+        self.ENABLE_CORAL = True
+        self.ENABLE_CLIMB = True
         
-        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE
+        # Command Scheduler is needed to run periodic() function on subsystems
+        self.scheduler = commands2.CommandScheduler()
+        
+        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE PLS
         
         if self.ENABLE_ALGAE:
             self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
+            self.scheduler.registerSubsystem(self.algaeSubsystem)
             
         if self.ENABLE_ELEVATOR:
             self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
             
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
+            self.scheduler.registerSubsystem(self.coralSubsystem)
+            self.pneumaticSubsystem = pneumaticSubsystem.PneumaticSubsystem()
             
         if self.ENABLE_CLIMB:
             ...
@@ -178,10 +180,8 @@ class RobotContainer:
             # Declare Algae Sequential commands
             AlgaeL2Command = commands2.SequentialCommandGroup(
                 elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2),
-                commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
-                ),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
@@ -190,10 +190,8 @@ class RobotContainer:
             
             AlgaeL3Command = commands2.SequentialCommandGroup(
                 elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3),
-                commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
-                ),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
@@ -202,10 +200,8 @@ class RobotContainer:
             
             AlgaeGroundIntakeCommand = commands2.SequentialCommandGroup(
                 elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeGroundIntake),
-                commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotGroundIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
-                ),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotGroundIntakingValue),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
@@ -221,16 +217,51 @@ class RobotContainer:
                 algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
             
-            AlgaeIdleCommand = commands2.SequentialCommandGroup(
+            algaeIdleCommand = commands2.SequentialCommandGroup(
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
                 algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
+            
+            # Declare inputs for those commands
         
         if self.ENABLE_CORAL and self.ENABLE_ELEVATOR:
-            ...
+            # Declare Coral Sequential Commands
+            coralDefaultCommand = coralCommands.CoralDefaultCommand(self.coralSubsystem)
+            
+            coralIntakeCommand = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralIntakePosition)
+            )
+            
+            coralL1Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralLv1),
+                coralCommands.DischargeCoralCommand(self.coralSubsystem, self.pneumaticSubsystem, activateFlippers=False)
+            )
+            
+            coralL2Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralLv2),
+                coralCommands.DischargeCoralCommand(self.coralSubsystem, self.pneumaticSubsystem, activateFlippers=False)
+            )
+            
+            coralL3Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralLv3),
+                coralCommands.DischargeCoralCommand(self.coralSubsystem, self.pneumaticSubsystem, activateFlippers=False)
+            )
+            
+            coralL4Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralLv4),
+                coralCommands.DischargeCoralCommand(self.coralSubsystem, self.pneumaticSubsystem, activateFlippers=True)
+            )
+            
+            # Declare inputs for those commands
+            
+        # FOR TESTING
+        coralTestCommand = coralCommands.TestCommand(self.coralSubsystem)
+        
+        self._joystick2.x().whileTrue(coralTestCommand)
 
     def getAutonomousCommand(self) -> commands2.Command:
-        """Use this to pass the autonomous command to the main {@link Robot} class.
+        """Use this to pass the autonomous command
+        to the main {@link Robot} class.
 
         :returns: the command to run in autonomous
         """

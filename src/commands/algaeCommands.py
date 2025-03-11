@@ -74,5 +74,11 @@ class AlgaePivotCommand(Command):
 class AlgaeIntakeCommand(Command):
     '''Super simple command that sets intake motors and that's it'''
     def __init__(self, speed, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):
-        self.algaeSubsystem = algaeSubsystem
         # Doesn't add requirements so it can be run at the same time as tha AlgaePivotCommand
+        self.algaeSubsystem = algaeSubsystem
+        self.speed = speed
+        
+    def initialize(self):
+        self.algaeSubsystem.spinIntakeMotor(self.speed)
+        
+    def isFinished(self): return True
