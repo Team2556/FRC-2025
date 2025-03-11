@@ -245,10 +245,10 @@ class ElevatorConstants():
 
         kElevatorOffsetMeters = 0 #Used in softlimit minimum
 
-        kBottomLeftLimitSwitchChannel = Rio_DIO.ZERO
-        kBottomRightLimitSwitchChannel = Rio_DIO.ONE
-        kTopLeftLimitSwitchChannel = Rio_DIO.TWO
-        kTopRightLimitSwitchChannel = Rio_DIO.THREE #TODO: ? two on top also?
+        kBottomLeftLimitSwitchChannel = Rio_DIO.SEVEN
+        kBottomRightLimitSwitchChannel = Rio_DIO.EIGHT
+        kTopLeftLimitSwitchChannel = Rio_DIO.NINE
+        kTopRightLimitSwitchChannel = Rio_DIO.TEN #TODO: ? two on top also?
 
 class AlgaeConstants:
     # Motor Channels
@@ -257,7 +257,6 @@ class AlgaeConstants:
     
     # Limit Switch channel (So it doesn't input when limit switch activated)
     kLimitSwitchChannel = Rio_DIO.FOUR # TODO: Add more actual CAN IDs
-    # kOtherLimitSwitchChannel = Rio_DIO.FIVE # TODO: Figure out if there's actually two limit switches
     
     # This is so it doesn't move too fast in one way? 
     # (to disable just set to super high positive/negative numbers)
@@ -298,10 +297,10 @@ class AlgaeConstants:
 class CoralConstants:
     kCoralMotorPort = CAN_Address.THIRTY
     
-    kLeftBreakerLight = 8  # TODO: Get the actual IDs
-    kRightBreakerLight = 9
+    kLeftBreakerLight = Rio_DIO.ZERO # TODO: Get the actual IDs
+    kRightBreakerLight = Rio_DIO.ONE
     
-    kIntakeMultiplier = 0.06
+    kIntakeMultiplier = 0.03
     kDischargeMultiplier = 0.08
     
     kSolenoidPulseDuration = 0.5
