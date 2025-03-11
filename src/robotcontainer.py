@@ -85,7 +85,8 @@ class RobotContainer:
         
         # Command Scheduler is needed to run periodic() function on subsystems
         self.scheduler = commands2.CommandScheduler()   
-        # self.scheduler.registerSubsystem(self.algae)  why doing this?
+        self.scheduler.registerSubsystem(self.algaeSubsystem) # why doing this?
+        # So periodic() in algae subsystem runs... sorry for the name typo
         
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
         
@@ -224,6 +225,9 @@ class RobotContainer:
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
                 algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
+        
+        if self.ENABLE_CORAL and self.ENABLE_ELEVATOR:
+            ...
 
     def getAutonomousCommand(self) -> commands2.Command:
         """Use this to pass the autonomous command to the main {@link Robot} class.
