@@ -14,6 +14,7 @@
 # If you wish to change any of these, be sure to change all 
 # instances of the rule unless you're really desperate on time
 
+from shutil import move
 import commands2
 import commands2.button
 import commands2.cmd
@@ -177,10 +178,8 @@ class RobotContainer:
             # Declare Algae Sequential commands
             AlgaeL2Command = commands2.SequentialCommandGroup(
                 elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2),
-                commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
-                ),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
@@ -189,10 +188,8 @@ class RobotContainer:
             
             AlgaeL3Command = commands2.SequentialCommandGroup(
                 elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3),
-                commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
-                ),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
@@ -201,10 +198,8 @@ class RobotContainer:
             
             AlgaeGroundIntakeCommand = commands2.SequentialCommandGroup(
                 elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kAlgaeGroundIntake),
-                commands2.ParallelCommandGroup(
-                    algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotGroundIntakingValue),
-                    algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier)
-                ),
+                algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 1 * AlgaeConstants.kIntakeMultiplier),
+                algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotGroundIntakingValue),
                 commands2.WaitCommand(AlgaeConstants.kTimeItTakesToIntake),
                 # TODO: Back up the robot a bit
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
@@ -220,10 +215,148 @@ class RobotContainer:
                 algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
             
-            AlgaeIdleCommand = commands2.SequentialCommandGroup(
+            algaeIdleCommand = commands2.SequentialCommandGroup(
                 algaeCommands.AlgaeIntakeCommand(self.algaeSubsystem, 0),
                 algaeCommands.AlgaePivotCommand(self.algaeSubsystem, AlgaeConstants.kPivotIdleValue),
             )
+            
+            # Declare inputs for those commands
+        
+        if self.ENABLE_CORAL and self.ENABLE_ELEVATOR:
+            # Declare Coral Sequential Commands
+            coralDefaultCommand = coralCommands.CoralDefaultCommand(self.coralSubsystem)
+            
+            coralIntakeCommand = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralIntakePosition)
+            )
+            
+            coralL1Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralLv1),
+                coralCommands.DischargeCoralCommand(self.coralSubsystem, self.pneumaticSubsystem, activateFlippers=False)
+            )
+            
+            coralL2Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralLv2),
+                coralCommands.DischargeCoralCommand(self.coralSubsystem, self.pneumaticSubsystem, activateFlippers=False)
+            )
+            
+            coralL3Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralLv3),
+                coralCommands.DischargeCoralCommand(self.coralSubsystem, self.pneumaticSubsystem, activateFlippers=False)
+            )
+            
+            coralL4Command = commands2.SequentialCommandGroup(
+                elevatorCommands.SetElevatorCommand(self.elevatorSubsystem, ElevatorConstants.kCoralLv4),
+                coralCommands.DischargeCoralCommand(self.coralSubsystem, self.pneumaticSubsystem, activateFlippers=True)
+            )
+
+            # TODO: Add movement command functionality inside these commands (As in you can tell the robot to move from one point to another):
+
+            moveBottomLeft1 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveBottomLeft2 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveBottom1 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveBottom2 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveBottomRight1 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveBottomRight2 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveTopLeft1 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveTopLeft2 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveTop1 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveTop2 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveTopRight1 = commands2.SequentialCommandGroup(
+
+            )
+
+            moveTopRight2 = commands2.SequentialCommandGroup(
+
+            )
+
+            currentMoveCommand = None # When we press one of the buttons that will tell the robot to move, then we will store that command inside this variable
+            currentActionCommand = None # When we press one of the buttons that will tell the robot to do something, then we will store that command inside this variable
+
+
+            self.controlPanelFunctions = {
+                "0": ([currentMoveCommand, currentActionCommand]),  # The activate button, for when we tell the robot to engage with whatever we said to do.
+
+                "1": ([moveBottomLeft1]), # 1-12 will be edges of the field
+                "2": ([moveBottomLeft2]),
+                "3": ([moveBottom1]),
+                "4": ([moveBottom2]),
+                "5": ([moveBottomRight1]),
+                "6": ([moveBottomRight2]),
+                "7": ([moveTopLeft1]),
+                "8": ([moveTopLeft2]),
+                "9": ([moveTop1]),
+                "10": ([moveTop2]),
+                "11": ([moveTopRight1]),
+                "12": ([moveTopRight2]),
+
+                "13": ([coralL1Command, coralIntakeCommand, coralDefaultCommand]), # 13-15 will be coral levels on the reef
+                "14": ([coralL2Command, coralIntakeCommand, coralDefaultCommand]),
+                "15": ([coralL3Command, coralIntakeCommand, coralDefaultCommand]),
+                "16": ([coralL4Command, coralIntakeCommand, coralDefaultCommand]),
+
+                "17": ([AlgaeL2Command, AlgaeProcessingCommand]), # 16 & 17 will be algae levels on the reef
+                "18": ([AlgaeL3Command, AlgaeProcessingCommand]),
+
+                "19": ([algaeIdleCommand, AlgaeGroundIntakeCommand]), # 18 and 19 will be feeders located on the left & right side of the field for our robot
+                "20": ([])
+            }
+
+
+            print(self.controlPanelFunctions)
+
+            self._buttons = []
+            for key in self.controlPanelFunctions.keys():
+                button = commands2.button.NetworkButton("/SmartDashboard/keyboard", str(key))
+                commands = self.controlPanelFunctions[key]
+
+                if key == "0": # The action command. This will NEED to be pressed in order for anything to happen. The other buttons "set" the action command.
+                    button.whileTrue(
+                        commands2.cmd.sequence(
+                            self.drivetrain.apply_request(lambda: self._drive),
+                            *commands,
+                            self.drivetrain.apply_request(lambda: self._brake)
+                        )
+                    )
+                    self._buttons.append(button)
+                elif int(key) <= 12: # Movement commands
+                    currentMoveCommand = self.controlPanelFunctions[key]
+                elif int(key) > 12: # Action commands
+                    currentActionCommand = self.controlPanelFunctions[key]
+
+                    
+
+            
 
     def getAutonomousCommand(self) -> commands2.Command:
         """Use this to pass the autonomous command to the main {@link Robot} class.
