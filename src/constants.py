@@ -354,12 +354,12 @@ class UltrasonicConstants:
 
 class LimelightConstants:
     # for field map replacr src with /home/lvuser/py/
-    if Path('/').resolve() == Path('/'):  # Check if root is actually root (Linux/RoboRIO)
+    '''if Path('/').resolve() == Path('/'):  # Check if root is actually root (Linux/RoboRIO)
         field_map_folder = Path('/home/lvuser/py/WPIcalFieldToUse/')
     else:  # We're on Windows
         field_map_folder = Path('WPIcalFieldToUse/')
     # field_map_folder = Path('/home/lvuser/py/WPIcalFieldToUse/')
-    field_map_address = str([i for i in field_map_folder.glob(pattern='*fmap', case_sensitive=False)][0])
+    field_map_address = str([i for i in field_map_folder.glob(pattern='*fmap', case_sensitive=False)][0])'''
     #TODO Update the location values
     kLL3forward = -0.383
     kLL3side = 0.0
