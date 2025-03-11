@@ -257,6 +257,7 @@ class RobotContainer:
         # FOR TESTING
         coralTestCommand = coralCommands.TestCommand(self.coralSubsystem)
         
+        self.coralSubsystem.setDefaultCommand(coralDefaultCommand)
         self._joystick2.x().whileTrue(coralTestCommand)
 
     def getAutonomousCommand(self) -> commands2.Command:

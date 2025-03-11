@@ -74,7 +74,5 @@ class TestCommand(Command):
         self.coralTrack = coralTrack
         self.addRequirements(self.coralTrack)
         
-        self.coralTrack.set_motor(0.1)
-        
-    def end(self):
-        self.coralTrack.set_motor(0)
+    def execute(self):
+        self.coralTrack.set_motor(-0.1)
