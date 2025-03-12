@@ -1,6 +1,6 @@
 '''Has a command for discharging and a default command for intaking'''
 
-from commands2 import Command
+from commands2 import Command, InterruptionBehavior
 from wpilib import Timer
 
 from subsystems import coralSubsystem, pneumaticSubsystem, elevatorSubsystem
@@ -10,58 +10,54 @@ class DischargeCoralCommand(Command):
     def __init__(
         self, 
         coralTrack: coralSubsystem.CoralTrack, 
+        elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem,
         pneumaticHub: pneumaticSubsystem.PneumaticSubsystem, 
-        activateFlippers = False,
+        direction = 1,
     ):
         # Declare subsystems and add requirements
         self.coralTrack = coralTrack
         self.pneumaticHub = pneumaticHub
         self.addRequirements(self.coralTrack, pneumaticHub)
         
-        self.activateFlippers = activateFlippers # Whether to activate flippers
-        self.timer = Timer() # wpilib.Timer for waiting a bit after no beam brakes detected 
+        self.elevatorSubsystem = elevatorSubsystem # Not a requirement; just used for getting position
         
-        self.left_solenoid_channel = 0
-        self.right_solenoid_channel = 1
+        self.direction = direction # Left is -1, Right is 1 
         
-    def initialize(self):
-        self.direction = self.getDirection()
+        self.left_solenoid_channel = CoralConstants.kLeftFlipper
+        self.right_solenoid_channel = CoralConstants.kRightFlipper
         
     def getDirection(self):
         """Get Direction of Discharge using April Tags/Odometry"""
         # TODO Use April Tags to automatically identify the needed direction for discharge
-        return 1
+        return self.direction # Right now just manually find the direction
         
     def execute(self):
         # Constantly set the motor speed so default command doesn't run
-        self.coralTrack.set_motor(CoralConstants.kDischargeMultiplier * self.direction)
-        # Start the timer once all beam breaks don't see coral
-        if not self.coralTrack.detect_coral:
-            self.timer.start()
-        # Activate flippers
-        if not self.coralTrack.detect_coral and self.activateFlippers:
-            self.pneumaticHub.pulse_solenoid(self.right_solenoid_channel, CoralConstants.kSolenoidPulseDuration)
-            self.pneumaticHub.pulse_solenoid(self.left_solenoid_channel, CoralConstants.kSolenoidPulseDuration)
+        self.coralTrack.set_motor(CoralConstants.kDischargeMultiplier * self.getDirection())
+        # Check for flippers
+        if (self.elevatorSubsystem.get_position() >= CoralConstants.kHighEnoughToActivateFlippers
+            and self.coralTrack.detect_coral == False):
+            self.pneumaticHub.pulse_solenoid(self.left_solenoid_channel, CoralConstants.kFlipperPulseDuration)
+            self.pneumaticHub.pulse_solenoid(self.right_solenoid_channel, CoralConstants.kFlipperPulseDuration)
     
-    def isFinished(self):
-        if self.timer.get() >= CoralConstants.kTimeBetweenLeavingBeamBreaksAndDischargingCoral:
-            return True
+    def isFinished(self): # It's kinda like an InstantCommand
+        return True
 
 class CoralDefaultCommand(Command):
     '''The default command for coral... it does all the centering'''
-    def __init__(self, coralTrack: coralSubsystem.CoralTrack):
+    def __init__(self, coralSubsystem: coralSubsystem.CoralTrack):
         # Declare subsystems and add requirements
-        self.coralTrack = coralTrack
-        self.addRequirements(self.coralTrack)
+        self.coralSubsystem = coralSubsystem
+        self.addRequirements(self.coralSubsystem)
         
     def execute(self):
         # Look guys it's Aidan's original code v4
-        is_Left = self.coralTrack.left_detector.get()
-        is_Right = self.coralTrack.right_detector.get()
+        is_Left = self.coralSubsystem.left_detector.get()
+        is_Right = self.coralSubsystem.right_detector.get()
 
         if is_Left and not is_Right:
-            self.coralTrack.set_motor(1 * CoralConstants.kIntakeMultiplier)
+            self.coralSubsystem.set_motor(1 * CoralConstants.kIntakeMultiplier)
         elif is_Right and not is_Left:
-            self.coralTrack.set_motor(-1 * CoralConstants.kIntakeMultiplier)
+            self.coralSubsystem.set_motor(-1 * CoralConstants.kIntakeMultiplier)
         else:
-            self.coralTrack.disable_motor()
+            self.coralSubsystem.disable_motor()

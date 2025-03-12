@@ -1,6 +1,7 @@
 from phoenix6 import CANBus, configs, hardware, signals, swerve, units
 from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 from wpimath.units import inchesToMeters
+from networktables import NetworkTables
 
 
 class TunerConstants:
@@ -15,11 +16,11 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     _steer_gains = (
         configs.Slot0Configs()
-        .with_k_p(100)
+        .with_k_p(40) #was generated as (100)
         .with_k_i(0)
-        .with_k_d(0.5)
-        .with_k_s(0.1)
-        .with_k_v(2.33)
+        .with_k_d(0.5)#was generated as (0.5)
+        .with_k_s(0.1)#was generated as (0.1)
+        .with_k_v(1.59)#was generated as (1.59)
         .with_k_a(0)
         .with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
     )
@@ -27,11 +28,11 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(0.1)
+        .with_k_p(0.00442645)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0)
-        .with_k_v(0.124)
+        .with_k_s(0.07664325)
+        .with_k_v(0.11421)
     )
 
     # The closed-loop output type to use for the steer motors;
@@ -47,8 +48,9 @@ class TunerConstants:
     _steer_motor_type = swerve.SteerMotorArrangement.TALON_FX_INTEGRATED
 
     # The remote sensor feedback type to use for the steer motors;
-    # When not Pro-licensed, Fused*/Sync* automatically fall back to Remote*
-    _steer_feedback_type = swerve.SteerFeedbackType.FUSED_CANCODER
+    # When not Pro-licensed, FusedCANcoder/SyncCANcoder automatically fall back to RemoteCANcoder
+    # _steer_feedback_type = swerve.SteerFeedbackType.FUSED_CANCODER #giving us errors
+    _steer_feedback_type = swerve.SteerFeedbackType.REMOTE_CANCODER 
 
     # The stator current at which the wheels start to slip;
     # This needs to be tuned to your individual robot
@@ -61,11 +63,11 @@ class TunerConstants:
         configs.CurrentLimitsConfigs()
         # Swerve azimuth does not require much torque output, so we can set a relatively low
         # stator current limit to help avoid brownouts without impacting performance.
-        .with_stator_current_limit(60).with_stator_current_limit_enable(True)
+        .with_stator_current_limit(40).with_stator_current_limit_enable(True)
     )
     _encoder_initial_configs = configs.CANcoderConfiguration()
     # Configs for the Pigeon 2; leave this None to skip applying Pigeon 2 configs
-    _pigeon_configs: configs.Pigeon2Configuration | None = None
+    _pigeon_configs: configs.Pigeon2Configuration | None = configs.Pigeon2Configuration()#.with_gyro_trim(1750/1800)
 
     # CAN bus that the devices are located on;
     # All swerve devices must share the same CAN bus
@@ -73,18 +75,21 @@ class TunerConstants:
 
     # Theoretical free speed (m/s) at 12 V applied output;
     # This needs to be tuned to your individual robot
-    speed_at_12_volts: units.meters_per_second = 4.57
+    speed_at_12_volts: units.meters_per_second = 2.73 # TODO: #10 Change this to the actual speed 
+    
+    
 
     # Every 1 rotation of the azimuth results in _couple_ratio drive motor turns;
     # This may need to be tuned to your individual robot
-    _couple_ratio = 3.125
+    # Protobot: turned in steer direction 4 times, drive motor turned 2 plus 7 out of the 43 drive bevel teeth
+    _couple_ratio = (2 + 13/45) / 4 # generated: 3.125
 
     _drive_gear_ratio = 7.125
     _steer_gear_ratio = 18.75
     _wheel_radius: units.meter = inchesToMeters(2.04)
 
-    _invert_left_side = True
-    _invert_right_side = False
+    _invert_left_side = False
+    _invert_right_side = True
 
     _pigeon_id = 15
 
@@ -131,45 +136,45 @@ class TunerConstants:
     _front_left_drive_motor_id = 1
     _front_left_steer_motor_id = 2
     _front_left_encoder_id = 3
-    _front_left_encoder_offset: units.rotation = 0.110107421875
-    _front_left_steer_motor_inverted = False
-    _front_left_encoder_inverted = True
+    _front_left_encoder_offset: units.rotation = 0.31884765625
+    _front_left_steer_motor_inverted = True
+    _front_left_encoder_inverted = False
 
-    _front_left_x_pos: units.meter = inchesToMeters(11.4175)
-    _front_left_y_pos: units.meter = inchesToMeters(11.4175)
+    _front_left_x_pos: units.meter = inchesToMeters(11.375)
+    _front_left_y_pos: units.meter = inchesToMeters(11.375)
 
     # Front Right
     _front_right_drive_motor_id = 4
     _front_right_steer_motor_id = 5
     _front_right_encoder_id = 6
-    _front_right_encoder_offset: units.rotation = -0.001220703125
-    _front_right_steer_motor_inverted = False
-    _front_right_encoder_inverted = True
+    _front_right_encoder_offset: units.rotation = -0.172119140625
+    _front_right_steer_motor_inverted = True
+    _front_right_encoder_inverted = False
 
-    _front_right_x_pos: units.meter = inchesToMeters(11.4175)
-    _front_right_y_pos: units.meter = inchesToMeters(-11.4175)
+    _front_right_x_pos: units.meter = inchesToMeters(11.375)
+    _front_right_y_pos: units.meter = inchesToMeters(-11.375)
 
     # Back Left
     _back_left_drive_motor_id = 7
     _back_left_steer_motor_id = 8
     _back_left_encoder_id = 9
-    _back_left_encoder_offset: units.rotation = -0.103271484375
-    _back_left_steer_motor_inverted = False
-    _back_left_encoder_inverted = True
+    _back_left_encoder_offset: units.rotation = -0.36962890625
+    _back_left_steer_motor_inverted = True
+    _back_left_encoder_inverted = False
 
-    _back_left_x_pos: units.meter = inchesToMeters(-11.4175)
-    _back_left_y_pos: units.meter = inchesToMeters(11.4175)
+    _back_left_x_pos: units.meter = inchesToMeters(-11.375)
+    _back_left_y_pos: units.meter = inchesToMeters(11.375)
 
     # Back Right
     _back_right_drive_motor_id = 10
     _back_right_steer_motor_id = 11
     _back_right_encoder_id = 12
-    _back_right_encoder_offset: units.rotation = 0.123291015625
-    _back_right_steer_motor_inverted = False
-    _back_right_encoder_inverted = True
+    _back_right_encoder_offset: units.rotation = 0.395751953125
+    _back_right_steer_motor_inverted = True
+    _back_right_encoder_inverted = False
 
-    _back_right_x_pos: units.meter = inchesToMeters(-11.4175)
-    _back_right_y_pos: units.meter = inchesToMeters(-11.4175)
+    _back_right_x_pos: units.meter = inchesToMeters(-11.375)
+    _back_right_y_pos: units.meter = inchesToMeters(-11.375)
 
 
     front_left = _constants_creator.create_module_constants(
@@ -228,6 +233,9 @@ class TunerConstants:
             hardware.TalonFX,
             hardware.CANcoder,
             clazz.drivetrain_constants,
+            # TODO: #75 add in odometry and vision initial uncertainties
+            #odometry_standard_deviation: tuple[float, float, float],
+            #vision_standard_deviation: tuple[float, float, float],
             [
                 clazz.front_left,
                 clazz.front_right,

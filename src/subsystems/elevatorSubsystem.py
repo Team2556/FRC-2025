@@ -43,12 +43,12 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         # Declare Limit switches (2 on each direction)
         self.limit_bottomLeft = wpilib.DigitalInput(ElevatorConstants.kBottomLeftLimitSwitchChannel)
         self.limit_bottomRight = wpilib.DigitalInput(ElevatorConstants.kBottomRightLimitSwitchChannel)
-        self.limit_topLeft = wpilib.DigitalInput(ElevatorConstants.kTopLeftLimitSwitchChannel)
+        # self.limit_topLeft = wpilib.DigitalInput(ElevatorConstants.kTopLeftLimitSwitchChannel)
         self.limit_topRight = wpilib.DigitalInput(ElevatorConstants.kTopRightLimitSwitchChannel)
 
         # Declare booleans that record if both limit switches on one side are active
         self.limit_bottom = (self.limit_bottomLeft.get() and self.limit_bottomRight.get())
-        self.limit_top = (self.limit_topLeft.get() and self.limit_topRight.get())
+        self.limit_top = self.limit_topRight.get()#(self.limit_topLeft.get() and )
 
         # Setup all the PID stuff
         cfg = configs.TalonFXConfiguration()

@@ -14,6 +14,7 @@ from wpimath.units import (
 from wpimath.trajectory import TrapezoidProfile
 from wpilib import SmartDashboard
 from phoenix6.configs.config_groups import Slot0Configs
+from pathlib import Path
 
 class AprilTags_height:
     def tag_heights():  # height of apriltags by order of number, in centimeters
@@ -134,7 +135,7 @@ class Rio_Analog(IntEnum):
     TWO = auto()
     THREE = auto()
 
-# TODO: Do we really need this
+# TODO: Do we really need this (i guess so?)
 class CAN_Address(IntEnum):
     ZERO = 0
     ONE = auto()
@@ -196,67 +197,70 @@ class Override_DriveConstant: ...
 
 # NOTE: ALL OF THE BELOW CLASSES ARE FOR SUBSYSTEMS
 
-class ElevatorConstants():
-        # Motor CAN ID's
-        kLeftMotorPort = CAN_Address.FOURTEEN
-        kRightMotorPort = CAN_Address.FIFTEEN
-        # kJoystickPort = 0
-        
-        kpeak_forward_torque_current = 35 #120
-        kpeak_reverse_torque_current = -35 #-120
-        kincrement_m_per_sec_held = .25
-        kHomingRate = 1/30 # 1 meter in 30 seconds
+class ElevatorConstants:
+    kLeftMotorPort = CAN_Address.THIRTEEN
+    kRightMotorPort = CAN_Address.FOURTEEN
+    kJoystickPort = 0
+    kpeak_forward_torque_current = 35  # 120
+    kpeak_reverse_torque_current = -35  # -120
+    kincrement_m_per_sec_held = 0.25
+    kHomingRate = 1 / 30  # 1 meter in 30 seconds
 
-        kElevatorKp = 1.0
-        kElevatorKi = 0.0
-        kElevatorKd = .0
-        kElevatorGearing = 6 #10.0
-        kElevatorDrumRadius = .035/2   # half of 35mm in meters
-        kCarriageMass = 4 # 4 kg
+    kElevatorKp = 1.0
+    kElevatorKi = 0.0
+    kElevatorKd = 0.0
+    kElevatorGearing = 6  # 10.0
+    kElevatorDrumRadius = 0.035 / 2  # half of 35mm in meters
+    kCarriageMass = 22.68  # 4 kg
 
-        kMinElevatorHeight = 0.00 #0.0508  # 2 inches
-        kMaxElevatorHeight = inchesToMeters(26)  # 50 inches TODO: make this smaller
-        kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.00002
-        
-        ScaredSafetyFactor = 200 # Set ScaredSafetyFactor to 1 once we get SUPER confident
-        # All the elevator levels to do stuff
-        kCoralLv1 = 0.1 / ScaredSafetyFactor # Height in meters
-        kCoralLv2 = 0.32 / ScaredSafetyFactor # 556
-        kCoralLv3 = 0.5588 / ScaredSafetyFactor
-        kCoralLv4 = 0.6 / ScaredSafetyFactor # All the elevator levels below aren't tuned
-        kAlgaeProcess = 0.15 / ScaredSafetyFactor
-        kAlgaeGroundIntake = 0.21 / ScaredSafetyFactor
-        kAlgaeLv2 = 0.2 / ScaredSafetyFactor
-        kAlgaeLv3 = 0.4 / ScaredSafetyFactor
-        kZero = 0
+    kMinElevatorHeight = 0.00 #0.0508  # 2 inches
+    kMaxElevatorHeight = inchesToMeters(26)  # 50 inches TODO: make this smaller
+    kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.00002
+    
+    ScaredSafetyFactor = 200 # Set ScaredSafetyFactor to 1 once we get SUPER confident
+    # All the elevator levels to do stuff
+    kCoralIntakePosition = 0.05 / ScaredSafetyFactor
+    kCoralLv1 = 0.1 / ScaredSafetyFactor # Height in meters
+    kCoralLv2 = 0.32 / ScaredSafetyFactor # 556
+    kCoralLv3 = 0.5588 / ScaredSafetyFactor
+    kCoralLv4 = 0.6 / ScaredSafetyFactor # All the elevator levels below aren't tuned
+    kAlgaeProcess = 0.15 / ScaredSafetyFactor
+    kAlgaeGroundIntake = 0.21 / ScaredSafetyFactor
+    kAlgaeLv2 = 0.2 / ScaredSafetyFactor
+    kAlgaeLv3 = 0.4 / ScaredSafetyFactor
+    kZero = 0
 
-        # The command decides the position's close enough if it's within this range (in meters?)
-        kTargetValueAccuracy = 0.02
+    # The command decides the position's close enough if it's within this range (in meters?)
+    kTargetValueAccuracy = 0.02
 
-        kMaxVelocityMetersPerSecond = 1.5/ScaredSafetyFactor
-        kMaxAccelerationMetersPerSecSquared = 0.5/ScaredSafetyFactor
+    kMaxVelocityMetersPerSecond = 1.5/ScaredSafetyFactor
+    kMaxAccelerationMetersPerSecSquared = 0.5/ScaredSafetyFactor
 
-        kSVolts = 0
-        kGVolts = 0.01
+    kSVolts = 0
+    kGVolts = 0.01
 
-        kVVoltSecondPerMeter = 0 #1.5
-        kAVoltSecondSquaredPerMeter = 0 #0.75
+    kVVoltSecondPerMeter = 0 #1.5
+    kAVoltSecondSquaredPerMeter = 0 #0.75
 
-        kElevatorOffsetMeters = 0 #Used in softlimit minimum
+    kElevatorOffsetMeters = 0 #Used in softlimit minimum
 
-        kBottomLeftLimitSwitchChannel = Rio_DIO.ZERO
-        kBottomRightLimitSwitchChannel = Rio_DIO.ONE
-        kTopLeftLimitSwitchChannel = Rio_DIO.TWO
-        kTopRightLimitSwitchChannel = Rio_DIO.THREE #TODO: ? two on top also?
+    kBottomLeftLimitSwitchChannel = Rio_DIO.EIGHT
+    kBottomRightLimitSwitchChannel = Rio_DIO.NINE
+    # kTopLeftLimitSwitchChannel = Rio_DIO.TWO
+    kTopRightLimitSwitchChannel = Rio_DIO.SEVEN  # TODO: ? two on top also?
+
+
+# endregion
+class Override_DriveConstant: ...
+
 
 class AlgaeConstants:
     # Motor Channels
-    kPivotMotorChannel = CAN_Address.FORTY # TODO: Add the actual CAN IDs
-    kIntakeWheelsChannel = CAN_Address.FORTYONE
+    kPivotMotorChannel = CAN_Address.TWENTYTWO # TODO: Add the actual CAN IDs
+    kIntakeWheelsChannel = CAN_Address.TWENTYTHREE
     
     # Limit Switch channel (So it doesn't input when limit switch activated)
-    kLimitSwitchChannel = Rio_DIO.FOUR # TODO: Add more actual CAN IDs
-    # kOtherLimitSwitchChannel = Rio_DIO.FIVE # TODO: Figure out if there's actually two limit switches
+    kLimitSwitchChannel = Rio_DIO.FIVE # TODO: Add more actual CAN IDs
     
     # This is so it doesn't move too fast in one way? 
     # (to disable just set to super high positive/negative numbers)
@@ -297,17 +301,24 @@ class AlgaeConstants:
 class CoralConstants:
     kCoralMotorPort = CAN_Address.THIRTY
     
-    kLeftBreakerLight = 8  # TODO: Get the actual IDs
-    kRightBreakerLight = 9
+    kLeftBreakerLight = Rio_DIO.ZERO # TODO: Get the actual IDs
+    kRightBreakerLight = Rio_DIO.ONE
     
-    kIntakeMultiplier = 0.06
-    kDischargeMultiplier = 0.08
+    kLeftFlipper = 1 # IDs for the pneumatics flippers
+    kRightFlipper = 2
     
-    kSolenoidPulseDuration = 0.5
-    kTimeBetweenLeavingBeamBreaksAndDischargingCoral = 0.3
+    kIntakeMultiplier = 0.05
+    kDischargeMultiplier = 0.25
+    
+    kFlipperPulseDuration = 1
+    
+    # Not currently being used
+    kDelayBetweenLeavingBeamBreaksAndActivatingFlippers = 0.3
+    
+    kHighEnoughToActivateFlippers = 0.8 # I think it's in meters (where 0 is lowest physical point on elevator)
 
 class ClimbConstants:
-    kClimbMotorPort = CAN_Address.FIFTYONE
+    kClimbMotorPort = CAN_Address.TWENTYSEVEN
     kTopLimitSwitchChannel = Rio_DIO.FIVE
     kBottomLimitSwitchChannel = Rio_DIO.SIX
     kClimbHookZeroEntry = 1
@@ -336,10 +347,39 @@ class ClimbConstants:
             )
 
 class PneumaticConstants:
-    kHub = 40
+    kHub = CAN_Address.FORTY
+
+class PowerDistributionConstants:
+    kPDP = CAN_Address.FIFTY
 
 class UltrasonicConstants:
-    frontLeft = Rio_DIO.ZERO
-    frontRight = Rio_DIO.ONE
-    backLeft = Rio_DIO.TWO
-    backRight = Rio_DIO.THREE
+    frontLeft = Rio_DIO.TWO
+    frontRight = Rio_DIO.THREE
+    # backLeft = Rio_DIO.FOUR
+    # backRight = Rio_DIO.THREE
+
+
+class LimelightConstants:
+    # for field map replacr src with /home/lvuser/py/
+    '''if Path('/').resolve() == Path('/'):  # Check if root is actually root (Linux/RoboRIO)
+        field_map_folder = Path('/home/lvuser/py/WPIcalFieldToUse/')
+    else:  # We're on Windows
+        field_map_folder = Path('WPIcalFieldToUse/')
+    # field_map_folder = Path('/home/lvuser/py/WPIcalFieldToUse/')
+    field_map_address = str([i for i in field_map_folder.glob(pattern='*fmap', case_sensitive=False)][0])'''
+    #TODO Update the location values
+    kLL3forward = -0.383
+    kLL3side = 0.0
+    kLL3up = 0.167
+    kLL3roll = 0.0
+    kLL3pitch = 25.1
+    kLL3yaw = 180
+    
+    kLL4forward = 0.0
+    kLL4side = -0.365
+    kLL4up = 0.217
+    kLL4roll = 2.8
+    kLL4pitch = 37.6
+    kLL4yaw = -90
+
+    
