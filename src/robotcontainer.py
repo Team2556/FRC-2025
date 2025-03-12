@@ -329,7 +329,7 @@ class RobotContainer:
                 "18": ([AlgaeL3Command, AlgaeProcessingCommand]),
 
                 "19": ([algaeIdleCommand, AlgaeGroundIntakeCommand]), # 18 and 19 will be feeders located on the left & right side of the field for our robot
-                "20": ([])
+                "20": ([algaeIdleCommand, AlgaeGroundIntakeCommand]),
             }
 
 
@@ -340,19 +340,24 @@ class RobotContainer:
                 button = commands2.button.NetworkButton("/SmartDashboard/keyboard", str(key))
                 commands = self.controlPanelFunctions[key]
 
-                if key == "0": # The action command. This will NEED to be pressed in order for anything to happen. The other buttons "set" the action command.
+                if int(key) == 0: # The action command. This will NEED to be pressed in order for anything to happen. The other buttons "set" the action command.
                     button.whileTrue(
-                        commands2.cmd.sequence(
-                            self.drivetrain.apply_request(lambda: self._drive),
-                            *commands,
-                            self.drivetrain.apply_request(lambda: self._brake)
+                        commands2.cmd.sequence(*commands)
                         )
-                    )
-                    self._buttons.append(button)
                 elif int(key) <= 12: # Movement commands
-                    currentMoveCommand = self.controlPanelFunctions[key]
+                    button.onTrue(
+                        commands2.cmd.runOnce(lambda k=key: self.setMoveCommand(k))
+                        )
                 elif int(key) > 12: # Action commands
-                    currentActionCommand = self.controlPanelFunctions[key]
+                    button.onTrue(
+                        commands2.cmd.runOnce(lambda k=key: self.setActionCommand(k))
+                        )
+
+    def setMoveCommand(self, key):
+        self.currentMoveCommand = self.controlPanelFunctions[key]
+
+    def setActionCommand(self, key):
+        self.currentActionCommand = self.controlPanelFunctions[key]
 
                     
 
