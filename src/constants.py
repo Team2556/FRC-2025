@@ -217,11 +217,11 @@ class ElevatorConstants:
     kMaxElevatorHeight = inchesToMeters(26)  # 50 inches TODO: make this smaller
     kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.00002
     
-    ScaredSafetyFactor = 200 # Set ScaredSafetyFactor to 1 once we get SUPER confident
+    ScaredSafetyFactor = 5 # Set ScaredSafetyFactor to 1 once we get SUPER confident
     # All the elevator levels to do stuff
     kCoralIntakePosition = 0.05 / ScaredSafetyFactor
-    kCoralLv1 = 0.1 / ScaredSafetyFactor # Height in meters
-    kCoralLv2 = 0.32 / ScaredSafetyFactor # 556
+    # kCoralLv1 = 0.1 / ScaredSafetyFactor # Height in meters
+    kCoralLv2 = 0 / ScaredSafetyFactor # 556
     kCoralLv3 = 0.5588 / ScaredSafetyFactor
     kCoralLv4 = 0.6 / ScaredSafetyFactor # All the elevator levels below aren't tuned
     kAlgaeProcess = 0.15 / ScaredSafetyFactor
@@ -256,19 +256,19 @@ class Override_DriveConstant: ...
 
 class AlgaeConstants:
     # Motor Channels
-    kPivotMotorChannel = CAN_Address.TWENTYTWO # TODO: Add the actual CAN IDs
-    kIntakeWheelsChannel = CAN_Address.TWENTYTHREE
+    kPivotMotorChannel = CAN_Address.TWENTYTHREE
+    kIntakeWheelsChannel = CAN_Address.TWENTYTWO
     
     # Limit Switch channel (So it doesn't input when limit switch activated)
     kLimitSwitchChannel = Rio_DIO.FIVE # TODO: Add more actual CAN IDs
     
     # This is so it doesn't move too fast in one way? 
     # (to disable just set to super high positive/negative numbers)
-    kPeakForwardTorqueCurrent = 10
-    kPeakReverseTorqueCurrent = -10
+    kPeakForwardTorqueCurrent = 3
+    kPeakReverseTorqueCurrent = -3
     
     # All the following stuff are tunable in SmartDashboard
-    kPivotp = 0.3
+    kPivotp = 0.01
     kPivoti = 0
     kPivotd = 0
     kPivotg = 0
@@ -284,7 +284,7 @@ class AlgaeConstants:
     kPivotMinHeight = 0
     
     # Values to set pivoting motor to
-    kPivotReefIntakingValue = 0.25 # Pivot position when grabbing algae
+    kPivotReefIntakingValue = 0.1 # Pivot position when grabbing algae
     kPivotGroundIntakingValue = 0.03 # Pivot position when grabbing algae from the FLOOR
     kPivotProcessingValue = 0.07 # Pivot position when about to send to processor
     kPivotIdleValue = 0 # Pivot position when idle
@@ -292,7 +292,7 @@ class AlgaeConstants:
     kPivotRotationsPerSecond = 0.05
     
     # Intake wheels multiply by this speed
-    kIntakeMultiplier = 0.8 # CHANGE BACK TO 0.2 WHEN TESTING
+    kIntakeMultiplier = 0.3 # CHANGE BACK TO 0.2 WHEN TESTING
     
     # The code waits this many seconds between intaking/processing
     kTimeItTakesToIntake = 1

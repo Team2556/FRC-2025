@@ -225,42 +225,52 @@ class RobotContainer:
             algaeProcessCommand = algaeCommands.AlgaeInstantCommand(
                 self.algaeSubsystem, AlgaeConstants.kPivotProcessingValue, -1 * AlgaeConstants.kIntakeMultiplier
             )
-            
+             
             # ALGAE IDLE COMMAND
             algaeIdleCommand = algaeCommands.AlgaeInstantCommand(
                 self.algaeSubsystem, AlgaeConstants.kPivotIdleValue, 0 * AlgaeConstants.kIntakeMultiplier
             )
             
-            # self._joystick2.x().onTrue(algaeIntakeCommand)
-            # self._joystick2.x().onTrue(algaeProcessCommand)
-            # self._joystick2.x().onTrue(algaeIdleCommand)
+            # self._joystick2.y().onTrue(algaeIntakeCommand)
+            # self._joystick2.povDown().onTrue(algaeProcessCommand)
+            # self._joystick2.a().onTrue(algaeIdleCommand)
+            
+            # self._joystick2.povUp().onTrue(algaeCommands.AlgaeHomeCommand(self.algaeSubsystem))
         
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands
             defaultCoralCommand = coralCommands.CoralDefaultCommand(self.coralSubsystem)
-            dischargeCoralCommand = coralCommands.DischargeCoralCommand(
+            
+            dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
                 self.elevatorSubsystem,
                 self.pneumaticSubsystem,
                 direction = -1 # Left is -1, Right is 1
             )
             
+            dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                self.elevatorSubsystem,
+                self.pneumaticSubsystem,
+                direction = 1 # Left is -1, Right is 1
+            )
+            
             self.coralSubsystem.setDefaultCommand(defaultCoralCommand)
-            self._joystick2.x().whileTrue(dischargeCoralCommand)
+            self._joystick2.leftBumper().whileTrue(dischargeCoralLeftCommand)
+            self._joystick2.rightBumper().whileTrue(dischargeCoralRightCommand)
+            
             
         if self.ENABLE_ELEVATOR:
             IC = elevatorCommands.InstantSetElevatorCommand # So I can actually see all the code
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralIntakePosition))
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv1))
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeGroundIntake))
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2))
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
-            self._joystick2.x().whileTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeProcess))
+            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralIntakePosition))
+            self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
+            self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
+            self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeGroundIntake))
+            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2))
+            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
+            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeProcess))
 
-            
         if self.ENABLE_CLIMB:
             ...
 

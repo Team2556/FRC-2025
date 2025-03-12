@@ -39,9 +39,6 @@ class DischargeCoralCommand(Command):
             and self.coralTrack.detect_coral == False):
             self.pneumaticHub.pulse_solenoid(self.left_solenoid_channel, CoralConstants.kFlipperPulseDuration)
             self.pneumaticHub.pulse_solenoid(self.right_solenoid_channel, CoralConstants.kFlipperPulseDuration)
-    
-    def isFinished(self): # It's kinda like an InstantCommand
-        return True
 
 class CoralDefaultCommand(Command):
     '''The default command for coral... it does all the centering'''

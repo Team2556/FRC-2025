@@ -30,9 +30,9 @@ class AlgaeSubsystem(Subsystem):
         # All the following config stuff so setting position PID still works
         cfg = phoenix6.configs.TalonFXConfiguration()
         # TODO: make these constants
-        cfg.slot0.k_p = 0.1
-        cfg.slot0.k_i = 0
-        cfg.slot0.k_d = 0
+        cfg.slot0.k_p = AlgaeConstants.kPivotp
+        cfg.slot0.k_i = AlgaeConstants.kPivoti
+        cfg.slot0.k_d = AlgaeConstants.kPivotd
         
         # Don't think these do anything at all
         # cfg.slot0.integralZone = 0
@@ -127,9 +127,13 @@ class AlgaeSubsystem(Subsystem):
         # TODO: Figure out if this is actually the correct function to use
         return self.intakeMotor.get_supply_current().value
     
-    def getLimitSwitchActive(self, toggleLimitSwitch=True) -> bool:
-        '''Returns true if limit switch is active (and toggleLimitSwitch is also true)'''
-        return self.limitSwitch.get() and toggleLimitSwitch
+    def getLimitSwitchActive(self) -> bool:
+        '''Returns true if limit switch is active'''
+        return not self.limitSwitch.get()
+    
+    def spinPivotMotor(self, speed) -> None:
+        voltage = 12
+        self.pivotMotor.set(speed)
         
     # TODO: Add a cool list/grid layout with the new values to ShuffleBoard
     def setupSmartDashboard(self):
@@ -153,16 +157,16 @@ class AlgaeSubsystem(Subsystem):
         
     def updateSmartDashboard(self):
         '''Put all SmartDashboard stuff for this subsystem here'''
-        self.updatePIDvalues(
-            SmartDashboard.getNumber("Algae/Pivot P", self.PIDconfig.slot0.k_p),
-            SmartDashboard.getNumber("Algae/Pivot I", self.PIDconfig.slot0.k_i),
-            SmartDashboard.getNumber("Algae/Pivot D", self.PIDconfig.slot0.k_d),
-            SmartDashboard.getNumber("Algae/Pivot G", self.PIDconfig.slot0.k_g),
-        )
+        # self.updatePIDvalues(
+        #     SmartDashboard.getNumber("Algae/Pivot P", self.PIDconfig.slot0.k_p), # TODO FIX THIS LATER PLS
+        #     SmartDashboard.getNumber("Algae/Pivot I", self.PIDconfig.slot0.k_i),
+        #     SmartDashboard.getNumber("Algae/Pivot D", self.PIDconfig.slot0.k_d),
+        #     SmartDashboard.getNumber("Algae/Pivot G", self.PIDconfig.slot0.k_g),
+        # )
         # Output values
         SmartDashboard.putString("Algae/Pivot Position", self.pivotMotor.get_position().__str__())
         SmartDashboard.putString("Algae/Intake Speed", self.intakeMotor.get().__str__())
-        SmartDashboard.putBoolean("Algae/Limit Switch", self.limitSwitch.get())
+        SmartDashboard.putBoolean("Algae/Limit Switch", self.getLimitSwitchActive())
         
         # Tuning values
         AlgaeConstants.kAmpValueToDetectIfMotorStalled = SmartDashboard.getNumber("Algae/Amp Value to Detect if Stalled", AlgaeConstants.kAmpValueToDetectIfMotorStalled)
@@ -180,10 +184,12 @@ class AlgaeSubsystem(Subsystem):
         
     def periodic(self) -> None:
         # Sets setpoint to 0 if bottom limit switch active. No top limit switch though so umm...
-        if self.limitSwitch.get():
+        if self.getLimitSwitchActive():
             self.setpoint = 0
         # Stop intake motor if motor current supply value says to stop
         if self.getCurrent() > AlgaeConstants.kAmpValueToDetectIfMotorStalled:
             self.spinIntakeMotor(0)
         # Updates SmartDashboard
-        self.updateSmartDashboard()
+        # self.updateSmartDashboard()
+        
+        # print(self.getLimitSwitchActive())

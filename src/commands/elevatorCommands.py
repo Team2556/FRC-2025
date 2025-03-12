@@ -36,7 +36,7 @@ class InstantSetElevatorCommand(Command):
     def initialize(self):
         self.elevatorSubsystem.update_setpoint(self.position, incremental=False)
         self.elevatorSubsystem.moveElevator()
-        
+                
     def isFinished(self):
         return True
         

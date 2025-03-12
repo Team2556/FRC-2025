@@ -156,7 +156,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
     def rotationsToDistance(self, rotations: float) -> float:
         return rotations * 2*pi*ElevatorConstants.kElevatorDrumRadius/ElevatorConstants.kElevatorGearing
     
-    def update_setpoint(self, setpoint: float, incremental = True, constrain: bool = False) -> None:
+    def update_setpoint(self, setpoint: float, incremental = False, constrain: bool = True) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
         
         if incremental:
@@ -190,7 +190,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
         if not movement:
             movement = self.setpoint
-        self.elevmotor_left.set_control(self.position_voltage.with_position(self.distanceToRotations(movement)))
+        self.elevmotor_left.set_control(self.position_voltage.with_position(self.distanceToRotations(-movement)))
         # self.elevmotor_left.set_control(self.position_voltage.   with_position(self.distanceToRotations(movement)))
     
     def get_position(self):
