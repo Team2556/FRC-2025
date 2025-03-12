@@ -160,6 +160,31 @@ class RobotContainer:
             )
         )
 
+        self._joystick.rightBumper().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: (
+                    self._robot_centric_drive.with_velocity_x(
+                        -self._joystick.getLeftY() * self._max_speed
+                    )  # Drive forward with negative Y (forward)
+                    .with_velocity_y(
+                        -self._joystick.getLeftX() * self._max_speed
+                    )  # Drive left with negative X (left)
+                    .with_rotational_rate(
+                        -self._joystick.getRightX() * self._max_angular_rate
+                    )  # Drive counterclockwise with negative X (left)
+                )
+            )
+        )
+
+        self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
+        self._joystick.b().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: self._point.with_module_direction(
+                    Rotation2d(-self._joystick.getLeftY(), -self._joystick.getLeftX())
+                )
+            )
+        )
+
         # Run SysId routines when holding back/start and X/Y.
         # Note that each routine should be run exactly once in a single log.
         (self._joystick.back() & self._joystick.y()).whileTrue(
