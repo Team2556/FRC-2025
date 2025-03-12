@@ -74,16 +74,16 @@ class TestScoreLeftCommand(Command):
         self.coralTrack = coralTrack
         self.addRequirements(self.coralTrack)
         
-        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
         
+        '''self.InterruptionBehavior = InterruptionBehavior.kCancelSelf#kCancelIncoming
         self.timer = Timer()
-        self.timer.start()
+        self.timer.start()'''
         
     def execute(self):
-        self.coralTrack.set_motor(-CoralConstants.kDischargeMultiplier)
+        self.coralTrack.set_motor(CoralConstants.kDischargeMultiplier)
         
     def isFinished(self):
-        return self.timer.get() > 1
+        return False#self.timer.get() > 1
     
 class TestScoreRightCommand(Command):
     '''For testing yay'''
@@ -92,13 +92,14 @@ class TestScoreRightCommand(Command):
         self.coralTrack = coralTrack
         self.addRequirements(self.coralTrack)
         
-        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
+        
+        '''self.InterruptionBehavior = InterruptionBehavior.kCancelSelf#kCancelIncoming
         
         self.timer = Timer()
-        self.timer.start()
+        self.timer.start()'''
         
     def execute(self):
-        self.coralTrack.set_motor(CoralConstants.kDischargeMultiplier)
+        self.coralTrack.set_motor(-CoralConstants.kDischargeMultiplier)
         
     def isFinished(self):
-        return self.timer.get() > 1
+        return False#self.timer.get() > 1

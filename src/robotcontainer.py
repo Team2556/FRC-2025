@@ -267,8 +267,8 @@ class RobotContainer:
         # FOR TESTING
         self.coralSubsystem.setDefaultCommand(coralDefaultCommand)
         
-        self._joystick2.x().onTrue(coralCommands.TestScoreLeftCommand(self.coralSubsystem))
-        self._joystick2.b().onTrue(coralCommands.TestScoreRightCommand(self.coralSubsystem))
+        self._joystick2.x().whileTrue(coralCommands.TestScoreLeftCommand(self.coralSubsystem))
+        self._joystick2.b().whileTrue(coralCommands.TestScoreRightCommand(self.coralSubsystem))
 
     def getAutonomousCommand(self) -> commands2.Command:
         """Use this to pass the autonomous command
