@@ -27,6 +27,19 @@ class SetElevatorCommand(Command):
         return (value <= self.position + ElevatorConstants.kTargetValueAccuracy
             and value >= self.position - ElevatorConstants.kTargetValueAccuracy)
         
+class InstantSetElevatorCommand(Command):
+    def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
+        self.elevatorSubsystem = elevatorSubsystem
+        self.addRequirements(self.elevatorSubsystem)
+        self.position = position
+        
+    def initialize(self):
+        self.elevatorSubsystem.update_setpoint(self.position, incremental=False)
+        self.elevatorSubsystem.moveElevator()
+        
+    def isFinished(self):
+        return True
+        
 class IncrementElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, amount):
         self.elevatorSubsystem = elevatorSubsystem

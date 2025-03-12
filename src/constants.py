@@ -135,7 +135,7 @@ class Rio_Analog(IntEnum):
     TWO = auto()
     THREE = auto()
 
-# TODO: Do we really need this
+# TODO: Do we really need this (i guess so?)
 class CAN_Address(IntEnum):
     ZERO = 0
     ONE = auto()
@@ -304,11 +304,18 @@ class CoralConstants:
     kLeftBreakerLight = Rio_DIO.ZERO # TODO: Get the actual IDs
     kRightBreakerLight = Rio_DIO.ONE
     
+    kLeftFlipper = 1 # IDs for the pneumatics flippers
+    kRightFlipper = 2
+    
     kIntakeMultiplier = 0.05
     kDischargeMultiplier = 0.25
     
-    kSolenoidPulseDuration = 0.5
-    kTimeBetweenLeavingBeamBreaksAndDischargingCoral = 0.3
+    kFlipperPulseDuration = 1
+    
+    # Not currently being used
+    kDelayBetweenLeavingBeamBreaksAndActivatingFlippers = 0.3
+    
+    kHighEnoughToActivateFlippers = 0.8 # I think it's in meters (where 0 is lowest physical point on elevator)
 
 class ClimbConstants:
     kClimbMotorPort = CAN_Address.TWENTYSEVEN
