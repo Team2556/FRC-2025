@@ -19,6 +19,9 @@ import commands2.button
 import commands2.cmd
 from commands2.sysid import SysIdRoutine
 
+from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
+from pathplannerlib.path import PathPlannerPath, PathConstraints
+
 # NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
 from subsystems import (
     algaeSubsystem,
@@ -125,6 +128,14 @@ class RobotContainer:
         # Configure the button bindings
         self.configureButtonBindings()
 
+
+    def getAutonomousCommand():
+        # Load the path you want to follow using its name in the GUI
+        path = PathPlannerPath.fromPathFile('moveForeward')
+        # Create a path following command using AutoBuilder. This will also trigger event markers.
+        return AutoBuilder.followPath(path)
+    
+    
     def configureButtonBindings(self) -> None:
         """
         Use this method to define your button->command mappings. Buttons can be created by
