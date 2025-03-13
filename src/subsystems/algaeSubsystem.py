@@ -34,6 +34,7 @@ class AlgaeSubsystem(Subsystem):
         cfg.slot0.k_i = AlgaeConstants.kPivoti
         cfg.slot0.k_d = AlgaeConstants.kPivotd
         cfg.slot0.k_g = AlgaeConstants.kPivotg
+        self.setpoint=0
         
         # Don't think these do anything at all
         # cfg.slot0.integralZone = 0
@@ -77,7 +78,7 @@ class AlgaeSubsystem(Subsystem):
         ).with_slot(0)#._.
         
     # I might need this for PID
-    def updatePIDvalues(self, k_p: float = None, k_i: float = None, k_d : float = None, k_g: float = None) -> None:
+        '''    def updatePIDvalues(self, k_p: float = None, k_i: float = None, k_d : float = None, k_g: float = None) -> None:
         valueUpdated = False
         if self.PIDconfig.slot0.k_p != k_p: 
             self.PIDconfig.slot0.k_p = k_p
@@ -100,7 +101,7 @@ class AlgaeSubsystem(Subsystem):
                 if status.is_ok():
                     break
             if not status.is_ok(): 
-                print(f"Could not apply updated gravity compensation, error code: {status.name}")
+                print(f"Could not apply updated gravity compensation, error code: {status.name}")'''
     
     def updatePivotSetpoint(self, setpoint: float, increment = False, constrain: bool = False) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
@@ -116,10 +117,10 @@ class AlgaeSubsystem(Subsystem):
                 self.setpoint = AlgaeConstants.kPivotMinHeight
     
     # Motor spinning functions
-    def changePivotPosition(self):
+    def changePivotPosition(self, setpoint: float = None) -> None:
         '''Sets the position of the pivot motor (obvoiusly)'''
         # TODO: Actually test this
-        self.pivotMotor.set_control(self.positionVoltage.with_position(self.setpoint)) 
+        self.pivotMotor.set_control(self.positionVoltage.with_position(2)) 
         # self.pivotMotor.set_position()
     
     def spinIntakeMotor(self, speed) -> None:
@@ -192,13 +193,14 @@ class AlgaeSubsystem(Subsystem):
         # AlgaeConstants.kTimeItTakesToProcess = SmartDashboard.getNumber("Algae/Processing Delay", AlgaeConstants.kTimeItTakesToProcess)
         
     def periodic(self) -> None:
+        self.pivotMotor.set_control(self.positionVoltage.with_position(self.setpoint)) 
         # Sets setpoint to 0 if bottom limit switch active. No top limit switch though so umm...
-        if self.getLimitSwitchActive():
-            self.setpoint = 0
+        # if self.getLimitSwitchActive():
+        #     self.setpoint = 0
         # Stop intake motor if motor current supply value says to stop
         if self.getCurrent() > AlgaeConstants.kAmpValueToDetectIfMotorStalled:
             self.spinIntakeMotor(0)
         # Updates SmartDashboard
         # self.updateSmartDashboard()
         
-        print(self.getLimitSwitchActive(), self.pivotMotor.get_position().__str__())
+        print(f'limit:{self.getLimitSwitchActive()},setpoint{self.setpoint},pos:{ self.pivotMotor.get_position().__str__()}')

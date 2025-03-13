@@ -284,8 +284,8 @@ class AlgaeConstants:
     kPivotMinHeight = 0
     
     # Values to set pivoting motor to
-    kPivotReefIntakingValue = 2.5 # Pivot position when grabbing algae
-    # kPivotGroundIntakingValue = 0.03 # Pivot position when grabbing algae from the FLOOR
+    kPivotReefIntakingValue = 3.1 # Pivot position when grabbing algae
+    kPivotGroundIntakingValue = 2.5 # Pivot position when grabbing algae from the FLOOR
     kPivotProcessingValue = 1.5 # Pivot position when about to send to processor
     kPivotIdleValue = 0.5 # Pivot position when idle
     # The time it takes to switch between pivoting positions
