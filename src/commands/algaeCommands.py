@@ -48,9 +48,9 @@ class AlgaeInstantCommand(Command):
         self.speed = intakeSpeed
     
     def initialize(self):
-        self.algaeSubsystem.spinIntakeMotor(self.speed)
         self.algaeSubsystem.updatePivotSetpoint(self.position)
         self.algaeSubsystem.changePivotPosition()
+        self.algaeSubsystem.spinIntakeMotor(self.speed)
     
     def isFinished(self): return True
     

@@ -231,11 +231,11 @@ class RobotContainer:
                 self.algaeSubsystem, AlgaeConstants.kPivotIdleValue, 0 * AlgaeConstants.kIntakeMultiplier
             )
             
-            # self._joystick2.y().onTrue(algaeIntakeCommand)
-            # self._joystick2.povDown().onTrue(algaeProcessCommand)
-            # self._joystick2.a().onTrue(algaeIdleCommand)
+            self._joystick2.y().onTrue(algaeIntakeCommand)
+            self._joystick2.b().onTrue(algaeProcessCommand)
+            self._joystick2.a().onTrue(algaeIdleCommand)
             
-            # self._joystick2.povUp().onTrue(algaeCommands.AlgaeHomeCommand(self.algaeSubsystem))
+            self._joystick2.x().onTrue(algaeCommands.AlgaeHomeCommand(self.algaeSubsystem))
         
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands

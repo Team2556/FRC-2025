@@ -64,7 +64,7 @@ class ContinuousIncrementCommand(Command):
     
     def execute(self):
         self.elevatorSubsystem.incrementElevator(self.function())
-        print(self.function(), self.elevatorSubsystem.get_position())
+        # print(self.function(), self.elevatorSubsystem.get_position())
         
     def updateIncrement(self, increment):
         self.increment = increment

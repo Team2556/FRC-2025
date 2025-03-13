@@ -264,11 +264,11 @@ class AlgaeConstants:
     
     # This is so it doesn't move too fast in one way? 
     # (to disable just set to super high positive/negative numbers)
-    kPeakForwardTorqueCurrent = 3
-    kPeakReverseTorqueCurrent = -3
+    kPeakForwardTorqueCurrent = 20
+    kPeakReverseTorqueCurrent = -20
     
     # All the following stuff are tunable in SmartDashboard
-    kPivotp = 0.01
+    kPivotp = 2
     kPivoti = 0
     kPivotd = 0
     kPivotg = 0
@@ -284,12 +284,12 @@ class AlgaeConstants:
     kPivotMinHeight = 0
     
     # Values to set pivoting motor to
-    kPivotReefIntakingValue = 0.1 # Pivot position when grabbing algae
-    kPivotGroundIntakingValue = 0.03 # Pivot position when grabbing algae from the FLOOR
-    kPivotProcessingValue = 0.07 # Pivot position when about to send to processor
-    kPivotIdleValue = 0 # Pivot position when idle
+    kPivotReefIntakingValue = 2.5 # Pivot position when grabbing algae
+    # kPivotGroundIntakingValue = 0.03 # Pivot position when grabbing algae from the FLOOR
+    kPivotProcessingValue = 1.5 # Pivot position when about to send to processor
+    kPivotIdleValue = 0.5 # Pivot position when idle
     # The time it takes to switch between pivoting positions
-    kPivotRotationsPerSecond = 0.05
+    kPivotRotationsPerSecond = 1
     
     # Intake wheels multiply by this speed
     kIntakeMultiplier = 0.3 # CHANGE BACK TO 0.2 WHEN TESTING
