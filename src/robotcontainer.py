@@ -254,10 +254,11 @@ class RobotContainer:
                 self.pneumaticSubsystem,
                 direction = 1 # Left is -1, Right is 1
             )
-            
+            # 0.53 0.27 
             self.coralSubsystem.setDefaultCommand(defaultCoralCommand)
-            self._joystick2.leftBumper().whileTrue(dischargeCoralLeftCommand)
-            self._joystick2.rightBumper().whileTrue(dischargeCoralRightCommand)
+            # Cayden said to invert these
+            self._joystick2.rightBumper().whileTrue(dischargeCoralLeftCommand)
+            self._joystick2.leftBumper().whileTrue(dischargeCoralRightCommand)
             
             
         if self.ENABLE_ELEVATOR:
@@ -266,10 +267,21 @@ class RobotContainer:
             self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
             self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
             self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
-            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeGroundIntake))
+            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorCon stants.kAlgaeGroundIntake))
             # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2))
             # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
             # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeProcess))
+            
+            # Increment bad command
+            def getElevatorIncrement():
+                return 0.3 * ((self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis()) ** 3) + 0.03
+            
+            self.continuousElevatorCommand = elevatorCommands.ContinuousIncrementCommand(
+                self.elevatorSubsystem, 
+                getElevatorIncrement
+            )
+            
+            self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
 
         if self.ENABLE_CLIMB:
             ...

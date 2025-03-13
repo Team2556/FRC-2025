@@ -221,9 +221,9 @@ class ElevatorConstants:
     # All the elevator levels to do stuff
     kCoralIntakePosition = 0.05 / ScaredSafetyFactor
     # kCoralLv1 = 0.1 / ScaredSafetyFactor # Height in meters
-    kCoralLv2 = 0 / ScaredSafetyFactor # 556
-    kCoralLv3 = 0.5588 / ScaredSafetyFactor
-    kCoralLv4 = 0.6 / ScaredSafetyFactor # All the elevator levels below aren't tuned
+    kCoralLv2 = 0.1 / ScaredSafetyFactor # 556
+    kCoralLv3 = 0.3 / ScaredSafetyFactor
+    kCoralLv4 = 0.53 / ScaredSafetyFactor # All the elevator levels below aren't tuned
     kAlgaeProcess = 0.15 / ScaredSafetyFactor
     kAlgaeGroundIntake = 0.21 / ScaredSafetyFactor
     kAlgaeLv2 = 0.2 / ScaredSafetyFactor

@@ -30,7 +30,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         self.elevmotor_left = phoenix6.hardware.TalonFX(ElevatorConstants.kLeftMotorPort, "rio")
         
         # Make the right motor follow the left (so moving the left one moves the right one in the opposite direction)
-        self.elevmotor_right.set_control(request=Follower(self.elevmotor_left.device_id, oppose_master_direction=True))
+        # self.elevmotor_right.set_control(request=Follower(self.elevmotor_left.device_id, oppose_master_direction=True))
         
         # Make it so when motor speed is set to 0 then it stays at 0 and resists movement against it
         self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
@@ -190,11 +190,19 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
         if not movement:
             movement = self.setpoint
-        self.elevmotor_left.set_control(self.position_voltage.with_position(self.distanceToRotations(-movement)))
+        self.elevmotor_left.set_control(self.position_voltage.with_position(self.distanceToRotations(movement)))
+        self.elevmotor_right.set_control(self.position_voltage.with_position(self.distanceToRotations(-1 * movement)))
+        print(movement)
+        # self.elevmotor_right.set_control(self.position_voltage.with_position(self.distanceToRotations(-movement)))
+        #self.elevmotor_right.set(0.3)
         # self.elevmotor_left.set_control(self.position_voltage.   with_position(self.distanceToRotations(movement)))
     
     def get_position(self):
         return self.rotationsToDistance(self.elevmotor_left.get_position().value)
+    
+    def incrementElevator(self, increment):
+        self.elevmotor_left.set(increment)
+        self.elevmotor_right.set(-1 * increment)
         
     def periodic(self):
         wpilib.SmartDashboard.putNumber("Elevator/Position_calced", self.rotationsToDistance(self.elevmotor_left.get_position().value))

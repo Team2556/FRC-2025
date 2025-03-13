@@ -53,3 +53,18 @@ class IncrementElevatorCommand(Command):
     def isFinished(self):
         # This just increments so it should automatically finish (but we can add a timer if otherwise)
         return True
+    
+# Here are the bad commands that work so we're keeping them
+class ContinuousIncrementCommand(Command):
+    def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, function):
+        self.elevatorSubsystem = elevatorSubsystem
+        self.addRequirements(self.elevatorSubsystem)
+        self.increment = 0
+        self.function = function
+    
+    def execute(self):
+        self.elevatorSubsystem.incrementElevator(self.function())
+        print(self.function(), self.elevatorSubsystem.get_position())
+        
+    def updateIncrement(self, increment):
+        self.increment = increment
