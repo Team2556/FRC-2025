@@ -1,6 +1,6 @@
 '''Commands that set elevator to a position and increment elevator up or down'''
 
-from commands2 import Command
+from commands2 import Command, InterruptionBehavior
 from wpilib import XboxController, SmartDashboard
 from wpimath.controller import PIDController
 from wpimath.units import meters, inches, seconds, metersToInches, inchesToMeters
@@ -53,6 +53,17 @@ class IncrementElevatorCommand(Command):
     def isFinished(self):
         # This just increments so it should automatically finish (but we can add a timer if otherwise)
         return True
+    
+class ElevatorHomeCommand(Command):
+    def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem):
+        self.elevatorSubsystem = elevatorSubsystem
+        self.addRequirements(self.elevatorSubsystem)
+        
+    def initialize(self):
+        self.elevatorSubsystem.incrementElevator(-0.3)
+        
+    def isFinished(self):
+        return self.elevatorSubsystem.
     
 # Here are the bad commands that work so we're keeping them
 class ContinuousIncrementCommand(Command):

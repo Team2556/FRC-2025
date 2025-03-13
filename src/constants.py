@@ -204,7 +204,7 @@ class ElevatorConstants:
     kpeak_forward_torque_current = 35  # 120
     kpeak_reverse_torque_current = -35  # -120
     kincrement_m_per_sec_held = 0.25
-    kHomingRate = 1 / 30  # 1 meter in 30 seconds
+    kHomingRate = 1 / 10  # 1 meter in 10 seconds
 
     kElevatorKp = 1.0
     kElevatorKi = 0.0
@@ -289,7 +289,7 @@ class AlgaeConstants:
     kPivotProcessingValue = 1.5 # Pivot position when about to send to processor
     kPivotIdleValue = 0.5 # Pivot position when idle
     # The time it takes to switch between pivoting positions
-    kPivotRotationsPerSecond = 1
+    kPivotRotationsPerSecond = 2
     
     # Intake wheels multiply by this speed
     kIntakeMultiplier = 0.3 # CHANGE BACK TO 0.2 WHEN TESTING

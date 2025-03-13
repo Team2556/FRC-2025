@@ -30,7 +30,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         self.elevmotor_left = phoenix6.hardware.TalonFX(ElevatorConstants.kLeftMotorPort, "rio")
         
         # Make the right motor follow the left (so moving the left one moves the right one in the opposite direction)
-        # self.elevmotor_right.set_control(request=Follower(self.elevmotor_left.device_id, oppose_master_direction=True))
+        # TODO: Actually make this work it's important we kinda need it
+        self.elevmotor_right.set_control(request=Follower(self.elevmotor_left.device_id, oppose_master_direction=True))
         
         # Make it so when motor speed is set to 0 then it stays at 0 and resists movement against it
         self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
@@ -56,8 +57,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         cfg.slot0.k_i = ElevatorConstants.kElevatorKi
         cfg.slot0.k_d = ElevatorConstants.kElevatorKd
         
-        cfg.slot0.integralZone = 0
-        cfg.slot0.forwardSoftLimitThreshold = 0
+        # cfg.slot0.integralZone = 0
+        # cfg.slot0.forwardSoftLimitThreshold = 0
 
         cfg.slot0.gravity_type = signals.GravityTypeValue.ELEVATOR_STATIC
         cfg.slot0.static_feedforward_sign = signals.StaticFeedforwardSignValue.USE_VELOCITY_SIGN
@@ -113,7 +114,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         if not status.is_ok():
             print(f"Could not apply configs, error code: {status.name}")
 
-        #create handel for the control
+        # Create handle for the control
         # Make sure we start at 0
         #TODO: add to teleop init a homing command, once we have the limit switches
         self.homing_control = (controls.VelocityVoltage(-ElevatorConstants.kHomingRate)
@@ -131,16 +132,16 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         if self.cfg_slot0.k_p != k_p: 
             self.cfg_slot0.k_p = k_p
             updated = True
-        if  self.cfg_slot0.k_i != k_i: 
+        if self.cfg_slot0.k_i != k_i: 
             self.cfg_slot0.k_i = k_i
             updated = True
-        if  self.cfg_slot0.k_d != k_d: 
+        if self.cfg_slot0.k_d != k_d: 
             self.cfg_slot0.k_d = k_d
             updated = True
-        if  self.cfg_slot0.k_g != k_g: 
+        if self.cfg_slot0.k_g != k_g: 
             self.cfg_slot0.k_g = k_g
             updated = True
-        #TODO: add others, if needed
+        # TODO: add others if needed
         if updated:
             #repete up to 5 times
             status: StatusCode = StatusCode.STATUS_CODE_NOT_INITIALIZED
@@ -158,7 +159,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
     
     def update_setpoint(self, setpoint: float, incremental = False, constrain: bool = True) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
-        
         if incremental:
             self.setpoint += setpoint
         else:
@@ -169,9 +169,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
                 self.setpoint = ElevatorConstants.kMaxElevatorHeight
             elif self.setpoint < ElevatorConstants.kMinElevatorHeight:
                 self.setpoint = ElevatorConstants.kMinElevatorHeight
-        wpilib.SmartDashboard.putNumber("Elevator/Setpoint", self.setpoint)
     
-    def reset_zero_point_here(self, let_droop: bool = True) -> None:
+    def reset_zero_point(self, let_droop: bool = True) -> None:
         #put the motor in neutral - no breaking
         # if let_droop: self.elevmotor_left.set_control(self.elevmotor_left.setNeutralMode(NeutralModeValue.COAST))
         
@@ -180,11 +179,11 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         
         
     def let_elevator_drop(self) -> None:
-        #put the motor in neutral - no breaking
+        # Put the motor in neutral - no breaking
         return commands2.cmd.run(lambda: self.elevmotor_left.setNeutralMode(NeutralModeValue.COAST) )
+    
     def elevator_motors_break(self):
         return commands2.cmd.run(lambda: self.elevmotor_left.setNeutralMode(NeutralModeValue.BRAKE))
-    
 
     def moveElevator(self, movement=None) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''

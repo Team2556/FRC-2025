@@ -13,7 +13,9 @@ class AlgaeSubsystem(Subsystem):
         self.pivotMotor = phoenix6.hardware.TalonFX(AlgaeConstants.kPivotMotorChannel, "rio")
         self.intakeMotor = phoenix6.hardware.TalonFX(AlgaeConstants.kIntakeWheelsChannel, "rio")
         # Declare limit switch
-        self.limitSwitch = DigitalInput(AlgaeConstants.kLimitSwitchChannel)
+        self.bottomLimitSwitch = DigitalInput(AlgaeConstants.kBottomSwitchChannel)
+        self.topLimitSwitch = DigitalInput(AlgaeConstants.kTopSwitchChannel)
+
         # self.otherLimitSwitch = DigitalInput(AlgaeConstants.kOtherLimitSwitchChannel) 
         # There might be another limit switch maybe
         
@@ -70,7 +72,7 @@ class AlgaeSubsystem(Subsystem):
         # Creates another "CTRE Control Request Object" for making it position
         self.positionVoltage = phoenix6.controls.PositionVoltage(
             0, # Position will be changed when this is actually used
-            # velocity=AlgaeConstants.kPivotRotationsPerSecond,
+            velocity=AlgaeConstants.kPivotRotationsPerSecond,
             limit_forward_motion=True,
             limit_reverse_motion=True,
             # ignore_hardware_limits=True
