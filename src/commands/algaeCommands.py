@@ -92,6 +92,28 @@ class AlgaeLiftArmCommand(Command):
             self.algaeSubsystem.spinPivotMotor(0)
             return True
 
+class AlgaeManualPIDCommand(Command):
+    def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem, position, p, g):
+        self.algaeSubsystem = algaeSubsystem
+        self.addRequirements(self.algaeSubsystem)
+        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
+        self.setpoint = position
+        self.kp = p
+        self.kg = g
+        self.timer = Timer()
+        self.timer.start()
+        
+    def execute(self):
+        self.algaeSubsystem.spinPivotMotor(
+            (self.setpoint - self.algaeSubsystem.pivotMotor.get_position().value)
+            * self.kp + self.kg
+        )
+    
+    def isFinished(self):
+        return self.timer.get() > 1
+        # return (self.setpoint <= self.position + AlgaeConstants.kTargetValueAccuracy
+        #         and self.setpoint >= self.position - AlgaeConstants.kTargetValueAccuracy)
+    
 '''
 MANUAL PID
 get current position and setpoint
