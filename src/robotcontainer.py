@@ -260,17 +260,27 @@ class RobotContainer:
             self._joystick2.rightBumper().whileTrue(dischargeCoralLeftCommand)
             self._joystick2.leftBumper().whileTrue(dischargeCoralRightCommand)
             
-            
         if self.ENABLE_ELEVATOR:
             IC = elevatorCommands.InstantSetElevatorCommand # So I can actually see all the code
             # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralIntakePosition))
-            self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
-            self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+            # self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
+            # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
+            # self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
             # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorCon stants.kAlgaeGroundIntake))
             # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2))
             # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
             # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeProcess))
+            
+            # TEST THESE
+            # self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
+            # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
+            # self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+            
+            # ALSO TEST THESE
+            SC = elevatorCommands.SetElevatorCommand
+            self._joystick2.povUp().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
+            self._joystick2.povRight().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
+            self._joystick2.povDown().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
             
             # Increment bad command
             def getElevatorIncrement():
@@ -282,6 +292,10 @@ class RobotContainer:
             )
             
             self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
+            
+            self._joystick2.povUpLeft().onTrue(elevatorCommands.InstantTestFlipperCommand(
+                self.pneumaticSubsystem
+            ))
 
         if self.ENABLE_CLIMB:
             ...

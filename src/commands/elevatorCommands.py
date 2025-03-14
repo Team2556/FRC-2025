@@ -10,7 +10,7 @@ from math import pi
 import numpy as np
 import time
 from robotUtils import controlAugment
-from subsystems import elevatorSubsystem
+from subsystems import elevatorSubsystem, pneumaticSubsystem
 
 class SetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
@@ -23,9 +23,11 @@ class SetElevatorCommand(Command):
         self.elevatorSubsystem.moveElevator()
     
     def isFinished(self):
-        value = self.elevatorSubsystem.elevmotor_left.get_position()
-        return (value <= self.position + ElevatorConstants.kTargetValueAccuracy
-            and value >= self.position - ElevatorConstants.kTargetValueAccuracy)
+        value = self.elevatorSubsystem.rotationsToDistance(
+            self.elevatorSubsystem.elevmotor_left.get_position().value
+        )
+        return (value <= self.position + ElevatorConstants.kTargetValueAccuracy + ElevatorConstants.kTargetValueAdder
+            and value >= self.position - ElevatorConstants.kTargetValueAccuracy + ElevatorConstants.kTargetValueAdder)
         
 class InstantSetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
@@ -39,6 +41,8 @@ class InstantSetElevatorCommand(Command):
                 
     def isFinished(self):
         return True
+    
+    def end(self): self.elevatorSubsystem.elevator_motors_break()
         
 class IncrementElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, amount):
@@ -60,10 +64,14 @@ class ElevatorHomeCommand(Command):
         self.addRequirements(self.elevatorSubsystem)
         
     def initialize(self):
-        self.elevatorSubsystem.incrementElevator(-0.3)
+        self.elevatorSubsystem.incrementElevator(
+            self.elevatorSubsystem.distanceToRotations(ElevatorConstants.kHomingRate)
+        )
         
     def isFinished(self):
-        return self.elevatorSubsystem.
+        if self.elevatorSubsystem.getLimitBottom():
+            self.elevatorSubsystem.incrementElevator(0)
+            return True
     
 # Here are the bad commands that work so we're keeping them
 class ContinuousIncrementCommand(Command):
@@ -79,3 +87,14 @@ class ContinuousIncrementCommand(Command):
         
     def updateIncrement(self, increment):
         self.increment = increment
+        
+class InstantTestFlipperCommand(Command):
+    def __init__(self, pneumaticsSubsystem: pneumaticSubsystem.PneumaticSubsystem, function):
+        self.pneumaticsSubsystem = pneumaticsSubsystem
+        self.addRequirements(self.pneumaticsSubsystem)
+    
+    def initialize(self):
+        self.pneumaticsSubsystem.pulse_solenoid(0, 1)
+        self.pneumaticsSubsystem.pulse_solenoid(1, 1)
+    
+    def isFinished(self): return True
