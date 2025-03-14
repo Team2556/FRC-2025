@@ -36,7 +36,7 @@ class DischargeCoralCommand(Command):
         self.coralTrack.set_motor(CoralConstants.kDischargeMultiplier * self.getDirection())
         # Check for flippers
         if (self.elevatorSubsystem.get_position() >= CoralConstants.kHighEnoughToActivateFlippers
-            and self.coralTrack.detect_coral == False):
+            and not self.coralTrack.detect_coral):
             self.pneumaticHub.pulse_solenoid(self.left_solenoid_channel, CoralConstants.kFlipperPulseDuration)
             self.pneumaticHub.pulse_solenoid(self.right_solenoid_channel, CoralConstants.kFlipperPulseDuration)
 
