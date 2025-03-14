@@ -14,8 +14,12 @@ class AlgaePivotCommand(Command):
         self.position = position
     
     def initialize(self):
+        pass
+
+    def execute(self):
         self.algaeSubsystem.updatePivotSetpoint(self.position)
         self.algaeSubsystem.changePivotPosition()
+
         
     def isFinished(self):
         value = self.algaeSubsystem.pivotMotor.get_position().value
@@ -52,6 +56,10 @@ class AlgaeInstantCommand(Command):
         self.algaeSubsystem.changePivotPosition()
         self.algaeSubsystem.spinIntakeMotor(self.speed)
     
+    def execute(self):
+        self.algaeSubsystem.updatePivotSetpoint(self.position)
+        self.algaeSubsystem.changePivotPosition(2)#self.algaeSubsystem.setpoint)
+    
     def isFinished(self): return True
     
 class AlgaeHomeCommand(Command):
@@ -65,6 +73,21 @@ class AlgaeHomeCommand(Command):
         
     def isFinished(self): 
         if self.algaeSubsystem.getBottomLimitSwitchActive():
+            self.algaeSubsystem.setpoint = 0
+            self.algaeSubsystem.spinPivotMotor(0)
+            return True
+
+class AlgaeLiftArmCommand(Command):
+    def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):
+        self.algaeSubsystem = algaeSubsystem
+        self.addRequirements(self.algaeSubsystem)
+        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
+    
+    def initialize(self):
+        self.algaeSubsystem.spinPivotMotor(0.075)
+        
+    def isFinished(self):
+        if self.algaeSubsystem.getLimitSwitchActive():
             self.algaeSubsystem.setpoint = 0
             self.algaeSubsystem.spinPivotMotor(0)
             return True

@@ -19,6 +19,9 @@ import commands2.button
 import commands2.cmd
 from commands2.sysid import SysIdRoutine
 
+from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
+from pathplannerlib.path import PathPlannerPath, PathConstraints
+
 # NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
 from subsystems import (
     algaeSubsystem,
@@ -125,6 +128,14 @@ class RobotContainer:
         # Configure the button bindings
         self.configureButtonBindings()
 
+
+    def getAutonomousCommand():
+        # Load the path you want to follow using its name in the GUI
+        path = PathPlannerPath.fromPathFile('moveForeward')
+        # Create a path following command using AutoBuilder. This will also trigger event markers.
+        return AutoBuilder.followPath(path)
+    
+    
     def configureButtonBindings(self) -> None:
         """
         Use this method to define your button->command mappings. Buttons can be created by
@@ -231,9 +242,18 @@ class RobotContainer:
                 self.algaeSubsystem, AlgaeConstants.kPivotIdleValue, 0 * AlgaeConstants.kIntakeMultiplier
             )
             
-            self._joystick2.y().onTrue(algaeIntakeCommand)
-            self._joystick2.b().onTrue(algaeProcessCommand)
-            self._joystick2.a().onTrue(algaeIdleCommand)
+            self._joystick2.y().onTrue(algaeCommands.AlgaeInstantCommand(
+                self.algaeSubsystem, AlgaeConstants.kPivotReefIntakingValue, 1 * AlgaeConstants.kIntakeMultiplier)
+            )
+                # algaeIntakeCommand)
+            self._joystick2.b().onTrue(commands2.cmd.runOnce(lambda: self.algaeSubsystem.updatePivotSetpoint(
+                AlgaeConstants.kPivotProcessingValue), self.algaeSubsystem)
+            )
+                #algaeProcessCommand)
+            # self._joystick2.a().onTrue(algaeCommands.AlgaeInstantCommand(
+            #     self.algaeSubsystem, AlgaeConstants.kPivotGroundIntakingValue, 1 * AlgaeConstants.kIntakeMultiplier)
+            # )#algaeIdleCommand)
+            self._joystick2.a().whileTrue(algaeCommands.AlgaeLiftArmCommand(self.algaeSubsystem))
             
             self._joystick2.x().onTrue(algaeCommands.AlgaeHomeCommand(self.algaeSubsystem))
         
@@ -299,11 +319,3 @@ class RobotContainer:
 
         if self.ENABLE_CLIMB:
             ...
-
-    def getAutonomousCommand(self) -> commands2.Command:
-        """Use this to pass the autonomous command
-        to the main {@link Robot} class.
-
-        :returns: the command to run in autonomous
-        """
-        return commands2.cmd.print_("No autonomous command configured")

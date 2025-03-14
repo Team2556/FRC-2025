@@ -6,6 +6,8 @@ from typing import Callable, overload
 from wpilib import DriverStation, Notifier, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Pose2d, Rotation2d
+from pathplannerlib.auto import AutoBuilder, RobotConfig
+from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
 
 
 class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
@@ -299,6 +301,36 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
         self._sim_notifier = Notifier(_sim_periodic)
         self._sim_notifier.startPeriodic(self._SIM_LOOP_PERIOD)
 
+
+    def _configure_auto_builder(self):
+        config = RobotConfig.fromGUISettings()
+        if AutoBuilder.isConfigured():
+            print("AutoBuilder is already configured, Double Configuring XXXXXXXXXXX!!!!!!!!!!!!!!!!!!!!!!!XXXXXXXXXXXXXXX")
+    
+        AutoBuilder.configure(
+            lambda: self.get_state().pose,   # Supplier of current robot pose
+            self.reset_pose,                 # Consumer for seeding pose against auto
+            lambda: self.get_state().speeds, # Supplier of current robot speeds
+            # Consumer of ChassisSpeeds and feedforwards to drive the robot
+            lambda speeds, feedforwards: self.set_control(
+                self._apply_robot_speeds
+                .with_speeds(speeds)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
+                .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
+            ),
+            PPHolonomicDriveController(
+                # PID constants for translation
+                PIDConstants(1.0, 0.0, 0.0),
+                # PID constants for rotation
+                PIDConstants(.004, 0.0, 0.0)
+            ),
+            config,
+            # Assume the path needs to be flipped for Red vs Blue, this is normally the case
+            #  don't know what the 'or' is for ... lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed,
+            lambda: DriverStation.getAlliance()  == DriverStation.Alliance.kRed, #has no effect in sim as it is init happens before color selection
+            self # Subsystem for requirements
+        )
+        
     def add_vision_measurement(self, vision_robot_pose: Pose2d, timestamp: units.second, vision_measurement_std_devs: tuple[float, float, float] | None = None):
         """
         Adds a vision measurement to the Kalman Filter. This will correct the
@@ -318,3 +350,4 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
         :type vision_measurement_std_devs:  tuple[float, float, float] | None
         """
         swerve.SwerveDrivetrain.add_vision_measurement(self, vision_robot_pose, utils.fpga_to_current_time(timestamp), vision_measurement_std_devs)
+
