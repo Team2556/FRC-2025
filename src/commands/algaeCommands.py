@@ -87,7 +87,14 @@ class AlgaeLiftArmCommand(Command):
         self.algaeSubsystem.spinPivotMotor(0.075)
         
     def isFinished(self):
-        if self.algaeSubsystem.getLimitSwitchActive():
+        if self.algaeSubsystem.getBottomLimitSwitchActive():
             self.algaeSubsystem.setpoint = 0
             self.algaeSubsystem.spinPivotMotor(0)
             return True
+
+'''
+MANUAL PID
+get current position and setpoint
+set speed to: kp * (setpoint - position) + kg
+see if this works
+'''

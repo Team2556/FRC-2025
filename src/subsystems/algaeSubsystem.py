@@ -80,7 +80,7 @@ class AlgaeSubsystem(Subsystem):
         ).with_slot(0)#._.
         
     # I might need this for PID
-        '''    def updatePIDvalues(self, k_p: float = None, k_i: float = None, k_d : float = None, k_g: float = None) -> None:
+    def updatePIDvalues(self, k_p: float = None, k_i: float = None, k_d : float = None, k_g: float = None) -> None:
         valueUpdated = False
         if self.PIDconfig.slot0.k_p != k_p: 
             self.PIDconfig.slot0.k_p = k_p
@@ -103,7 +103,7 @@ class AlgaeSubsystem(Subsystem):
                 if status.is_ok():
                     break
             if not status.is_ok(): 
-                print(f"Could not apply updated gravity compensation, error code: {status.name}")'''
+                print(f"Could not apply updated gravity compensation, error code: {status.name}")
     
     def updatePivotSetpoint(self, setpoint: float, increment = False, constrain: bool = False) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
@@ -203,7 +203,7 @@ class AlgaeSubsystem(Subsystem):
         self.pivotMotor.set_control(self.positionVoltage.with_position(self.setpoint)) 
         # Sets setpoint to 0 if bottom limit switch active. No top limit switch though so umm...
 
-        if self.getLimitSwitchActive():
+        if self.getBottomLimitSwitchActive():
              self.setpoint = 0
         
         # Stop intake motor if motor current supply value says to stop

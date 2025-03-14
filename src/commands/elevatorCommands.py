@@ -42,7 +42,7 @@ class InstantSetElevatorCommand(Command):
     def isFinished(self):
         return True
     
-    def end(self): self.elevatorSubsystem.elevator_motors_break()
+    # def end(self): self.elevatorSubsystem.elevator_motors_break()
         
 class IncrementElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, amount):
@@ -89,7 +89,7 @@ class ContinuousIncrementCommand(Command):
         self.increment = increment
         
 class InstantTestFlipperCommand(Command):
-    def __init__(self, pneumaticsSubsystem: pneumaticSubsystem.PneumaticSubsystem, function):
+    def __init__(self, pneumaticsSubsystem: pneumaticSubsystem.PneumaticSubsystem):
         self.pneumaticsSubsystem = pneumaticsSubsystem
         self.addRequirements(self.pneumaticsSubsystem)
     
