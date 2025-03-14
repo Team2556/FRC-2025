@@ -204,7 +204,10 @@ class ElevatorConstants:
     kpeak_forward_torque_current = 35  # 120
     kpeak_reverse_torque_current = -35  # -120
     kincrement_m_per_sec_held = 0.25
-    kHomingRate = 1 / 30  # 1 meter in 30 seconds
+    
+    # All the speed stuff
+    kHomingRate = 1 / 10  # 1 meter every 10 seconds
+    kElevatorSpeed = 1 / 10 # 1 meter every 10 seconds
 
     kElevatorKp = 1.0
     kElevatorKi = 0.0
@@ -215,7 +218,7 @@ class ElevatorConstants:
 
     kMinElevatorHeight = 0.00 #0.0508  # 2 inches
     kMaxElevatorHeight = inchesToMeters(26)  # 50 inches TODO: make this smaller
-    kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.00002
+    # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.00002 sorry Jack
     
     ScaredSafetyFactor = 5 # Set ScaredSafetyFactor to 1 once we get SUPER confident
     # All the elevator levels to do stuff
@@ -232,6 +235,7 @@ class ElevatorConstants:
 
     # The command decides the position's close enough if it's within this range (in meters?)
     kTargetValueAccuracy = 0.02
+    kTargetValueAdder = 0 # If it setpoints to a value a bit more or less than you want to to
 
     kMaxVelocityMetersPerSecond = 1.5/ScaredSafetyFactor
     kMaxAccelerationMetersPerSecSquared = 0.5/ScaredSafetyFactor
@@ -260,7 +264,8 @@ class AlgaeConstants:
     kIntakeWheelsChannel = CAN_Address.TWENTYTWO
     
     # Limit Switch channel (So it doesn't input when limit switch activated)
-    kLimitSwitchChannel = Rio_DIO.FIVE # TODO: Add more actual CAN IDs
+    kBottomLimitSwitchChannel = Rio_DIO.FIVE # TODO: Add more actual CAN IDs
+    kTopLimitSwitchChannel = Rio_DIO.SIX
     
     # This is so it doesn't move too fast in one way? 
     # (to disable just set to super high positive/negative numbers)
@@ -285,11 +290,11 @@ class AlgaeConstants:
     
     # Values to set pivoting motor to
     kPivotReefIntakingValue = 3.1 # Pivot position when grabbing algae
-    kPivotGroundIntakingValue = 2.5 # Pivot position when grabbing algae from the FLOOR
+    kPivotGroundIntakingValue = 2.5 # Pivot position when grabbing algae from the FLOOR (not being used)
     kPivotProcessingValue = 1.5 # Pivot position when about to send to processor
     kPivotIdleValue = 0.5 # Pivot position when idle
     # The time it takes to switch between pivoting positions
-    kPivotRotationsPerSecond = 1
+    kPivotRotationsPerSecond = 2
     
     # Intake wheels multiply by this speed
     kIntakeMultiplier = 0.3 # CHANGE BACK TO 0.2 WHEN TESTING

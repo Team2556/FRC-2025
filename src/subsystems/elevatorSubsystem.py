@@ -30,7 +30,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         self.elevmotor_left = phoenix6.hardware.TalonFX(ElevatorConstants.kLeftMotorPort, "rio")
         
         # Make the right motor follow the left (so moving the left one moves the right one in the opposite direction)
-        # self.elevmotor_right.set_control(request=Follower(self.elevmotor_left.device_id, oppose_master_direction=True))
+        # TODO: Actually make this work it's important we kinda need it
+        self.elevmotor_right.set_control(Follower(self.elevmotor_left.device_id, oppose_master_direction=True))
         
         # Make it so when motor speed is set to 0 then it stays at 0 and resists movement against it
         self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
@@ -46,18 +47,14 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         # self.limit_topLeft = wpilib.DigitalInput(ElevatorConstants.kTopLeftLimitSwitchChannel)
         self.limit_topRight = wpilib.DigitalInput(ElevatorConstants.kTopRightLimitSwitchChannel)
 
-        # Declare booleans that record if both limit switches on one side are active
-        self.limit_bottom = (self.limit_bottomLeft.get() and self.limit_bottomRight.get())
-        self.limit_top = self.limit_topRight.get()#(self.limit_topLeft.get() and )
-
         # Setup all the PID stuff
         cfg = configs.TalonFXConfiguration()
         cfg.slot0.k_p = ElevatorConstants.kElevatorKp
         cfg.slot0.k_i = ElevatorConstants.kElevatorKi
         cfg.slot0.k_d = ElevatorConstants.kElevatorKd
         
-        cfg.slot0.integralZone = 0
-        cfg.slot0.forwardSoftLimitThreshold = 0
+        # cfg.slot0.integralZone = 0
+        # cfg.slot0.forwardSoftLimitThreshold = 0
 
         cfg.slot0.gravity_type = signals.GravityTypeValue.ELEVATOR_STATIC
         cfg.slot0.static_feedforward_sign = signals.StaticFeedforwardSignValue.USE_VELOCITY_SIGN
@@ -113,34 +110,46 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         if not status.is_ok():
             print(f"Could not apply configs, error code: {status.name}")
 
-        #create handel for the control
+        # Create handle for the control
         # Make sure we start at 0
         #TODO: add to teleop init a homing command, once we have the limit switches
-        self.homing_control = (controls.VelocityVoltage(-ElevatorConstants.kHomingRate)
+        self.homing_control = (controls.VelocityVoltage(-1 * self.distanceToRotations(ElevatorConstants.kHomingRate))
                                .with_slot(0)
-                               .with_limit_reverse_motion(self.limit_bottom))
+                               .with_limit_reverse_motion(False))#self.getLimitBottom))
         self.elevmotor_left.set_position(0)#self.distanceToRotations(ElevatorConstants.kElevatorOffsetMeters))
-        #move up some
-        self.position_voltage = controls.PositionVoltage(ElevatorConstants.kElevatorDistanceMovedAfterContactWithLimitSwitch).with_slot(0)
+        
+        self.position_voltage = controls.PositionVoltage(
+            0, # Position will be changed when this is actually used
+            self.distanceToRotations(ElevatorConstants.kElevatorSpeed),
+            limit_forward_motion = False,#self.getLimitTop(),
+            limit_reverse_motion = False#self.getLimitBottom()
+        ).with_slot(0)
         # self.elevmotor_left.set_control(request=self.position_voltage.with_position(self.distanceToRotations(inchesToMeters(.25)))
 
-
+    def moveElevator(self, movement=None) -> None:
+        '''Setpoint is in meters of elevator elevation from lowest physical limit'''
+        if not movement:
+            movement = self.setpoint
+        self.elevmotor_left.set_control(self.position_voltage.with_position(self.distanceToRotations(movement)))
+        # self.elevmotor_right.set_control(self.position_voltage.with_position(self.distanceToRotations(-1 * movement)))
+        print(movement)
+        
     def updateSlot0(self,  k_p: float = None, k_i:float =None, k_d:float=None, k_g: float=None   ) -> None:
         updated = False
 
         if self.cfg_slot0.k_p != k_p: 
             self.cfg_slot0.k_p = k_p
             updated = True
-        if  self.cfg_slot0.k_i != k_i: 
+        if self.cfg_slot0.k_i != k_i: 
             self.cfg_slot0.k_i = k_i
             updated = True
-        if  self.cfg_slot0.k_d != k_d: 
+        if self.cfg_slot0.k_d != k_d: 
             self.cfg_slot0.k_d = k_d
             updated = True
-        if  self.cfg_slot0.k_g != k_g: 
+        if self.cfg_slot0.k_g != k_g: 
             self.cfg_slot0.k_g = k_g
             updated = True
-        #TODO: add others, if needed
+        # TODO: add others if needed
         if updated:
             #repete up to 5 times
             status: StatusCode = StatusCode.STATUS_CODE_NOT_INITIALIZED
@@ -155,10 +164,14 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         return distance * ElevatorConstants.kElevatorGearing/(2*pi*ElevatorConstants.kElevatorDrumRadius)
     def rotationsToDistance(self, rotations: float) -> float:
         return rotations * 2*pi*ElevatorConstants.kElevatorDrumRadius/ElevatorConstants.kElevatorGearing
+
+    def getLimitBottom(self):
+        return self.limit_bottomLeft.get() and self.limit_bottomRight.get()
+    def getLimitTop(self):
+        return self.limit_topRight.get()
     
     def update_setpoint(self, setpoint: float, incremental = False, constrain: bool = True) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
-        
         if incremental:
             self.setpoint += setpoint
         else:
@@ -169,33 +182,24 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
                 self.setpoint = ElevatorConstants.kMaxElevatorHeight
             elif self.setpoint < ElevatorConstants.kMinElevatorHeight:
                 self.setpoint = ElevatorConstants.kMinElevatorHeight
-        wpilib.SmartDashboard.putNumber("Elevator/Setpoint", self.setpoint)
     
-    def reset_zero_point_here(self, let_droop: bool = True) -> None:
+    def reset_zero_point(self, let_droop: bool = True) -> None:
         #put the motor in neutral - no breaking
         # if let_droop: self.elevmotor_left.set_control(self.elevmotor_left.setNeutralMode(NeutralModeValue.COAST))
         
         # self.elevmotor_left.set_position(0) #self.elevmotor_left.set_control(lambda: )
         return commands2.cmd.run(lambda: self.elevmotor_left.set_position(0))
         
-        
     def let_elevator_drop(self) -> None:
-        #put the motor in neutral - no breaking
-        return commands2.cmd.run(lambda: self.elevmotor_left.setNeutralMode(NeutralModeValue.COAST) )
+        # Put the motor in neutral - no breaking
+        return commands2.cmd.run(lambda: self.elevmotor_left.setNeutralMode(NeutralModeValue.COAST))
+    
     def elevator_motors_break(self):
         return commands2.cmd.run(lambda: self.elevmotor_left.setNeutralMode(NeutralModeValue.BRAKE))
-    
 
-    def moveElevator(self, movement=None) -> None:
-        '''Setpoint is in meters of elevator elevation from lowest physical limit'''
-        if not movement:
-            movement = self.setpoint
-        self.elevmotor_left.set_control(self.position_voltage.with_position(self.distanceToRotations(movement)))
-        self.elevmotor_right.set_control(self.position_voltage.with_position(self.distanceToRotations(-1 * movement)))
-        print(movement)
-        # self.elevmotor_right.set_control(self.position_voltage.with_position(self.distanceToRotations(-movement)))
-        #self.elevmotor_right.set(0.3)
-        # self.elevmotor_left.set_control(self.position_voltage.   with_position(self.distanceToRotations(movement)))
+    def homeInToZero(self):
+        '''Makes elevator move down'''
+        self.elevmotor_left.set_control(self.homing_control)
     
     def get_position(self):
         return self.rotationsToDistance(self.elevmotor_left.get_position().value)
@@ -203,6 +207,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
     def incrementElevator(self, increment):
         self.elevmotor_left.set(increment)
         self.elevmotor_right.set(-1 * increment)
+        # WE WILL GET PID SETPOINTS TO WORK
         
     def periodic(self):
         wpilib.SmartDashboard.putNumber("Elevator/Position_calced", self.rotationsToDistance(self.elevmotor_left.get_position().value))

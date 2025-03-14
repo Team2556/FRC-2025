@@ -22,7 +22,7 @@ class AlgaePivotCommand(Command):
 
         
     def isFinished(self):
-        value = self.algaeSubsystem.pivotMotor.get_position()
+        value = self.algaeSubsystem.pivotMotor.get_position().value
         if self.position == AlgaeConstants.kPivotIdleValue:
             return True # Automatically finish the command if it's being told to set to idle value
         else:
@@ -51,7 +51,9 @@ class AlgaeInstantCommand(Command):
         self.position = pivotPosition
         self.speed = intakeSpeed
     
-    def initialize(self):
+    def initialize(self): # TODO: WORK ON THIS
+        self.algaeSubsystem.updatePivotSetpoint(self.position)
+        self.algaeSubsystem.changePivotPosition()
         self.algaeSubsystem.spinIntakeMotor(self.speed)
     
     def execute(self):
@@ -69,8 +71,8 @@ class AlgaeHomeCommand(Command):
     def initialize(self):
         self.algaeSubsystem.spinPivotMotor(-0.15)
         
-    def isFinished(self):
-        if self.algaeSubsystem.getLimitSwitchActive():
+    def isFinished(self): 
+        if self.algaeSubsystem.getBottomLimitSwitchActive():
             self.algaeSubsystem.setpoint = 0
             self.algaeSubsystem.spinPivotMotor(0)
             return True
