@@ -48,6 +48,7 @@ from telemetry import Telemetry
 from phoenix6 import swerve
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
+from wpilib import DriverStation
 
 
 class RobotContainer:
@@ -59,6 +60,10 @@ class RobotContainer:
     """
 
     def __init__(self) -> None:
+        self.invertBlueRedDrive = 1
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            self.invertBlueRedDrive = -1
+
         self._max_speed = (
             TunerConstants.speed_at_12_volts
         )  # speed_at_12_volts desired top speed
@@ -152,9 +157,11 @@ class RobotContainer:
                     self._drive.with_velocity_x(  
                     #self._robot_centric_drive.with_velocity_x(
                         -self._joystick.getLeftY() * self._max_speed
+                                                * self.invertBlueRedDrive
                     )  # Drive forward with negative Y (forward)
                     .with_velocity_y(
                         -self._joystick.getLeftX() * self._max_speed
+                                                * self.invertBlueRedDrive
                     )  # Drive left with negative X (left)
                     .with_rotational_rate(
                         -self._joystick.getRightX() * self._max_angular_rate
@@ -179,9 +186,11 @@ class RobotContainer:
                 lambda: (
                     self._robot_centric_drive.with_velocity_x(
                         ((-1 * self._joystick.getLeftY()) ** 3) * self._max_speed * robotCentricSpeedMultiplier
+                                                * self.invertBlueRedDrive
                     )  # Drive forward with negative Y (forward)
                     .with_velocity_y(
                         ((-1 * self._joystick.getLeftX()) ** 3) * self._max_speed * robotCentricSpeedMultiplier
+                                                * self.invertBlueRedDrive
                     )  # Drive left with negative X (left)
                     .with_rotational_rate(
                         ((-1 * self._joystick.getRightX()) ** 3) * self._max_angular_rate * robotCentricSpeedMultiplier
@@ -324,7 +333,8 @@ class RobotContainer:
             
             # Increment bad command
             def getElevatorIncrement():
-                return 0.3 * (self._joystick2.getLeftTriggerAxis() - self._joystick2.getRightTriggerAxis()) - 0.03            
+                # TODO: clean up the negative if POSITIVE is the right way
+                return -1 * (0.3 * (self._joystick2.getLeftTriggerAxis() - self._joystick2.getRightTriggerAxis()) - 0.03 )           
             self.continuousElevatorCommand = elevatorCommands.ContinuousIncrementCommand(
                 self.elevatorSubsystem, 
                 getElevatorIncrement

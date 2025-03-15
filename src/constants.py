@@ -16,6 +16,9 @@ from wpilib import SmartDashboard
 from phoenix6.configs.config_groups import Slot0Configs
 from pathlib import Path
 
+AprilTagField = apriltag.AprilTagFieldLayout.loadField(
+    apriltag.AprilTagField.k2025ReefscapeWelded
+)
 class AprilTags_height:
     def tag_heights():  # height of apriltags by order of number, in centimeters
         heights = numpy.array(
@@ -222,7 +225,10 @@ class ElevatorConstants:
     
     ScaredSafetyFactor = 5 # Set ScaredSafetyFactor to 1 once we get SUPER confident
     # All the elevator levels to do stuff
-    kCoralIntakePosition = -0.05 #/ ScaredSafetyFactor
+    
+    # TODO: clean up the negative if POSITIVE is the right way
+
+    kCoralIntakePosition = 0.05 #/ ScaredSafetyFactor
     # kCoralLv1 = 0.1 / ScaredSafetyFactor # Height in meters
     kCoralLv2 = 0.1 #/ ScaredSafetyFactor # 556
     kCoralLv3 = 0.2 #/ ScaredSafetyFactor
