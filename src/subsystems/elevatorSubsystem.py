@@ -169,9 +169,9 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         return rotations * 2*pi*ElevatorConstants.kElevatorDrumRadius/ElevatorConstants.kElevatorGearing
 
     def getLimitBottom(self):
-        return self.limit_bottomLeft.get() or self.limit_bottomRight.get()
+        return not self.limit_bottomLeft.get() and not self.limit_bottomRight.get()
     def getLimitTop(self):
-        return self.limit_topRight.get()
+        return not self.limit_topRight.get()
     
     def update_setpoint(self, setpoint: float, incremental = False, constrain: bool = True) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''

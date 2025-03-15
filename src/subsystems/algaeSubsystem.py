@@ -210,7 +210,6 @@ class AlgaeSubsystem(Subsystem):
             self.justHitLimitSwitch = True
         else:
             self.justHitLimitSwitch = False
-
         
         # Stop intake motor if motor current supply value says to stop
         # if self.getCurrent() > AlgaeConstants.kAmpValueToDetectIfMotorStalled:
