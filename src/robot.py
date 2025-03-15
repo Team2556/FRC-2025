@@ -8,7 +8,7 @@
 import wpilib
 import commands2
 import typing
-from wpilib import SmartDashboard, DriverStation, Field2d
+
 from robotcontainer import RobotContainer
 
 
@@ -30,10 +30,6 @@ class MyRobot(commands2.TimedCommandRobot):
         # autonomous chooser on the dashboard.
         self.container = RobotContainer()
 
-        #region Glass field viewer
-        self.field = Field2d()
-        SmartDashboard.putData("Field", self.field)
-
     def robotPeriodic(self) -> None:
         """This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
         that you want ran during disabled, autonomous, teleoperated and test.
@@ -41,17 +37,11 @@ class MyRobot(commands2.TimedCommandRobot):
         This runs after the mode specific periodic functions, but before LiveWindow and
         SmartDashboard integrated updating."""
 
-
-
         # Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
         # commands, running already-scheduled commands, removing finished or interrupted commands,
         # and running subsystem periodic() methods.  This must be called from the robot's periodic
         # block in order for anything in the Command-based framework to work.
         commands2.CommandScheduler.getInstance().run()
-
-        self.container.invertBlueRedDrive = 1
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self.container.invertBlueRedDrive = -1
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
@@ -63,14 +53,22 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
-        self.autonomousCommand = self.container.getAutonomousCommand()
+        # self.autonomousCommand = self.container.getAutonomousCommand()
 
-        if self.autonomousCommand:
-            self.autonomousCommand.schedule()
+        # if self.autonomousCommand:
+        #     self.autonomousCommand.schedule()
+        pass
+            
 
     def autonomousPeriodic(self) -> None:
         """This function is called periodically during autonomous"""
-        pass
+        self.container.drivetrain.apply_request(
+            commands2.cmd.runOnce(
+                lambda: (
+                    self.container._drive.with_velocity_x(2).with_velocity_y(2)
+                )
+            )
+        )
 
     def teleopInit(self) -> None:
         # This makes sure that the autonomous stops running when

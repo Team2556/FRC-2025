@@ -46,10 +46,4 @@ def one_side_control_only(joystick_value: float, PosOrNeg: str= 'Neg'):
         return 0
 
 
-
-if __name__ == '__main__':
-    while True:
-        test_input = input('Value to Test: ')
-        print(smooth(float(test_input)))
-    
     

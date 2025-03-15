@@ -3,7 +3,7 @@
 from commands2 import Command, InterruptionBehavior
 from wpilib import Timer
 
-from subsystems import coralSubsystem, pneumaticSubsystem, elevatorSubsystem
+from subsystems import coralSubsystem, elevatorSubsystem
 from constants import CoralConstants
 
 class DischargeCoralCommand(Command):
@@ -11,13 +11,11 @@ class DischargeCoralCommand(Command):
         self, 
         coralTrack: coralSubsystem.CoralTrack, 
         elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem,
-        pneumaticHub: pneumaticSubsystem.PneumaticSubsystem, 
         direction = 1,
     ):
         # Declare subsystems and add requirements
         self.coralTrack = coralTrack
-        self.pneumaticHub = pneumaticHub
-        self.addRequirements(self.coralTrack, pneumaticHub)
+        self.addRequirements(self.coralTrack)
         
         self.elevatorSubsystem = elevatorSubsystem # Not a requirement; just used for getting position
         
@@ -35,10 +33,6 @@ class DischargeCoralCommand(Command):
         # Constantly set the motor speed so default command doesn't run
         self.coralTrack.set_motor(CoralConstants.kDischargeMultiplier * self.getDirection())
         # Check for flippers
-        if (self.elevatorSubsystem.get_position() >= CoralConstants.kHighEnoughToActivateFlippers
-            and not self.coralTrack.detect_coral):
-            self.pneumaticHub.pulse_solenoid(self.left_solenoid_channel, CoralConstants.kFlipperPulseDuration)
-            self.pneumaticHub.pulse_solenoid(self.right_solenoid_channel, CoralConstants.kFlipperPulseDuration)
 
 class CoralDefaultCommand(Command):
     '''The default command for coral... it does all the centering'''

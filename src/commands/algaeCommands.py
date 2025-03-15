@@ -21,7 +21,6 @@ class AlgaePivotCommand(Command):
     def execute(self):
         self.algaeSubsystem.updatePivotSetpoint(self.position)
         self.algaeSubsystem.changePivotPosition()
-        print("ALGAE COMMAND ENDED")
         
     def isFinished(self):
         return self.timer.get() > 1
@@ -80,7 +79,6 @@ class AlgaeHomeCommand(Command):
         if self.algaeSubsystem.getBottomLimitSwitchActive():
             self.algaeSubsystem.pivotMotor.set_position(0)
             self.algaeSubsystem.spinPivotMotor(0)
-            print("HOMING ENDED")
             return True
     
     def end(self):

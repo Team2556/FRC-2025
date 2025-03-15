@@ -10,7 +10,7 @@ from math import pi
 import numpy as np
 import time
 from robotUtils import controlAugment
-from subsystems import elevatorSubsystem, pneumaticSubsystem
+from subsystems import elevatorSubsystem
 
 class SetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
@@ -83,18 +83,17 @@ class ContinuousIncrementCommand(Command):
     
     def execute(self):
         self.elevatorSubsystem.incrementElevator(self.function())
-        # print(self.function(), self.elevatorSubsystem.get_position())
         
     def updateIncrement(self, increment):
         self.increment = increment
         
-class InstantTestFlipperCommand(Command):
-    def __init__(self, pneumaticsSubsystem: pneumaticSubsystem.PneumaticSubsystem):
-        self.pneumaticsSubsystem = pneumaticsSubsystem
-        self.addRequirements(self.pneumaticsSubsystem)
+# class InstantTestFlipperCommand(Command):
+#     def __init__(self, pneumaticsSubsystem: pneumaticSubsystem.PneumaticSubsystem):
+#         self.pneumaticsSubsystem = pneumaticsSubsystem
+#         self.addRequirements(self.pneumaticsSubsystem)
     
-    def initialize(self):
-        self.pneumaticsSubsystem.pulse_solenoid(0, 1)
-        self.pneumaticsSubsystem.pulse_solenoid(1, 1)
+#     def initialize(self):
+#         self.pneumaticsSubsystem.pulse_solenoid(0, 1)
+#         self.pneumaticsSubsystem.pulse_solenoid(1, 1)
     
-    def isFinished(self): return True
+#     def isFinished(self): return True

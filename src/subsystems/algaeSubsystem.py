@@ -67,8 +67,6 @@ class AlgaeSubsystem(Subsystem):
             status = self.pivotMotor.configurator.apply(self.PIDconfig)
             if status.is_ok():
                 break
-        if not status.is_ok():
-            print(f"Could not apply configs, error code: {status.name}")
         
         # Creates another "CTRE Control Request Object" for making it position
         self.positionVoltage = phoenix6.controls.PositionVoltage(
@@ -102,8 +100,6 @@ class AlgaeSubsystem(Subsystem):
                 status = self.pivotMotor.configurator.apply(self.PIDconfig)
                 if status.is_ok():
                     break
-            if not status.is_ok(): 
-                print(f"Could not apply updated gravity compensation, error code: {status.name}")
     
     def updatePivotSetpoint(self, setpoint: float, increment = False, constrain: bool = False) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
@@ -217,4 +213,3 @@ class AlgaeSubsystem(Subsystem):
         # Updates SmartDashboard
         self.updateSmartDashboard()
         
-        # print(self.getBottomLimitSwitchActive(), self.pivotMotor.get_position().__str__())

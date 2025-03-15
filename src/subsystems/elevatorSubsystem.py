@@ -110,8 +110,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
             status = self.elevmotor_right.configurator.apply(cfg)
             if status.is_ok():
                 break
-        if not status.is_ok():
-            print(f"Could not apply configs, error code: {status.name}")
 
         # Create handle for the control
         # Make sure we start at 0
@@ -135,7 +133,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
             movement = self.setpoint
         self.elevmotor_left.set_control(self.position_voltage.with_position(self.distanceToRotations(movement)))
         # self.elevmotor_right.set_control(self.position_voltage.with_position(self.distanceToRotations(-1 * movement)))
-        print(movement)
         
     def updateSlot0(self,  k_p: float = None, k_i:float =None, k_d:float=None, k_g: float=None   ) -> None:
         updated = False
@@ -160,8 +157,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
                 status = self.elevmotor_left.configurator.apply(self.cfg_slot0 )
                 if status.is_ok():
                     break
-            if not status.is_ok():
-                print(f"Could not apply updated gravity compensation, error code: {status.name}")
 
     def distanceToRotations(self, distance: float) -> float:
         return distance * ElevatorConstants.kElevatorGearing/(2*pi*ElevatorConstants.kElevatorDrumRadius)
@@ -223,7 +218,3 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         if self.getLimitBottom():
             self.position_voltage.limit_forward_motion = True
             self.elevmotor_left.set_position(0) # To zero it
-
-        # print(self.getLimitBottom(), self.getLimitTop())
-
-        print(self.elevmotor_left.get_position().value)

@@ -304,8 +304,6 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
 
     def _configure_auto_builder(self):
         config = RobotConfig.fromGUISettings()
-        if AutoBuilder.isConfigured():
-            print("AutoBuilder is already configured, Double Configuring XXXXXXXXXXX!!!!!!!!!!!!!!!!!!!!!!!XXXXXXXXXXXXXXX")
     
         AutoBuilder.configure(
             lambda: self.get_state().pose,   # Supplier of current robot pose
