@@ -27,6 +27,7 @@ from subsystems import (
     algaeSubsystem,
     coralSubsystem,
     elevatorSubsystem,
+    ultrasonicSubsystem
 )
 
 from commands import (
@@ -45,7 +46,7 @@ from telemetry import Telemetry
 from phoenix6 import swerve
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
-
+from wpilib.interfaces._interfaces import GenericHID
 
 class RobotContainer:
     """
@@ -358,6 +359,25 @@ class RobotContainer:
             # self._joystick2.povLeft().onTrue(elevatorCommands.InstantTestFlipperCommand(
             #     self.pneumaticSubsystem
             # ))
+
+        # START OF ULTRASONIC STUFF --------------------------------------------
+        # START OF ULTRASONIC STUFF --------------------------------------------
+        
+        self.ultrasonicSubsystem = ultrasonicSubsystem.UltrasonicSubsystem()
+        def outputIfTrue():
+            if self.ultrasonicSubsystem.checkIfReady():
+                self._joystick.setRumble(GenericHID.RumbleType.kLeftRumble, 0.3)
+                self._joystick2.setRumble(GenericHID.RumbleType.kLeftRumble, 0.3)
+            else: 
+                self._joystick.setRumble(GenericHID.RumbleType.kLeftRumble, 0)
+                self._joystick2.setRumble(GenericHID.RumbleType.kLeftRumble, 0)
+
+        self.ultrasonicSubsystem.setDefaultCommand( # For testing
+            commands2.cmd.run(outputIfTrue, self.ultrasonicSubsystem)
+        )
+        
+        # END OF ULTRASONIC STUFF ----------------------------------------------
+        # END OF ULTRASONIC STUFF ----------------------------------------------
 
         if self.ENABLE_CLIMB:
             ...
