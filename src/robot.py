@@ -25,6 +25,7 @@ class MyRobot(commands2.TimedCommandRobot):
         This function is run when the robot is first started up and should be used for any
         initialization code.
         """
+        self.schedulerEnabled = False
 
         # Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         # autonomous chooser on the dashboard.
@@ -41,7 +42,8 @@ class MyRobot(commands2.TimedCommandRobot):
         # commands, running already-scheduled commands, removing finished or interrupted commands,
         # and running subsystem periodic() methods.  This must be called from the robot's periodic
         # block in order for anything in the Command-based framework to work.
-        commands2.CommandScheduler.getInstance().run()
+        if self.schedulerEnabled:
+            commands2.CommandScheduler.getInstance().run()
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
@@ -65,7 +67,7 @@ class MyRobot(commands2.TimedCommandRobot):
         self.container.drivetrain.apply_request(
             commands2.cmd.runOnce(
                 lambda: (
-                    self.container._drive.with_velocity_x(2).with_velocity_y(2)
+                    self.container._drive.with_velocity_x(2)
                 )
             )
         )
@@ -75,6 +77,8 @@ class MyRobot(commands2.TimedCommandRobot):
         # teleop starts running. If you want the autonomous to
         # continue until interrupted by another command, remove
         # this line or comment it out.
+        self.schedulerEnabled = True
+        
         if self.autonomousCommand:
             self.autonomousCommand.cancel()
 
