@@ -336,6 +336,7 @@ class RobotContainer:
             # self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
             # self._joystick2.a().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
+<<<<<<< Updated upstream
             # Increment bad command
             def getElevatorIncrement():
                 return (
@@ -346,6 +347,46 @@ class RobotContainer:
                     )
                     - 0.03
                 )
+=======
+            def doDeadband(num):
+                return 0 if num <= 0.08 and num >= -0.08 else num
+            
+            self.kElevatorL3position = -11.2 # TUNE THIS
+            self.kElevatorL4position = -26.9 # TUNE THIS
+            self.kElevatorSlowGoingDown = -5.6 # TUNE THIS
+            
+            self.stopPastL3 = False
+            self.stopPastL4 = False
+            
+            def doStopPastL3(): self.stopPastL3 = True
+            def dontStopPastL3(): self.stopPastL3 = False
+            
+            def doStopPastL4(): self.stopPastL4 = True
+            def dontStopPastL4(): self.stopPastL4 = False
+
+            self._joystick2.x().whileTrue(commands2.cmd.runOnce(doStopPastL3))
+            self._joystick2.x().whileFalse(commands2.cmd.runOnce(dontStopPastL3))
+            
+            self._joystick2.y().whileTrue(commands2.cmd.runOnce(doStopPastL4))
+            self._joystick2.y().whileFalse(commands2.cmd.runOnce(dontStopPastL4))
+            
+            def getElevatorIncrement():
+                speed = (-0.3 * (self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis())
+                        - 0.1 * (-self._joystick2.getLeftY())
+                        # - 0.05 * (self._joystick2.getRightY())
+                        - 0.03)
+                if (self.stopPastL3 and self.elevatorSubsystem.elevmotor_left.get_position().value < self.kElevatorL3position
+                    and speed < -0.03):
+                    return -0.03
+                elif (self.stopPastL4 and self.elevatorSubsystem.elevmotor_left.get_position().value < self.kElevatorL4position
+                    and speed < -0.03):
+                    return -0.03
+                elif (self.elevatorSubsystem.elevmotor_left.get_position().value > self.kElevatorSlowGoingDown
+                    and speed > -0.03):
+                    return speed * 0.65
+                else:
+                    return speed
+>>>>>>> Stashed changes
 
             self.continuousElevatorCommand = (
                 elevatorCommands.ContinuousIncrementCommand(
