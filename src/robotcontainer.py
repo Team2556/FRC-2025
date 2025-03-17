@@ -336,18 +336,6 @@ class RobotContainer:
             # self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
             # self._joystick2.a().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
-<<<<<<< Updated upstream
-            # Increment bad command
-            def getElevatorIncrement():
-                return (
-                    0.3
-                    * (
-                        self._joystick2.getLeftTriggerAxis()
-                        - self._joystick2.getRightTriggerAxis()
-                    )
-                    - 0.03
-                )
-=======
             def doDeadband(num):
                 return 0 if num <= 0.08 and num >= -0.08 else num
             
@@ -386,7 +374,6 @@ class RobotContainer:
                     return speed * 0.65
                 else:
                     return speed
->>>>>>> Stashed changes
 
             self.continuousElevatorCommand = (
                 elevatorCommands.ContinuousIncrementCommand(
