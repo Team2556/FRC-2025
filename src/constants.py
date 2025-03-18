@@ -305,7 +305,7 @@ class AlgaeConstants:
     kTimeItTakesToProcess = 1
 
 class CoralConstants:
-    kCoralMotorPort = CAN_Address.THIRTY
+    kCoralMotorPort = CAN_Address.THIRTYNINE
     
     kLeftBreakerLight = Rio_DIO.ZERO # TODO: Get the actual IDs
     kRightBreakerLight = Rio_DIO.ONE

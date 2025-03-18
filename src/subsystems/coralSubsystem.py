@@ -9,6 +9,7 @@ from constants import CoralConstants
 
 class CoralTrack(Subsystem):
     def __init__(self):
+        print("CoralTrack init ---/n---/n--/n")
         self.motor_controller = SparkFlex(
             CoralConstants.kCoralMotorPort, SparkFlex.MotorType.kBrushless
         )
