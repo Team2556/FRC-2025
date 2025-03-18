@@ -56,6 +56,9 @@ class RobotContainer:
     """
 
     def __init__(self) -> None:
+
+        AutoBuilder._configured = False
+
         self._max_speed = (
             TunerConstants.speed_at_12_volts
         )  # speed_at_12_volts desired top speed
@@ -98,20 +101,20 @@ class RobotContainer:
         self.ENABLE_CLIMB = True
 
         # Command Scheduler is needed to run periodic() function on subsystems
-        self.scheduler = commands2.CommandScheduler()
+        # self.scheduler = commands2.CommandScheduler()
 
         # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE PLS
 
         if self.ENABLE_ALGAE:
             self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
-            self.scheduler.registerSubsystem(self.algaeSubsystem)
+            # self.scheduler.registerSubsystem(self.algaeSubsystem)
 
         if self.ENABLE_ELEVATOR:
             self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
 
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
-            self.scheduler.registerSubsystem(self.coralSubsystem)
+            # self.scheduler.registerSubsystem(self.coralSubsystem)
             # self.scheduler.schedule()
 
         if self.ENABLE_CLIMB:
