@@ -327,30 +327,7 @@ class ClimbConstants:
     kClimbMotorPort = CAN_Address.TWENTYSEVEN
     kTopLimitSwitchChannel = Rio_DIO.FIVE
     kBottomLimitSwitchChannel = Rio_DIO.SIX
-    kClimbHookZeroEntry = 1
     kSpeed = 1.0
-    kMaxAccelerationMetersPerSecondSquared = 0.5
-    #kPClimbController = 1
-    #kIClimbController = 0
-    #kDClimbController = 0
-    kClimbMaxHeight = 1.6081375
-    kClimbMinHeight = 0.815975
-    # kClimbSlightlyExtendedHeight = 0.9
-    # kClimbMinHeightEncoderEstimate = -3583.037109375
-    kS = 0
-    kV = 0
-    kA = 0
-    kClimbMaxPosConfirmationExtraHeight = 0.1
-    GEAR_RATIO = 15376/45
-    kPositionConversionFactor = 0.1965
-    GAINS = (Slot0Configs()
-                .with_k_p(1.0)
-                .with_k_i(0.0)
-                .with_k_d(0.0)
-                .with_k_s(0.0)
-                .with_k_v(0.0)
-                .with_k_a(0.0)
-            )
 
 class PneumaticConstants:
     kHub = CAN_Address.FORTY

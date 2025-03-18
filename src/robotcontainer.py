@@ -14,6 +14,7 @@
 # If you wish to change any of these, be sure to change all
 # instances of the rule unless you're really desperate on time
 
+from imaplib import Commands
 import commands2
 import commands2.button
 import commands2.cmd
@@ -27,12 +28,14 @@ from subsystems import (
     algaeSubsystem,
     coralSubsystem,
     elevatorSubsystem,
+    climbSubsystem
 )
 
 from commands import (
     algaeCommands,
     coralCommands,
     elevatorCommands,
+    climbCommands
 )
 
 from constants import ElevatorConstants, AlgaeConstants, CoralConstants
@@ -115,7 +118,8 @@ class RobotContainer:
             # self.scheduler.schedule()
 
         if self.ENABLE_CLIMB:
-            ...
+            self.climbSubsystem = climbSubsystem()
+            # self.scheduler.registerSubsystem(self.climbSubsystem)
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -203,15 +207,18 @@ class RobotContainer:
         (self._joystick.back() & self._joystick.y()).whileTrue(
             self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
         )
-        (self._joystick.back() & self._joystick.x()).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse)
-        )
+        # (self._joystick.back() & self._joystick.x()).whileTrue(
+        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse) # Commented out by Aida for climb - disable climb if needed.
+        # )
         (self._joystick.start() & self._joystick.y()).whileTrue(
             self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
         )
-        (self._joystick.start() & self._joystick.x()).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse)
-        )
+        # (self._joystick.start() & self._joystick.x()).whileTrue(
+        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse) # Commented out by Aidan for climb - disable climb if needed.
+        # )
+
+
+        # Elevator button press detection:
 
         # reset the field-centric heading on left bumper press
         self._joystick.leftBumper().onTrue(
@@ -388,4 +395,13 @@ class RobotContainer:
             # ))
 
         if self.ENABLE_CLIMB:
-            ...
+
+            # Reeling command:
+            self.reelCommand = climbCommands.ReelCommand(self.climbSubsystem)
+
+            # Unreeling command:
+            self.unreelCommand = climbCommands.UnreelCommand(self.climbSubsystem)
+
+            # Button detections:
+            self._joystick.y().whileTrue(self.reelCommand)
+            self._joystick.x().whileTrue(self.unreelCommand)
