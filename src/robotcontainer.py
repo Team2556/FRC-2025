@@ -118,7 +118,7 @@ class RobotContainer:
             # self.scheduler.schedule()
 
         if self.ENABLE_CLIMB:
-            self.climbSubsystem = climbSubsystem()
+            self.climbSubsystem = climbSubsystem.ClimbSubsystem()
             # self.scheduler.registerSubsystem(self.climbSubsystem)
 
         # Configure the button bindings
@@ -204,15 +204,15 @@ class RobotContainer:
 
         # Run SysId routines when holding back/start and X/Y.
         # Note that each routine should be run exactly once in a single log.
-        (self._joystick.back() & self._joystick.y()).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
-        )
+        # (self._joystick.back() & self._joystick.y()).whileTrue(
+        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
+        # )
         # (self._joystick.back() & self._joystick.x()).whileTrue(
         #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse) # Commented out by Aida for climb - disable climb if needed.
         # )
-        (self._joystick.start() & self._joystick.y()).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
-        )
+        # (self._joystick.start() & self._joystick.y()).whileTrue(
+        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
+        # )
         # (self._joystick.start() & self._joystick.x()).whileTrue(
         #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse) # Commented out by Aidan for climb - disable climb if needed.
         # )
@@ -397,11 +397,11 @@ class RobotContainer:
         if self.ENABLE_CLIMB:
 
             # Reeling command:
-            self.reelCommand = climbCommands.ReelCommand(self.climbSubsystem)
+            self.forwardCommand = climbCommands.Forward(self.climbSubsystem)
 
             # Unreeling command:
-            self.unreelCommand = climbCommands.UnreelCommand(self.climbSubsystem)
+            self.backwardCommand = climbCommands.Backward(self.climbSubsystem)
 
             # Button detections:
-            self._joystick.y().whileTrue(self.reelCommand)
-            self._joystick.x().whileTrue(self.unreelCommand)
+            self._joystick.y().whileTrue(self.forwardCommand)
+            self._joystick.x().whileTrue(self.backwardCommand)

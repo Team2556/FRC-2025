@@ -325,9 +325,16 @@ class CoralConstants:
 
 class ClimbConstants:
     kClimbMotorPort = CAN_Address.TWENTYSEVEN
-    kTopLimitSwitchChannel = Rio_DIO.FIVE
-    kBottomLimitSwitchChannel = Rio_DIO.SIX
-    kSpeed = 1.0
+    # kTopLimitSwitchChannel = Rio_DIO.FIVE
+    # kBottomLimitSwitchChannel = Rio_DIO.SIX
+    kSpeedForwardIn = 0.13
+    kSpeedBackOut = -0.13
+    
+
+    # PID stuff for coral:
+    kMotorKp = 1
+    kMotorKi = 0
+    kMotorKd = 0
 
 class PneumaticConstants:
     kHub = CAN_Address.FORTY
