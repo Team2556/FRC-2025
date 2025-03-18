@@ -1,37 +1,33 @@
 '''Has a command for changing the position of the pivot motor and the speed of the intake motor'''
 
-from wpilib import Timer, SmartDashboard
+from wpilib import Timer
 from commands2 import Command, InterruptionBehavior
-from subsystems import elevatorSubsystem, algaeSubsystem
+from subsystems import algaeSubsystem
 from constants import AlgaeConstants
     
-class AlgaePivotCommand(Command):
-    '''Sets algae pivot motor to any position in rotations'''
-    def __init__(self, position, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):
+class AlgaeCommand(Command):
+    '''THE algae command that sets a pivot and rotation value'''
+    def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem, position, intakeSpeed):
         self.algaeSubsystem = algaeSubsystem
         self.addRequirements(self.algaeSubsystem)
         self.InterruptionBehavior = InterruptionBehavior.kCancelSelf
+        
         self.position = position
-        self.timer = Timer()
-        self.timer.start()
+        self.intakeSpeed = intakeSpeed
     
     def initialize(self):
-        pass
-
-    def execute(self):
+        self.algaeSubsystem.spinIntakeMotor(self.intakeSpeed)
         self.algaeSubsystem.updatePivotSetpoint(self.position)
         self.algaeSubsystem.changePivotPosition()
         
     def isFinished(self):
-        return self.timer.get() > 1
-        # value = self.algaeSubsystem.pivotMotor.get_position().value
-        # if self.position == AlgaeConstants.kPivotIdleValue:
-        #     return True # Automatically finish the command if it's being told to set to idle value
-        # else:
-        #     return (value <= self.position + AlgaeConstants.kTargetValueAccuracy
-        #         and value >= self.position - AlgaeConstants.kTargetValueAccuracy)
+        value = self.algaeSubsystem.getPivotPosition()
+        return (value <= self.position + AlgaeConstants.kTargetValueAdder + AlgaeConstants.kTargetValueAccuracy
+            and value >= self.position + AlgaeConstants.kTargetValueAdder - AlgaeConstants.kTargetValueAccuracy)
         
-    def end(self): pass
+    def end(self): 
+        print("Algae Command Finished!") # NOTE ITS TEMPORARY
+        pass
 
 class AlgaeIntakeCommand(Command):
     '''Super simple command that sets intake motors and that's it'''

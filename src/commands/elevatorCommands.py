@@ -23,11 +23,30 @@ class SetElevatorCommand(Command):
         self.elevatorSubsystem.moveElevator()
     
     def isFinished(self):
-        value = self.elevatorSubsystem.rotationsToDistance(
-            self.elevatorSubsystem.elevmotor_left.get_position().value
-        )
-        return (value <= self.position + ElevatorConstants.kTargetValueAccuracy + ElevatorConstants.kTargetValueAdder
-            and value >= self.position - ElevatorConstants.kTargetValueAccuracy + ElevatorConstants.kTargetValueAdder)
+        value = self.elevatorSubsystem.get_position()
+        return (value <= self.position + ElevatorConstants.kTargetValueAdder + ElevatorConstants.kTargetValueAccuracy
+            and value >= self.position + ElevatorConstants.kTargetValueAdder - ElevatorConstants.kTargetValueAccuracy)
+    
+    def end(self):
+        print("Elevator Command Finished!") # NOTE ITS TEMPORARY
+        pass
+    
+class HomeElevatorCommand(Command):
+    '''Moves elevator down '''
+    def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem):
+        self.elevatorSubsystem = elevatorSubsystem
+        self.addRequirements(self.elevatorSubsystem)
+    
+    def initialize(self):
+        self.elevatorSubsystem.incrementElevator(-1 * ElevatorConstants.kHomingRate)
+        
+    def execute(self):
+        if self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown:
+            self.elevatorSubsystem.incrementElevator(
+                -1 * ElevatorConstants.kHomingRate * ElevatorConstants.kLowEnoughSpeedMultiplier
+            )
+        
+    def isFinished(self): return self.elevatorSubsystem.getLimitBottom()
         
 class InstantSetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
@@ -58,21 +77,6 @@ class IncrementElevatorCommand(Command):
         # This just increments so it should automatically finish (but we can add a timer if otherwise)
         return True
     
-class ElevatorHomeCommand(Command):
-    def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem):
-        self.elevatorSubsystem = elevatorSubsystem
-        self.addRequirements(self.elevatorSubsystem)
-        
-    def initialize(self):
-        self.elevatorSubsystem.incrementElevator(
-            self.elevatorSubsystem.distanceToRotations(ElevatorConstants.kHomingRate)
-        )
-        
-    def isFinished(self):
-        if self.elevatorSubsystem.getLimitBottom():
-            self.elevatorSubsystem.incrementElevator(0)
-            return True
-    
 # Here are the bad commands that work so we're keeping them
 class ContinuousIncrementCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, function):
@@ -86,14 +90,3 @@ class ContinuousIncrementCommand(Command):
         
     def updateIncrement(self, increment):
         self.increment = increment
-        
-# class InstantTestFlipperCommand(Command):
-#     def __init__(self, pneumaticsSubsystem: pneumaticSubsystem.PneumaticSubsystem):
-#         self.pneumaticsSubsystem = pneumaticsSubsystem
-#         self.addRequirements(self.pneumaticsSubsystem)
-    
-#     def initialize(self):
-#         self.pneumaticsSubsystem.pulse_solenoid(0, 1)
-#         self.pneumaticsSubsystem.pulse_solenoid(1, 1)
-    
-#     def isFinished(self): return True
