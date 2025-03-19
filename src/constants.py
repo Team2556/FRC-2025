@@ -200,6 +200,8 @@ class Override_DriveConstant: ...
 class ElevatorConstants:
     kLeftMotorPort = CAN_Address.THIRTEEN
     kRightMotorPort = CAN_Address.FOURTEEN
+
+    kElevatorSensorToMech = (1/6) * math.pi * 1.4397
     
     kpeak_forward_torque_current = 35  # 120
     kpeak_reverse_torque_current = -35  # -120

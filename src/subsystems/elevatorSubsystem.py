@@ -16,7 +16,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         '''IM AN ELEVATOR'''
 
         super().__init__( )
-        self.i = 0
+        # self.i = 0
 
         # Start at position 0
         self.setpoint = 0
@@ -27,7 +27,9 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         
         # Make the right motor follow the left (so moving the left one moves the right one in the opposite direction)
         # TODO: Actually make this work it's important we kinda need it
-        self.elevmotor_right.set_control(Follower(self.elevmotor_left.device_id, oppose_master_direction=True))
+        self.elevmotor_right.set_control(Follower(self.elevmotor_left.device_id, 
+                                                  #the motors ar configured such that positive id up on the motor when they act individually, therefore they do not oppose
+                                                  oppose_master_direction=False))
         
         # Make it so when motor speed is set to 0 then it stays at 0 and resists movement against it
         self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
@@ -90,7 +92,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         cfg.with_software_limit_switch(elevmotorSoftLimits_cfg)
         
         elevmotorFeedback_cfg = (configs.FeedbackConfigs().with_feedback_sensor_source(signals.FeedbackSensorSourceValue.ROTOR_SENSOR)
-                                 #The functions distance to rotations had this already TODO: which way to go  .with_sensor_to_mechanism_ratio(ElevatorConstants.kElevatorGearing)#/(2*pi*ElevatorConstants.kElevatorDrumRadius))
+                                 #The functions distance to rotations had this already TODO: which way to go  
+                                 .with_sensor_to_mechanism_ratio(ElevatorConstants.kElevatorSensorToMech)
                                     )
         cfg.with_feedback(elevmotorFeedback_cfg)
 
@@ -101,6 +104,12 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         status: StatusCode = StatusCode.STATUS_CODE_NOT_INITIALIZED
         for _ in range(0, 5):
             status = self.elevmotor_left.configurator.apply(cfg)
+            # status = self.elevmotor_right.configurator.apply(cfg)
+            if status.is_ok():
+                break
+        status: StatusCode = StatusCode.STATUS_CODE_NOT_INITIALIZED
+        for _ in range(0, 5):
+            # status = self.elevmotor_left.configurator.apply(cfg)
             status = self.elevmotor_right.configurator.apply(cfg)
             if status.is_ok():
                 break
@@ -171,7 +180,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         # Manual moving the elevator
         # TODO: CHANGE THIS TO UPDATING THE SETPOINT ONCE YOU HAVE PIDS
         self.elevmotor_left.set(increment)
-        self.elevmotor_right.set(-1 * increment)
+        # self.elevmotor_right.set(-1 * increment)
         
     def setupSmartDashboard(self):
         SmartDashboard.putNumber("Elevator/Kp", ElevatorConstants.kElevatorKp)
@@ -221,6 +230,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
     def periodic(self):
         self.updateSmartDashboard()
         
+        # Can do this all in motor config TODO: Update & Remove
         if self.getLimitBottom():
             self.position_voltage.limit_forward_motion = True
             self.elevmotor_left.set_position(0) # To zero it

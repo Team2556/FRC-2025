@@ -104,14 +104,14 @@ class RobotContainer:
 
         if self.ENABLE_ALGAE:
             self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
-            self.scheduler.registerSubsystem(self.algaeSubsystem)
+            # self.scheduler.registerSubsystem(self.algaeSubsystem)
 
         if self.ENABLE_ELEVATOR:
             self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
 
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
-            self.scheduler.registerSubsystem(self.coralSubsystem)
+            # self.scheduler.registerSubsystem(self.coralSubsystem)
             # self.scheduler.schedule()
 
         if self.ENABLE_CLIMB:
