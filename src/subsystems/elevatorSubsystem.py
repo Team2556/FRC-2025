@@ -15,9 +15,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
     def __init__(self) -> None:
         '''IM AN ELEVATOR'''
 
-        super().__init__( )
-        # self.i = 0
-
         # Start at position 0
         self.setpoint = 0
 
@@ -51,8 +48,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         cfg.slot0.k_d = ElevatorConstants.kElevatorKd
         cfg.slot0.k_g = ElevatorConstants.kElevatorKg
         
-        # # cfg.slot0.integralZone = 0
-        # # cfg.slot0.forwardSoftLimitThreshold = 0
+        # cfg.slot0.integralZone = 0
+        # cfg.slot0.forwardSoftLimitThreshold = 0
 
         cfg.slot0.gravity_type = signals.GravityTypeValue.ELEVATOR_STATIC
         cfg.slot0.static_feedforward_sign = signals.StaticFeedforwardSignValue.USE_VELOCITY_SIGN
@@ -62,7 +59,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         # cfg.slot0.maxIntegralAccumulator = 0
 
         # cfg.voltage.peak_output_forward = 8
-        cfg.stator_current_limit_enable = True
+        # cfg.stator_current_limit_enable = True
         cfg.torque_current.peak_forward_torque_current = ElevatorConstants.kpeak_forward_torque_current
         cfg.torque_current.peak_reverse_torque_current = ElevatorConstants.kpeak_reverse_torque_current
         # Would only work with CAN based (prob CRTE only) sensors as limitswitches
@@ -180,7 +177,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         # Manual moving the elevator
         # TODO: CHANGE THIS TO UPDATING THE SETPOINT ONCE YOU HAVE PIDS
         self.elevmotor_left.set(increment)
-        # self.elevmotor_right.set(-1 * increment)
+        self.elevmotor_right.set(-1 * increment)
         
     def setupSmartDashboard(self):
         SmartDashboard.putNumber("Elevator/Kp", ElevatorConstants.kElevatorKp)

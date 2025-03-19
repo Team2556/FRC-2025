@@ -56,6 +56,9 @@ class RobotContainer:
     """
 
     def __init__(self) -> None:
+        
+        AutoBuilder._configured = False
+        
         self._max_speed = (
             TunerConstants.speed_at_12_volts
         )  # speed_at_12_volts desired top speed
@@ -98,7 +101,7 @@ class RobotContainer:
         self.ENABLE_CLIMB = True
 
         # Command Scheduler is needed to run periodic() function on subsystems
-        self.scheduler = commands2.CommandScheduler()
+        # self.scheduler = commands2.CommandScheduler()
 
         # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE PLS
 
@@ -295,17 +298,14 @@ class RobotContainer:
             self._joystick2.leftBumper().whileTrue(dischargeCoralRightCommand)
 
         if self.ENABLE_ELEVATOR:
-            IC = (elevatorCommands.InstantSetElevatorCommand)
-            # TEST THESE
             # self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
             # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
             # self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
-            # FOR TESTING
             SC = elevatorCommands.SetElevatorCommand
-            self._joystick2.y().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
-            self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            self._joystick2.a().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+            self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
+            self._joystick2.x().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
+            self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
             def doDeadband(num):
                 return 0 if num <= 0.08 and num >= -0.08 else num
@@ -315,7 +315,9 @@ class RobotContainer:
                         + 0.1 * (-1 * doDeadband(self._joystick2.getLeftY()))
                         # - 0.05 * (self._joystick2.getRightY())
                         + 0.03)
-                if self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown:
+                if (self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown
+                    and self.elevatorSubsystem.elevmotor_left.get_velocity < 0):
+                    # Lower speed if position is low enough and going down
                     speed *= ElevatorConstants.kLowEnoughSpeedMultiplier
                 return speed
 

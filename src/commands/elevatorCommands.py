@@ -86,7 +86,9 @@ class ContinuousIncrementCommand(Command):
         self.function = function
     
     def execute(self):
-        self.elevatorSubsystem.incrementElevator(self.function())
+        speed = self.function()
+        if not speed == 0:
+            self.elevatorSubsystem.incrementElevator(speed)
         
     def updateIncrement(self, increment):
         self.increment = increment
