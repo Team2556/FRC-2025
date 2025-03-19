@@ -15,12 +15,14 @@ class Forward(Command):
         self.climbSubsystem.forward()
 
     def isFinished(self):
-        if self.climbSubsystem.climbMotor.get_forward_limit().value is signals.ForwardLimitValue.CLOSED_TO_GROUND:
+        return self.climbSubsystem.climbMotor.get_forward_limit().value is signals.ForwardLimitValue.CLOSED_TO_GROUND
             # do action when forward limit is closed
-            ...
-        if self.climbSubsystem.climbMotor.get_fault_forward_soft_limit().value:
+            # ...
+        # if self.climbSubsystem.climbMotor.get_fault_forward_soft_limit().value:
             # do action when forward soft limit is reached
-            ...
+            # ...
+    def end(self):
+        self.climbSubsystem.stop()
 
 
 class Backward(Command):
@@ -36,4 +38,7 @@ class Backward(Command):
         self.climbSubsystem.backward()
 
     def isFinished(self):
-        ...
+        return self.climbSubsystem.climbMotor.get_reverse_limit().value is signals.ForwardLimitValue.CLOSED_TO_GROUND
+
+    def end(self):
+        self.climbSubsystem.stop()

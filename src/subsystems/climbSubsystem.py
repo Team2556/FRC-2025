@@ -43,9 +43,13 @@ class ClimbSubsystem():
         ...
 
     def forward(self):
-        ''' Reel in the robot '''
+        ''' Reel in the robot claw '''
         self.climbMotor.set(self.climbConstants.kSpeedForwardIn)
 
     def backward(self):
-        ''' Reel out the robot '''
+        ''' Reel out the robot claw '''
         self.climbMotor.set(self.climbConstants.kSpeedBackOut)
+
+    def stop(self):
+        '''Stop the reel'''
+        self.climbMotor.set(0)
