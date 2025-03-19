@@ -153,6 +153,9 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
         self._has_applied_operator_perspective = False
         """Keep track if we've ever applied the operator perspective before or not"""
 
+        # Swerve request to apply during path following
+        self._apply_robot_speeds = swerve.requests.ApplyRobotSpeeds()
+
         # Swerve requests to apply during SysId characterization
         self._translation_characterization = swerve.requests.SysIdSwerveTranslation()
         self._steer_characterization = swerve.requests.SysIdSwerveSteerGains()

@@ -22,6 +22,8 @@ from commands2.sysid import SysIdRoutine
 from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
 from pathplannerlib.path import PathPlannerPath, PathConstraints
 
+from subsystems.vison import VisionSubsystem
+from commands.auto_align import AutoAlign
 # NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
 from subsystems import (
     algaeSubsystem,
@@ -77,14 +79,14 @@ class RobotContainer:
         )
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
-        # self._robot_centric_drive = (
-        #     swerve.requests.RobotCentric()
-        #     .with_deadband(0.1)
-        #     .with_rotational_deadband(0.1)  # Add a 10% deadband
-        #     .with_drive_request_type(
-        #         swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
-        #     )  # Use open-loop control for drive motors
-        # )
+        self._robot_centric_drive = (
+            swerve.requests.RobotCentric()
+            .with_deadband(0.1)
+            .with_rotational_deadband(0.1)  # Add a 10% deadband
+            .with_drive_request_type(
+                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
+            )  # Use open-loop control for drive motors
+        )
 
         self._logger = Telemetry(self._max_speed)
 
@@ -93,6 +95,9 @@ class RobotContainer:
 
         self.drivetrain = TunerConstants.create_drivetrain()
 
+
+        self.vision = VisionSubsystem(self.drivetrain, "limelight-four")
+        self.auto_align = AutoAlign(self.drivetrain, self.vision)
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
 
         self.ENABLE_ALGAE = True
@@ -100,22 +105,18 @@ class RobotContainer:
         self.ENABLE_CORAL = True
         self.ENABLE_CLIMB = True
 
-        # Command Scheduler is needed to run periodic() function on subsystems
-        # self.scheduler = commands2.CommandScheduler()
-
-        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE PLS
+        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE PLEASE
 
         if self.ENABLE_ALGAE:
             self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
-            # self.scheduler.registerSubsystem(self.algaeSubsystem)
+
 
         if self.ENABLE_ELEVATOR:
             self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
 
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
-            # self.scheduler.registerSubsystem(self.coralSubsystem)
-            # self.scheduler.schedule()
+
 
         if self.ENABLE_CLIMB:
             ...
@@ -123,7 +124,7 @@ class RobotContainer:
         # Configure the button bindings
         self.configureButtonBindings()
 
-    def getAutonomousCommand():
+    def getAutonomousCommand(self):
         # Load the path you want to follow using its name in the GUI
         path = PathPlannerPath.fromPathFile("moveForeward")
         # Create a path following command using AutoBuilder. This will also trigger event markers.
@@ -167,6 +168,9 @@ class RobotContainer:
                 )
             )
         )
+        self._joystick.x().whileTrue(self.auto_align)
+
+
 
         robotCentricSpeedMultiplier = 0.2
 
