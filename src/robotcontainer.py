@@ -17,6 +17,7 @@
 import commands2
 import commands2.button
 import commands2.cmd
+import wpilib
 from commands2.sysid import SysIdRoutine
 
 from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto

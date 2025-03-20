@@ -2,7 +2,7 @@
   {
     "name": "/SmartDashboard/Tag being tracked",
     "type": "double",
-    "value": 10.0,
+    "value": 7.0,
     "properties": {
       "persistent": true
     }
