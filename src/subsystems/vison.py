@@ -42,8 +42,8 @@ class VisionSubsystem(Subsystem):
         for future in concurrent.futures.as_completed(futures):
             estimate = future.result()
             if estimate and estimate.tag_count > 0:
-                SmartDashboard.putData("Number of Tags", estimate.tag_count)
-                SmartDashboard.putData("Pose", estimate.pose)
+                SmartDashboard.putNumber("Number of Tags", estimate.tag_count)
+                # SmartDashboard.putData("Pose", estimate.pose)
                 self._swerve.add_vision_measurement(
                     estimate.pose,
                     utils.fpga_to_current_time(estimate.timestamp_seconds),

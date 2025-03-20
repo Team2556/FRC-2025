@@ -54,7 +54,8 @@ class AutoAlign(Command):
             fiducial.dist_to_robot = 1  # Slightly farther from the robot center
             fiducial.ambiguity = 0.1  # Low ambiguity (good detection)
 
-        self.rotational_rate = self.rotational_pid.calculate(2 * fiducial.txyc, 0.0) * 0.75 * 0.9
+        self.rotational_rate = self.rotational_pid.calculate(2 * -1 * fiducial.txyc, 0.0) * 0.75 * 0.9
+
         self.velocity_x = self.x_pid.calculate(fiducial.dist_to_robot, 0.1) * 0.7 *0  # Scaled speed factor
 
         if self.rotational_pid.atSetpoint() and self.x_pid.atSetpoint():
