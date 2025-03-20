@@ -1,10 +1,11 @@
 from commands2 import Command, Subsystem
 from constants import ClimbConstants
 from phoenix6 import signals
+from subsystems.climbSubsystem import ClimbSubsystem
 
 class Forward(Command):
     
-    def __init__(self, climbSubsystem: Subsystem):
+    def __init__(self, climbSubsystem: ClimbSubsystem):
         self.climbSubsystem = climbSubsystem
         self.addRequirements(climbSubsystem)
 
@@ -15,7 +16,7 @@ class Forward(Command):
         self.climbSubsystem.forward()
 
     def isFinished(self):
-        return self.climbSubsystem.climbMotor.get_forward_limit().value is signals.ForwardLimitValue.CLOSED_TO_GROUND
+        return self.climbSubsystem.climbMotor.get_forward_limit().value == signals.ForwardLimitValue.CLOSED_TO_GROUND
             # do action when forward limit is closed
             # ...
         # if self.climbSubsystem.climbMotor.get_fault_forward_soft_limit().value:
@@ -27,7 +28,7 @@ class Forward(Command):
 
 class Backward(Command):
 
-    def __init__(self, climbSubsystem: Subsystem):
+    def __init__(self, climbSubsystem: ClimbSubsystem):
         self.climbSubsystem = climbSubsystem
         self.addRequirements(climbSubsystem)
 
@@ -38,7 +39,7 @@ class Backward(Command):
         self.climbSubsystem.backward()
 
     def isFinished(self):
-        return self.climbSubsystem.climbMotor.get_reverse_limit().value is signals.ForwardLimitValue.CLOSED_TO_GROUND
+        return self.climbSubsystem.climbMotor.get_reverse_limit().value == signals.ForwardLimitValue.CLOSED_TO_GROUND
 
     def end(self):
         self.climbSubsystem.stop()
