@@ -211,14 +211,13 @@ class ElevatorConstants:
     kHomingRate = 0.10 # 10
     # All the speed stuff (in rotations per second)
     kElevatorSpeed = 5 # 10
- 
-    kElevatorKp = .6
+    
+    kElevatorKp = 0.7
     kElevatorKi = 0.0
     kElevatorKd = 0.0
     kElevatorKg = 0.4
 
-    kMinElevatorHeight = 0
-    safetyFactor = .5
+    kMinElevatorHeight = 0safetyFactor = .5
     kMaxElevatorHeight = 39.5 - safetyFactor# 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
