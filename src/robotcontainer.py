@@ -14,6 +14,7 @@
 # If you wish to change any of these, be sure to change all
 # instances of the rule unless you're really desperate on time
 
+# from imaplib import Commands
 import commands2
 import commands2.button
 import commands2.cmd
@@ -27,12 +28,14 @@ from subsystems import (
     algaeSubsystem,
     coralSubsystem,
     elevatorSubsystem,
+    climbSubsystem
 )
 
 from commands import (
     algaeCommands,
     coralCommands,
     elevatorCommands,
+    climbCommands
 )
 
 from constants import ElevatorConstants, AlgaeConstants, CoralConstants
@@ -118,7 +121,8 @@ class RobotContainer:
             # self.scheduler.schedule()
 
         if self.ENABLE_CLIMB:
-            ...
+            self.climbSubsystem = climbSubsystem.ClimbSubsystem()
+            # self.scheduler.registerSubsystem(self.climbSubsystem)
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -203,18 +207,21 @@ class RobotContainer:
 
         # Run SysId routines when holding back/start and X/Y.
         # Note that each routine should be run exactly once in a single log.
-        (self._joystick.back() & self._joystick.y()).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
-        )
-        (self._joystick.back() & self._joystick.x()).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse)
-        )
-        (self._joystick.start() & self._joystick.y()).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
-        )
-        (self._joystick.start() & self._joystick.x()).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse)
-        )
+        # (self._joystick.back() & self._joystick.y()).whileTrue(
+        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
+        # )
+        # (self._joystick.back() & self._joystick.x()).whileTrue(
+        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse) # Commented out by Aida for climb - disable climb if needed.
+        # )
+        # (self._joystick.start() & self._joystick.y()).whileTrue(
+        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
+        # )
+        # (self._joystick.start() & self._joystick.x()).whileTrue(
+        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse) # Commented out by Aidan for climb - disable climb if needed.
+        # )
+
+
+        # Elevator button press detection:
 
         # reset the field-centric heading on left bumper press
         self._joystick.leftBumper().onTrue(
@@ -357,4 +364,15 @@ class RobotContainer:
             # ))
 
         if self.ENABLE_CLIMB:
-            ...
+
+            # Reeling command:
+            self.forwardCommand = climbCommands.Forward(self.climbSubsystem)
+
+            # Unreeling command:
+            self.backwardCommand = climbCommands.Backward(self.climbSubsystem)
+
+            # Button detections:
+            # TODO: consider auto trigger 
+            # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
+            self._joystick.y().whileTrue(self.forwardCommand)
+            self._joystick.x().whileTrue(self.backwardCommand)
