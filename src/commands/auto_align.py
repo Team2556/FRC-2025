@@ -20,7 +20,7 @@ class AutoAlign(Command):
         self.tag_id = 22  # Default tag ID
 
         self.rotational_pid = PIDController(0.05000, 0.000000, 0.001000)
-        self.x_pid = PIDController(2.7, 0.004, 0.02)
+
         self.y_pid = PIDController(2.7, 0.004, 0.02)
 
         self.align_request = RobotCentric().with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)

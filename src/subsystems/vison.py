@@ -1,6 +1,7 @@
 import concurrent.futures
 import math
 
+import wpilib
 from commands2 import Subsystem
 from phoenix6 import utils
 from wpilib import SmartDashboard
@@ -20,6 +21,12 @@ class VisionSubsystem(Subsystem):
     def __init__(self, swerve: CommandSwerveDrivetrain, *cameras: str):
         super().__init__()
 
+        # Create Field2d for robot and trajectory visualizations.
+        self.field = wpilib.Field2d()
+
+        # Create and push Field2d to SmartDashboard.
+        wpilib.SmartDashboard.putData(self.field)
+
         self._swerve = swerve
         self._cameras = tuple(cameras)
 
@@ -30,6 +37,7 @@ class VisionSubsystem(Subsystem):
 
     def periodic(self):
         super().periodic()
+
 
         if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720:
             return
@@ -43,7 +51,7 @@ class VisionSubsystem(Subsystem):
             estimate = future.result()
             if estimate and estimate.tag_count > 0:
                 SmartDashboard.putNumber("Number of Tags", estimate.tag_count)
-                # SmartDashboard.putData("Pose", estimate.pose)
+                self.field.setRobotPose(estimate.pose)
                 self._swerve.add_vision_measurement(
                     estimate.pose,
                     utils.fpga_to_current_time(estimate.timestamp_seconds),
