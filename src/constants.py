@@ -315,6 +315,7 @@ class CoralConstants:
     kDelayBetweenLeavingBeamBreaksAndActivatingFlippers = 0.3
     
     kHighEnoughToActivateFlippers = 0.8 # I think it's in meters (where 0 is lowest physical point on elevator)
+    
 
 class ClimbConstants:
     kClimbMotorPort = CAN_Address.TWENTYSEVEN
@@ -333,6 +334,11 @@ class ClimbConstants:
 
 class PneumaticConstants:
     kHub = CAN_Address.FORTY
+
+    kLeftScoreSolenoid = 12
+    kLeftRetractSolenoid = 13
+    kRightScoreSolenoid = 14
+    kRightRetractSolenoid = 15
 
 class PowerDistributionConstants:
     kPDP = CAN_Address.FIFTY

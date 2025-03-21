@@ -28,7 +28,8 @@ from subsystems import (
     algaeSubsystem,
     coralSubsystem,
     elevatorSubsystem,
-    climbSubsystem
+    climbSubsystem,
+    pneumaticSubsystem
 )
 
 from commands import (
@@ -102,6 +103,7 @@ class RobotContainer:
         self.ENABLE_ELEVATOR = True
         self.ENABLE_CORAL = True
         self.ENABLE_CLIMB = True
+        self.ENABLE_PNEUMATIC = False
 
         # Command Scheduler is needed to run periodic() function on subsystems
         # self.scheduler = commands2.CommandScheduler()
@@ -123,6 +125,10 @@ class RobotContainer:
         if self.ENABLE_CLIMB:
             self.climbSubsystem = climbSubsystem.ClimbSubsystem()
             # self.scheduler.registerSubsystem(self.climbSubsystem)
+        
+        if self.ENABLE_PNEUMATIC:
+            self.pneumaticSubsystem = pneumaticSubsystem.PneumaticSubsystem()
+            # self.scheduler.registerSubsystem(self.pneumaticSubsystem)
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -388,3 +394,20 @@ class RobotContainer:
             # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
             self._joystick.y().whileTrue(self.forwardCommand)
             self._joystick.x().whileTrue(self.backwardCommand)
+
+        if self.ENABLE_PNEUMATIC:
+            # Pneumatic commands
+
+            self.pneumaticSubsystem.setDefaultCommand(
+                commands2.ConditionalCommand(commands2.SequentialCommandGroup(
+                    commands2.WaitUntilCommand(lambda: self.elevatorSubsystem.get_position() > CoralConstants.kHighEnoughToActivateFlippers),
+                    commands2.WaitCommand(.015),
+                    pneumaticSubsystem.PneumaticDefaultCommand(self.pneumaticSubsystem)),
+                                             commands2.InstantCommand(),
+                                             lambda: (self.elevatorSubsystem.get_position() < CoralConstants.kHighEnoughToActivateFlippers) and not self.coralSubsystem.detect_coral()
+                                            )
+                                            )
+
+            self._joystick2.povUp().onTrue(
+                pneumaticSubsystem.PneumaticToggleCommand(self.pneumaticSubsystem, 0)
+            )

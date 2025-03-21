@@ -15,7 +15,11 @@ class PneumaticSubsystem(commands2.Subsystem):
                 if self.hub.checkSolenoidChannel(channel)
                 else False
             )
-            for channel in range(16) # Number of solenoids in the hub
+            for channel in [PneumaticConstants.kLeftScoreSolenoid,
+                            PneumaticConstants.kRightScoreSolenoid,
+                            PneumaticConstants.kLeftRetractSolenoid,
+                            PneumaticConstants.kRightRetractSolenoid]
+                              #range(16) # Number of solenoids in the hub
         ]
 
     def enable_solenoid(self, channel):
