@@ -168,6 +168,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
 
     def getLimitBottom(self):
         return not self.limit_bottomLeft.get() and not self.limit_bottomRight.get()
+    
     def getLimitTop(self):
         return not self.limit_top.get()
     

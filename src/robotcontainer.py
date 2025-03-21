@@ -248,7 +248,7 @@ class RobotContainer:
             # ALGAE PROCESS COMMAND
             algaeProcessCommand = algaeCommands.AlgaeCommand(
                 self.algaeSubsystem,
-                AlgaeConstants.kPivotReefIntakingValue,
+                AlgaeConstants.kPivotProcessingValue,
                 -1 * AlgaeConstants.kIntakeMultiplier,
             )
 
@@ -266,14 +266,14 @@ class RobotContainer:
                 0 * AlgaeConstants.kIntakeMultiplier,
             )
 
-            algaeHomeCommand = algaeCommands.AlgaeSetPivotSpeedCommand(self.algaeSubsystem, speed = -0.05)
+            algaeHomeCommand = algaeCommands.AlgaeHomeCommand(self.algaeSubsystem)
 
             self._joystick.povUp().onTrue(algaeReefIntakeCommand)
             self._joystick.rightTrigger().onTrue(algaeGroundIntakeCommand)
             self._joystick.leftTrigger().onTrue(algaeProcessCommand)
-            self._joystick.povDown().onTrue(algaeHomeCommand)
+            self._joystick.leftStick().onTrue(algaeHomeCommand)
 
-            self._joystick.povUp().onFalse(algaeAfterGroundIntakeCommand)
+            self._joystick.povUp().onFalse(algaeHomeCommand) # algaeAfterGroundIntakeCommand)
             self._joystick.rightTrigger().onFalse(algaeAfterGroundIntakeCommand)
             self._joystick.leftTrigger().onFalse(algaeHomeCommand)
             # self._joystick.povDown().onFalse()
@@ -311,10 +311,6 @@ class RobotContainer:
             commands2.CommandScheduler.getInstance().schedule(
                 elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
             )
-            IC = elevatorCommands.IncrementElevatorCommand
-            self._joystick2.povUp().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, ElevatorConstants.kElevatorIncrementalStep)))
-            # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -1 * ElevatorConstants.kElevatorIncrementalStep)))
 
             SC = elevatorCommands.SetElevatorCommand
             self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
@@ -322,54 +318,63 @@ class RobotContainer:
             self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
             self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
-            JS_right = commands2.SequentialCommandGroup(
-                SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
-                commands2.ParallelRaceGroup(
-                    dischargeCoralLeftCommand,
-                    commands2.SequentialCommandGroup(
-                        commands2.WaitCommand(0.5),
-                        SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
-                        commands2.WaitCommand(0.5),
-                    )
-                )
-            )
-
+            # For testing until pneumatics works because it will and it's amazing
             JS_left = commands2.SequentialCommandGroup(
                 SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
                 commands2.ParallelRaceGroup(
                     dischargeCoralRightCommand,
                     commands2.SequentialCommandGroup(
-                        commands2.WaitCommand(0.5),
+                        commands2.WaitCommand(0.5), # TODO make these constants if they actually work
                         SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
-                        commands2.WaitCommand(0.5),
+                        commands2.WaitCommand(0.3),
                     )
                 )
             )
 
-            (self._joystick2.b() & self._joystick2.rightTrigger()).onTrue(JS_right)
-            (self._joystick2.b() & self._joystick2.leftTrigger()).onTrue(JS_left)
+            JS_right = commands2.SequentialCommandGroup(
+                SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
+                commands2.ParallelRaceGroup(
+                    dischargeCoralLeftCommand,
+                    commands2.SequentialCommandGroup(
+                        commands2.WaitCommand(0.5), # TODO same for here too
+                        SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
+                        commands2.WaitCommand(0.3),
+                    )
+                )
+            )
+
+            self._joystick2.povLeft().onTrue(JS_left)
+            self._joystick2.povRight().onTrue(JS_right)
+            
+            # old elevator increment
+            # IC = elevatorCommands.IncrementElevatorCommand
+            # self._joystick2.povUp().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, ElevatorConstants.kElevatorIncrementalStep)))
+            # self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -1 * ElevatorConstants.kElevatorIncrementalStep)))
 
             def doDeadband(num):
                 return 0 if num <= 0.08 and num >= -0.08 else num
             
             def getElevatorIncrement():
-                speed = (0.3 * (self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis())
-                        + 0.1 * (-1 * doDeadband(self._joystick2.getLeftY()))
-                        # - 0.05 * (self._joystick2.getRightY())
-                        + 0.03)
+                speed = (
+                    (0.3 * (self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis())
+                    + 0.1 * (-1 * doDeadband(self._joystick2.getLeftY()))
+                    # - 0.05 * (self._joystick2.getRightY())
+                    ) * ElevatorConstants.kElevatorIncrementalStep
+                )
                 if (self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown
                     and self.elevatorSubsystem.elevmotor_left.get_velocity().value < 0):
                     # Lower speed if position is low enough and going down
                     speed *= ElevatorConstants.kLowEnoughSpeedMultiplier
                 return speed
 
-            # self.continuousElevatorCommand = (
-            #     elevatorCommands.ContinuousIncrementCommand(
-            #         self.elevatorSubsystem, getElevatorIncrement
-            #     )
-            # )
+            # *NEW* Elevator Increment
+            self.continuousElevatorCommand = (
+                elevatorCommands.ContinuousIncrementCommand(
+                    self.elevatorSubsystem, getElevatorIncrement
+                )
+            )
 
-            # self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
+            self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
 
             # self._joystick2.povLeft().onTrue(elevatorCommands.InstantTestFlipperCommand(
             #     self.pneumaticSubsystem
@@ -377,14 +382,14 @@ class RobotContainer:
 
         if self.ENABLE_CLIMB:
 
-            # Reeling command:
+            # Reeling command
             self.forwardCommand = climbCommands.Forward(self.climbSubsystem)
 
-            # Unreeling command:
+            # Unreeling command
             self.backwardCommand = climbCommands.Backward(self.climbSubsystem)
 
             # Button detections:
-            # TODO: consider auto trigger 
+            # TODO: consider auto trigger when latched on (with debounce of course)
             # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
             self._joystick.y().whileTrue(self.forwardCommand)
             self._joystick.x().whileTrue(self.backwardCommand)

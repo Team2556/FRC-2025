@@ -197,14 +197,6 @@ class AlgaeSubsystem(Subsystem):
     def periodic(self) -> None:
         # self.pivotMotor.set_control(self.positionVoltage.with_position(self.setpoint)) 
         # Sets setpoint to 0 if bottom limit switch active.
-
-        self.justHitLimitSwitch = False
-        if self.getBottomLimitSwitchActive() and not self.justHitLimitSwitch:
-            self.spinPivotMotor(0)
-            self.pivotMotor.set_position(0)
-            self.justHitLimitSwitch = True
-        else:
-            self.justHitLimitSwitch = False
         
         self.updateSmartDashboard()
         

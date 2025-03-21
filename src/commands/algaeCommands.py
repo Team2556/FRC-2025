@@ -65,20 +65,17 @@ class AlgaeHomeCommand(Command):
     def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):
         self.algaeSubsystem = algaeSubsystem
         self.addRequirements(self.algaeSubsystem)
-        self.InterruptionBehavior = InterruptionBehavior.kCancelSelf
-    
+
     def initialize(self):
-        self.algaeSubsystem.spinPivotMotor(-0.15)
+        self.algaeSubsystem.spinPivotMotor(AlgaeConstants.kPivotHomingRate)
         self.algaeSubsystem.spinIntakeMotor(0)
-        
+
     def isFinished(self): 
-        if self.algaeSubsystem.getBottomLimitSwitchActive():
-            self.algaeSubsystem.pivotMotor.set_position(0)
-            self.algaeSubsystem.spinPivotMotor(0)
-            return True
+        return self.algaeSubsystem.getBottomLimitSwitchActive()
     
     def end(self):
         self.algaeSubsystem.spinPivotMotor(0)
+        self.algaeSubsystem.pivotMotor.set_position(0)
 
 class AlgaeLiftArmCommand(Command):
     def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):
@@ -118,16 +115,6 @@ class AlgaeManualPIDCommand(Command):
         # return (self.setpoint <= self.position + AlgaeConstants.kTargetValueAccuracy
         #         and self.setpoint >= self.position - AlgaeConstants.kTargetValueAccuracy)
     
-class AlgaeSetPivotSpeedCommand(Command):
-    def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem, speed):
-        self.algaeSubsystem = algaeSubsystem
-        self.addRequirements(self.algaeSubsystem)
-        self.speed = speed
-
-    def initialize(self):
-        self.algaeSubsystem.spinPivotMotor(self.speed)
-
-    def isFinished(self): return True
 
 '''
 MANUAL PID

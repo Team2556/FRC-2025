@@ -216,11 +216,9 @@ class ElevatorConstants:
     kElevatorKi = 0.0
     kElevatorKd = 0.0
     kElevatorKg = 0.4
-    
-    safetyFactor = 0.5
 
     kMinElevatorHeight = 0
-    kMaxElevatorHeight = 39.5 - safetyFactor # 35
+    kMaxElevatorHeight = 38.5 # 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
     # So the robot doesn't slam into the ground
@@ -230,13 +228,15 @@ class ElevatorConstants:
     kCoralLv3 = 16 # 11.2
     kAlgaeLv3 = 23
     kCoralLv4 = 37 # 25.5 # All the elevator levels below aren't tuned
-    kCoralLv4_JumpScore = 39.49 - safetyFactor
+    kCoralLv4_JumpScore = 38.5
 
-    kElevatorIncrementalStep = .071
+    # Goes up of down by this much every 50th of a second
+    kElevatorIncrementalStep = 0.07
+    
     # The command decides the position's close enough if it's within this range (in rotations of a sort)
     # This doesn't delete the setpoint, it just declared the command's finished
-    kTargetValueAccuracy = 1
-    kTargetValueAdder = 0 # If it setpoints to a value a bit more or less than you want to to
+    kTargetValueAccuracy = 0.65
+    kTargetValueAdder = 0.35 # If it setpoints to a value a bit more or less than you want to to
 
     kVVoltSecondPerMeter = 0 # 1.5
     kAVoltSecondSquaredPerMeter = 0 # 0.75
@@ -286,9 +286,11 @@ class AlgaeConstants:
     kPivotReefIntakingValue = 2.5 # Pivot position when grabbing algae
     kPivotGroundIntakingValue = 2 # Pivot position when grabbing algae from the FLOOR (not being used)
     kPivotAfterGroundIntakingValue = 1.85
-    kPivotProcessingValue = 1.2 # Pivot position when about to send to processor
+    kPivotProcessingValue = 2 # Pivot position when about to send to processor
+    
     # The time it takes to switch between pivoting positions
     kPivotRotationsPerSecond = 2
+    kPivotHomingRate = -0.05
     
     # Intake wheels multiply by this speed
     kIntakeMultiplier = 0.5
