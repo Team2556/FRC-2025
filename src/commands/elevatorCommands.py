@@ -94,13 +94,10 @@ class ContinuousIncrementCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, function):
         self.elevatorSubsystem = elevatorSubsystem
         self.addRequirements(self.elevatorSubsystem)
-        self.increment = 0
         self.function = function
     
     def execute(self):
         speed = self.function()
         if not speed == 0:
-            self.elevatorSubsystem.setElevatorSpeed(speed)
-        
-    def updateIncrement(self, increment):
-        self.increment = increment
+            self.elevatorSubsystem.update_setpoint(self.speed, incremental=True)
+            self.elevatorSubsystem.moveElevator()

@@ -106,7 +106,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
             status = self.elevmotor_left.configurator.apply(cfg)
             # status = self.elevmotor_right.configurator.apply(cfg)
             if status.is_ok():
-                print("CONFIGURED LEFT MOTOR ----------------/n----------------------/n-------------------")
                 break
             
         status = StatusCode.STATUS_CODE_NOT_INITIALIZED
@@ -114,7 +113,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
             # status = self.elevmotor_left.configurator.apply(cfg)
             status = self.elevmotor_right.configurator.apply(cfg)
             if status.is_ok():
-                print("CONFIGURED RIGHT MOTOR |||||||||||||||||||/n|||||||||||||||||||||||||||||||/n|||||||||||||||||||||||")
                 break
             
         # TODO test this
@@ -137,8 +135,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
 
     def moveElevator(self) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
-        self.elevmotor_left.set_control(self.position_voltage.with_position(self.setpoint))
-                                        # .with_velocity(ElevatorConstants.kElevatorSpeed
+        self.elevmotor_left.set_control(self.position_voltage.with_position(self.setpoint)
+                                        .with_velocity(ElevatorConstants.kElevatorSpeed))
 
     def setElevatorSpeed(self, increment):
         # Manual moving the elevator

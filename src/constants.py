@@ -207,12 +207,12 @@ class ElevatorConstants:
     kpeak_reverse_torque_current = -35  # -120
     # kincrement_m_per_sec_held = 0.25
     
-    # THIS ONE has a max apeed of 1, so 0.15 is 15% of elevator's max speed
-    kHomingRate = 0.10 # 10
+    # THIS ONE has a max apeed of 1, so 0.10 is 10% of elevator's max speed
+    kHomingRate = 0.10
     # All the speed stuff (in rotations per second)
-    kElevatorSpeed = 5 # 10
+    kElevatorSpeed = 2.5 # 10
     
-    kElevatorKp = 0.7
+    kElevatorKp = 0.6
     kElevatorKi = 0.0
     kElevatorKd = 0.0
     kElevatorKg = 0.4
@@ -228,6 +228,7 @@ class ElevatorConstants:
     kLowEnoughSpeedMultiplier = 0.3
     
     kCoralLv3 = 16 # 11.2
+    kAlgaeLv3 = 23
     kCoralLv4 = 37 # 25.5 # All the elevator levels below aren't tuned
     kCoralLv4_JumpScore = 39.49 - safetyFactor
 

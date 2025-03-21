@@ -1331,6 +1331,35 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "10,4": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Field",
+              "_title": "Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "k2024Crescendo",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false
+            }
+          },
+          "24,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Number of Tags",
+              "_title": "Number of Tags",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1544,6 +1573,84 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Amp Value to Detect if Stalled",
+              "_title": "Amp Value to Detect if Stalled",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Pivot Max Height",
+              "_title": "Pivot Max Height",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Pivot Min Height",
+              "_title": "Pivot Min Height",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Pivot Idle Value",
+              "_title": "Pivot Idle Value",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Intaking Delay",
+              "_title": "Intaking Delay",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Processing Delay",
+              "_title": "Processing Delay",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1624,7 +1731,7 @@
               "_showGlyph": false
             }
           },
-          "3,2": {
+          "4,2": {
             "size": [
               2,
               1
@@ -1784,7 +1891,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "3,0": {
+          "4,0": {
             "size": [
               2,
               1
@@ -1798,7 +1905,7 @@
               "_children": []
             }
           },
-          "3,1": {
+          "4,1": {
             "size": [
               2,
               1
