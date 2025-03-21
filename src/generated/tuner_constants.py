@@ -68,7 +68,6 @@ class TunerConstants:
     _encoder_initial_configs = configs.CANcoderConfiguration()
     # Configs for the Pigeon 2; leave this None to skip applying Pigeon 2 configs
     _pigeon_configs: configs.Pigeon2Configuration | None = configs.Pigeon2Configuration()#.with_gyro_trim(1750/1800)
-
     # CAN bus that the devices are located on;
     # All swerve devices must share the same CAN bus
     canbus = CANBus("", "./logs/example.hoot")

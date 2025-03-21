@@ -52,7 +52,7 @@ class AlgaeInstantCommand(Command):
         self.position = pivotPosition
         self.speed = intakeSpeed
         self.addRequirements(self.algaeSubsystem)
-        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
+        self.InterruptionBehavior = InterruptionBehavior.kCancelSelf
     
     def initialize(self): # TODO: WORK ON THIS
         self.algaeSubsystem.updatePivotSetpoint(self.position)
