@@ -302,16 +302,33 @@ class RobotContainer:
             commands2.CommandScheduler.getInstance().schedule(
                 elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
             )
-            
-            # self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
+            IC = elevatorCommands.IncrementElevatorCommand
+            self._joystick2.povUp().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, ElevatorConstants.kElevatorIncrementalStep)))
             # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            # self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+            self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -ElevatorConstants.kElevatorIncrementalStep)))
 
             SC = elevatorCommands.SetElevatorCommand
             self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
             self._joystick2.x().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
             self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
             self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+
+            JS_right = commands2.SequentialCommandGroup(SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
+                                                  commands2.ParallelRaceGroup(
+                                                  self._joystick2.rightBumper().whileTrue(dischargeCoralLeftCommand),
+                                                  SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)())
+                                                  )
+            )
+
+            JS_left = commands2.SequentialCommandGroup(SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
+                                                  commands2.ParallelRaceGroup(
+                                                  self._joystick2.leftBumper().whileTrue(dischargeCoralRightCommand),
+                                                  SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)())
+                                                  )
+            )
+
+            (self._joystick2.b() & self._joystick2.rightBumper()).onTrue(JS_right)
+            (self._joystick2.b() & self._joystick2.leftBumper()).onTrue(JS_left)
 
             def doDeadband(num):
                 return 0 if num <= 0.08 and num >= -0.08 else num
