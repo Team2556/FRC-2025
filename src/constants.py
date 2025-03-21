@@ -212,22 +212,25 @@ class ElevatorConstants:
     # All the speed stuff (in rotations per second)
     kElevatorSpeed = 5 # 10
  
-    kElevatorKp = 2
+    kElevatorKp = .6
     kElevatorKi = 0.0
     kElevatorKd = 0.0
-    kElevatorKg = 0.75
+    kElevatorKg = 0.4
 
     kMinElevatorHeight = 0
-    kMaxElevatorHeight = 20 # 35
+    safetyFactor = .5
+    kMaxElevatorHeight = 39.5 - safetyFactor# 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
     # So the robot doesn't slam into the ground
     kLowEnoughToSlowDown = 6
     kLowEnoughSpeedMultiplier = 0.3
     
-    kCoralLv3 = 6 # 11.2
-    kCoralLv4 = 10 # 25.5 # All the elevator levels below aren't tuned
+    kCoralLv3 = 16 # 11.2
+    kCoralLv4 = 37 # 25.5 # All the elevator levels below aren't tuned
+    kCoralLv4_JumpScore = 39.49 -safetyFactor
 
+    kElevatorIncrementalStep = .071
     # The command decides the position's close enough if it's within this range (in rotations of a sort)
     # This doesn't delete the setpoint, it just declared the command's finished
     kTargetValueAccuracy = 1
@@ -331,14 +334,14 @@ class ClimbConstants:
     kClimbMaxPosConfirmationExtraHeight = 0.1
     GEAR_RATIO = 15376/45
     kPositionConversionFactor = 0.1965
-    GAINS = (Slot0Configs()
-                .with_k_p(1.0)
-                .with_k_i(0.0)
-                .with_k_d(0.0)
-                .with_k_s(0.0)
-                .with_k_v(0.0)
-                .with_k_a(0.0)
-            )
+    # GAINS = (Slot0Configs()
+    #             .with_k_p(1.0)
+    #             .with_k_i(0.0)
+    #             .with_k_d(0.0)
+    #             .with_k_s(0.0)
+    #             .with_k_v(0.0)
+    #             .with_k_a(0.0)
+    #         )
 
 class PneumaticConstants:
     kHub = CAN_Address.FORTY
