@@ -38,7 +38,7 @@ from commands import (
     climbCommands
 )
 
-from constants import ElevatorConstants, AlgaeConstants, CoralConstants
+from constants import ClimbConstants, ElevatorConstants, AlgaeConstants, CoralConstants
 
 from robotUtils.adjustJoystick import adjust_jostick
 
@@ -404,6 +404,9 @@ class RobotContainer:
 
             # Button detections:
             # TODO: consider auto trigger 
-            # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
+            sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
+
+            sensing_cage_in_hand.debounce(ClimbConstants.kLatchDebounce).whileTrue(self.forwardCommand)
+
             self._joystick.y().whileTrue(self.forwardCommand)
             self._joystick.x().whileTrue(self.backwardCommand)

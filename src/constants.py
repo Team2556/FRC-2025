@@ -326,6 +326,8 @@ class CoralConstants:
 class ClimbConstants:
     kClimbMotorPort = CAN_Address.TWENTYSEVEN
 
+    kLatchDebounce = 0.5
+
     kCaptureCageSwitchChannel = Rio_DIO.TWO
 
     kSpeedForwardIn = 0.30
