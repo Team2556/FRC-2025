@@ -218,18 +218,18 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         SmartDashboard.putBoolean("Elevator/Bottom Limit Switch", self.getLimitBottom())
         
         # PID Stuff
-        # self.updateSlot0(
-        #     k_p = SmartDashboard.getNumber("Elevator/Kp",0.0),
-        #     k_i = SmartDashboard.getNumber("Elevator/Ki",0.0),
-        #     k_d = SmartDashboard.getNumber("Elevator/Kd",0.0),
-        #     k_g = SmartDashboard.getNumber("Elevator/Kg",0.0)
-        # )
+        self.updateSlot0(
+            k_p = SmartDashboard.getNumber("Elevator/Kp",0.0),
+            k_i = SmartDashboard.getNumber("Elevator/Ki",0.0),
+            k_d = SmartDashboard.getNumber("Elevator/Kd",0.0),
+            k_g = SmartDashboard.getNumber("Elevator/Kg",0.0)
+        )
         
         # Temporary update PID
-        SmartDashboard.putNumber("Elevator/Kp", self.cfg_slot0.k_p)
-        SmartDashboard.putNumber("Elevator/Ki", self.cfg_slot0.k_i)
-        SmartDashboard.putNumber("Elevator/Kd", self.cfg_slot0.k_d)
-        SmartDashboard.putNumber("Elevator/Kg", self.cfg_slot0.k_g)
+        # SmartDashboard.putNumber("Elevator/Kp", self.cfg_slot0.k_p)
+        # SmartDashboard.putNumber("Elevator/Ki", self.cfg_slot0.k_i)
+        # SmartDashboard.putNumber("Elevator/Kd", self.cfg_slot0.k_d)
+        # SmartDashboard.putNumber("Elevator/Kg", self.cfg_slot0.k_g)
         
         ElevatorConstants.kTargetValueAccuracy = SmartDashboard.getNumber("Elevator/Target Value Accuracy", ElevatorConstants.kTargetValueAccuracy)
         ElevatorConstants.kTargetValueAdder = SmartDashboard.getNumber("Elevator/Target Value Adder", ElevatorConstants.kTargetValueAdder)
@@ -251,7 +251,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         if self.getLimitBottom():
             # self.position_voltage.limit_forward_motion = True
             self.elevmotor_left.set_position(0) # To zero it
-            print("ITS ZERO")
         # else: 
         #     self.position_voltage.limit_forward_motion = False
             

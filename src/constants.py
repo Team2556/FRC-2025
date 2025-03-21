@@ -212,21 +212,22 @@ class ElevatorConstants:
     # All the speed stuff (in rotations per second)
     kElevatorSpeed = 5 # 10
  
-    kElevatorKp = 2
+    kElevatorKp = 0.7
     kElevatorKi = 0.0
     kElevatorKd = 0.0
-    kElevatorKg = 0.75
+    kElevatorKg = 0.4
 
     kMinElevatorHeight = 0
-    kMaxElevatorHeight = 20 # 35
+    kMaxElevatorHeight = 23 # 38 is actual max height
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
     # So the robot doesn't slam into the ground
     kLowEnoughToSlowDown = 6
     kLowEnoughSpeedMultiplier = 0.3
     
-    kCoralLv3 = 6 # 11.2
-    kCoralLv4 = 10 # 25.5 # All the elevator levels below aren't tuned
+    kCoralLv3 = 8 # 11.2
+    kAlgaeLv3 = 15
+    kCoralLv4 = 20 # 25.5 # All the elevator levels below aren't tuned
 
     # The command decides the position's close enough if it's within this range (in rotations of a sort)
     # This doesn't delete the setpoint, it just declared the command's finished

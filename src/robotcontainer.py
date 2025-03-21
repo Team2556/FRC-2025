@@ -309,8 +309,9 @@ class RobotContainer:
 
             SC = elevatorCommands.SetElevatorCommand
             self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
-            self._joystick2.x().onTrue(SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv3)()))
-            self._joystick2.y().onTrue(SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()))
+            self._joystick2.x().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
+            self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
+            self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
             def doDeadband(num):
                 return 0 if num <= 0.08 and num >= -0.08 else num
