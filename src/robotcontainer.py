@@ -403,5 +403,7 @@ class RobotContainer:
             self.backwardCommand = climbCommands.Backward(self.climbSubsystem)
 
             # Button detections:
+            # TODO: consider auto trigger 
+            # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
             self._joystick.y().whileTrue(self.forwardCommand)
             self._joystick.x().whileTrue(self.backwardCommand)

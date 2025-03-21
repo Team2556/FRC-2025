@@ -12,9 +12,13 @@ class ClimbSubsystem():
         self.climbConstants = ClimbConstants()
         self.climbMotor = TalonFX(self.climbConstants.kClimbMotorPort, "rio")
         self.isReadyToGrabOntoCage = False
+        self.cageInGripSwitch = wpilib.DigitalInput(self.climbConstants.kCaptureCageSwitchChannel)
         # self.bottomLimitSwitch = wpilib.DigitalInput(self.climbConstants.kBottomLimitSwitchChannel)
         # self.topLimitSwitch = wpilib.DigitalInput(self.climbConstants.kTopLimitSwitchChannel)
         cfgs = phoenix6.configs.TalonFXConfiguration()
+        cfgs.current_limits.with_stator_current_limit_enable(False).with_supply_current_limit_enable(False)
+
+
         cfgs.slot0.k_p = ClimbConstants.kMotorKp
         cfgs.slot0.k_i = ClimbConstants.kMotorKi
         cfgs.slot0.k_d = ClimbConstants.kMotorKd
@@ -44,7 +48,11 @@ class ClimbSubsystem():
 
     def forward(self):
         ''' Reel in the robot claw '''
-        self.climbMotor.set(self.climbConstants.kSpeedForwardIn)
+        if not self.cageInGripSwitch.get():
+             #The is triggered bc normally open
+             self.climbMotor.set(self.climbConstants.kSpeedForwardIn_gripped)
+        else:
+            self.climbMotor.set(self.climbConstants.kSpeedForwardIn)
 
     def backward(self):
         ''' Reel out the robot claw '''

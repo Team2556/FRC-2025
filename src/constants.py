@@ -328,8 +328,9 @@ class ClimbConstants:
 
     kCaptureCageSwitchChannel = Rio_DIO.TWO
 
-    kSpeedForwardIn = 0.40
-    kSpeedBackOut = -0.13
+    kSpeedForwardIn = 0.30
+    kSpeedForwardIn_gripped = 0.99
+    kSpeedBackOut = -0.20
     
 
     # PID stuff for coral:
