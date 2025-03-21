@@ -14,7 +14,7 @@
 # If you wish to change any of these, be sure to change all
 # instances of the rule unless you're really desperate on time
 
-from imaplib import Commands
+# from imaplib import Commands
 import commands2
 import commands2.button
 import commands2.cmd
