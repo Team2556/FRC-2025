@@ -216,9 +216,11 @@ class ElevatorConstants:
     kElevatorKi = 0.0
     kElevatorKd = 0.0
     kElevatorKg = 0.4
+    
+    safetyFactor = 0.5
 
-    kMinElevatorHeight = 0safetyFactor = .5
-    kMaxElevatorHeight = 39.5 - safetyFactor# 35
+    kMinElevatorHeight = 0
+    kMaxElevatorHeight = 39.5 - safetyFactor # 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
     # So the robot doesn't slam into the ground
@@ -227,7 +229,7 @@ class ElevatorConstants:
     
     kCoralLv3 = 16 # 11.2
     kCoralLv4 = 37 # 25.5 # All the elevator levels below aren't tuned
-    kCoralLv4_JumpScore = 39.49 -safetyFactor
+    kCoralLv4_JumpScore = 39.49 - safetyFactor
 
     kElevatorIncrementalStep = .071
     # The command decides the position's close enough if it's within this range (in rotations of a sort)

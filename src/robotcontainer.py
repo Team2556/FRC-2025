@@ -305,7 +305,7 @@ class RobotContainer:
             IC = elevatorCommands.IncrementElevatorCommand
             self._joystick2.povUp().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, ElevatorConstants.kElevatorIncrementalStep)))
             # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -ElevatorConstants.kElevatorIncrementalStep)))
+            self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -1 * ElevatorConstants.kElevatorIncrementalStep)))
 
             SC = elevatorCommands.SetElevatorCommand
             self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
