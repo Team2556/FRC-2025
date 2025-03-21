@@ -201,39 +201,40 @@ class ElevatorConstants:
     kLeftMotorPort = CAN_Address.THIRTEEN
     kRightMotorPort = CAN_Address.FOURTEEN
 
-    kElevatorSensorToMech = (1/6) * math.pi * 1.4397
+    kElevatorSensorToMech = (1 / 6) * 1.4397 * math.pi
     
     kpeak_forward_torque_current = 35  # 120
     kpeak_reverse_torque_current = -35  # -120
     # kincrement_m_per_sec_held = 0.25
     
+    # THIS ONE has a max apeed of 1, so 0.15 is 15% of elevator's max speed
+    kHomingRate = 0.10 # 10
     # All the speed stuff (in rotations per second)
-    kHomingRate = 10
-    kElevatorSpeed = 10
-
-    kElevatorKp = 5.0
+    kElevatorSpeed = 5 # 10
+ 
+    kElevatorKp = 2
     kElevatorKi = 0.0
     kElevatorKd = 0.0
-    kElevatorKg = 0.0
+    kElevatorKg = 0.75
 
     kMinElevatorHeight = 0
-    kMaxElevatorHeight = 35
+    kMaxElevatorHeight = 20 # 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
     # So the robot doesn't slam into the ground
-    kLowEnoughToSlowDown = 5.6
-    kLowEnoughSpeedMultiplier = 0.65
+    kLowEnoughToSlowDown = 6
+    kLowEnoughSpeedMultiplier = 0.3
     
-    kCoralLv3 = 11.2
-    kCoralLv4 = 25.5 # All the elevator levels below aren't tuned
+    kCoralLv3 = 6 # 11.2
+    kCoralLv4 = 10 # 25.5 # All the elevator levels below aren't tuned
 
     # The command decides the position's close enough if it's within this range (in rotations of a sort)
     # This doesn't delete the setpoint, it just declared the command's finished
     kTargetValueAccuracy = 1
     kTargetValueAdder = 0 # If it setpoints to a value a bit more or less than you want to to
 
-    kVVoltSecondPerMeter = 0 #1.5
-    kAVoltSecondSquaredPerMeter = 0 #0.75
+    kVVoltSecondPerMeter = 0 # 1.5
+    kAVoltSecondSquaredPerMeter = 0 # 0.75
 
     kElevatorOffsetMeters = 0 #Used in softlimit minimum
 
@@ -242,10 +243,8 @@ class ElevatorConstants:
     
     kTopLimitSwitchChannel = Rio_DIO.SEVEN  # TODO: ? two on top also?
 
-
 # endregion
 class Override_DriveConstant: ...
-
 
 class AlgaeConstants:
     # Motor Channels

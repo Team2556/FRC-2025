@@ -1197,6 +1197,84 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "22,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight_Interface",
+              "_title": "limelight_Interface",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight_Stream",
+              "_title": "limelight_Stream",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight_PipelineName",
+              "_title": "limelight_PipelineName",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "19,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight-four_Interface",
+              "_title": "limelight-four_Interface",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight-four_Stream",
+              "_title": "limelight-four_Stream",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "21,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight-four_PipelineName",
+              "_title": "limelight-four_PipelineName",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1625,9 +1703,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -8.0,
-    "y": -8.0,
-    "width": 1382.0,
-    "height": 736.0
+    "x": 1.0,
+    "y": 1.0,
+    "width": 1364.0,
+    "height": 718.0
   }
 }

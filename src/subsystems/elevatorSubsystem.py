@@ -26,11 +26,12 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         # TODO: Actually make this work it's important we kinda need it
         self.elevmotor_right.set_control(Follower(self.elevmotor_left.device_id, 
                                                   #the motors ar configured such that positive id up on the motor when they act individually, therefore they do not oppose
-                                                  oppose_master_direction=False))
+                                                  oppose_master_direction = True))
         
         # Make it so when motor speed is set to 0 then it stays at 0 and resists movement against it
-        self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
-        self.elevmotor_left.setNeutralMode(NeutralModeValue.BRAKE)
+        # or not
+        # self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
+        # self.elevmotor_left.setNeutralMode(NeutralModeValue.BRAKE)
         
         # Declare the encoders (they're not referenced later but still needed?)
         self.elevCANcoder_left = phoenix6.hardware.CANcoder(ElevatorConstants.kLeftMotorPort)
@@ -63,19 +64,19 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         cfg.torque_current.peak_forward_torque_current = ElevatorConstants.kpeak_forward_torque_current
         cfg.torque_current.peak_reverse_torque_current = ElevatorConstants.kpeak_reverse_torque_current
         # Would only work with CAN based (prob CRTE only) sensors as limitswitches
-        # elevmotorLimitswitch_cfg = (configs.HardwareLimitSwitchConfigs()
-        #                                .with_forward_limit_enable(True)
-        #                                .with_forward_limit_autoset_position_enable(True)
-        #                                .with_forward_limit_autoset_position_value(ElevatorConstants.kMaxElevatorHeight)
-        #                                .with_forward_limit_remote_sensor_id(ElevatorConstants.kTopLimitSwitchChannel)
-        #                                .with_forward_limit_type(signals.ForwardLimitTypeValue.NORMALLY_OPEN)
-                                       
-        #                                .with_reverse_limit_autoset_position_enable(True)
-        #                                .with_reverse_limit_autoset_position_value(ElevatorConstants.kElevatorOffsetMeters)
-        #                                .with_reverse_limit_remote_sensor_id(ElevatorConstants.kBottomLeftLimitSwitchChannel)
-        #                                .with_reverse_limit_type(signals.ReverseLimitTypeValue.NORMALLY_OPEN)
-        #                                )
-        # cfg.with_hardware_limit_switch(elevmotorLimitswitch_cfg)
+        elevmotorLimitswitch_cfg = (configs.HardwareLimitSwitchConfigs()
+                                       .with_forward_limit_enable(True)
+                                       .with_forward_limit_autoset_position_enable(False)
+                                       # .with_forward_limit_autoset_position_value(ElevatorConstants.kMaxElevatorHeight)
+                                       .with_forward_limit_remote_sensor_id(ElevatorConstants.kTopLimitSwitchChannel)
+                                       .with_forward_limit_type(signals.ForwardLimitTypeValue.NORMALLY_OPEN)
+                                       .with_reverse_limit_enable(True)
+                                       .with_reverse_limit_autoset_position_enable(True)
+                                       .with_reverse_limit_autoset_position_value(ElevatorConstants.kMinElevatorHeight)
+                                       .with_reverse_limit_remote_sensor_id(ElevatorConstants.kBottomLeftLimitSwitchChannel)
+                                       .with_reverse_limit_type(signals.ReverseLimitTypeValue.NORMALLY_OPEN)
+                                       )
+        cfg.with_hardware_limit_switch(elevmotorLimitswitch_cfg)
  
         # cfg.with_current_limits(
         # configs.CurrentLimitsConfigs().with_supply_current_limit()
@@ -84,7 +85,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
                                    .with_forward_soft_limit_enable(True)
                                    .with_forward_soft_limit_threshold(ElevatorConstants.kMaxElevatorHeight)
                                    .with_reverse_soft_limit_enable(True)
-                                   .with_reverse_soft_limit_threshold(0)
+                                   .with_reverse_soft_limit_threshold(ElevatorConstants.kMinElevatorHeight)
                                    )
         cfg.with_software_limit_switch(elevmotorSoftLimits_cfg)
         
@@ -93,40 +94,55 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
                                  .with_sensor_to_mechanism_ratio(ElevatorConstants.kElevatorSensorToMech)
                                     )
         cfg.with_feedback(elevmotorFeedback_cfg)
-
-        self.cfg_slot0 = cfg.slot0
         
+        cfg.motor_output.with_inverted(phoenix6.configs.config_groups.InvertedValue.CLOCKWISE_POSITIVE)
+        cfg.motor_output.with_neutral_mode(phoenix6.configs.config_groups.NeutralModeValue.BRAKE)
+        
+        self.cfg_slot0 = cfg.slot0
 
-        # Retry config apply up to 5 times, report if failure
-        status: StatusCode = StatusCode.STATUS_CODE_NOT_INITIALIZED
+        # Retry config apply up to 5 times, report if failure (for both elevator motors)
+        status = StatusCode.STATUS_CODE_NOT_INITIALIZED
         for _ in range(0, 5):
             status = self.elevmotor_left.configurator.apply(cfg)
             # status = self.elevmotor_right.configurator.apply(cfg)
             if status.is_ok():
+                print("CONFIGURED LEFT MOTOR ----------------/n----------------------/n-------------------")
                 break
-        status: StatusCode = StatusCode.STATUS_CODE_NOT_INITIALIZED
+            
+        status = StatusCode.STATUS_CODE_NOT_INITIALIZED
         for _ in range(0, 5):
             # status = self.elevmotor_left.configurator.apply(cfg)
             status = self.elevmotor_right.configurator.apply(cfg)
             if status.is_ok():
+                print("CONFIGURED RIGHT MOTOR |||||||||||||||||||/n|||||||||||||||||||||||||||||||/n|||||||||||||||||||||||")
                 break
             
-        self.elevmotor_left.set_position(0)
+        # TODO test this
+        self.home_voltage = controls.DutyCycleOut(
+            0, # Output will be changed when this is actually used
+            # limit_forward_motion = False, # These are changed on the bottom in periodic 
+            # limit_reverse_motion = False
+        )
         
         self.position_voltage = controls.PositionVoltage(
             0, # Position will be changed when this is actually used
             ElevatorConstants.kElevatorSpeed,
-            limit_forward_motion = False, # These are changed on the bottom in periodic 
-            limit_reverse_motion = False
+            # limit_forward_motion = False, # These are changed on the bottom in periodic 
+            # limit_reverse_motion = False
         ).with_slot(0)
         
         self.setupSmartDashboard()
+        
+        self.elevmotor_left.set_position(0)
 
-    def moveElevator(self, movement=None) -> None:
+    def moveElevator(self) -> None:
         '''Setpoint is in meters of elevator elevation from lowest physical limit'''
-        if not movement:
-            movement = self.setpoint
-        self.elevmotor_left.set_control(self.position_voltage.with_position(movement))
+        self.elevmotor_left.set_control(self.position_voltage.with_position(self.setpoint))
+                                        # .with_velocity(ElevatorConstants.kElevatorSpeed
+
+    def setElevatorSpeed(self, increment):
+        # Manual moving the elevator
+        self.elevmotor_left.set_control(self.home_voltage.with_output(increment))
         
     def updateSlot0(self, k_p: float = None, k_i: float = None, k_d: float = None, k_g: float = None) -> None:
         '''Don't update it too much because it causes problems so it only does it when it needs to'''
@@ -173,11 +189,6 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
     def get_position(self):
         return self.elevmotor_left.get_position().value
     
-    def incrementElevator(self, increment):
-        # Manual moving the elevator
-        # TODO: CHANGE THIS TO UPDATING THE SETPOINT ONCE YOU HAVE PIDS
-        self.elevmotor_left.set(increment)
-        self.elevmotor_right.set(-1 * increment)
         
     def setupSmartDashboard(self):
         SmartDashboard.putNumber("Elevator/Kp", ElevatorConstants.kElevatorKp)
@@ -203,13 +214,22 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         SmartDashboard.putNumber("Elevator/Position", self.elevmotor_left.get_position().value)
         SmartDashboard.putNumber("Elevator/SetpointError", self.setpoint - self.elevmotor_left.get_position().value)
         
+        SmartDashboard.putBoolean("Elevator/Top Limit Switch", self.getLimitTop())
+        SmartDashboard.putBoolean("Elevator/Bottom Limit Switch", self.getLimitBottom())
+        
         # PID Stuff
-        self.updateSlot0(
-            k_p = SmartDashboard.getNumber("Elevator/Kp",0.0),
-            k_i = SmartDashboard.getNumber("Elevator/Ki",0.0),
-            k_d = SmartDashboard.getNumber("Elevator/Kd",0.0),
-            k_g = SmartDashboard.getNumber("Elevator/Kg",0.0)
-        )
+        # self.updateSlot0(
+        #     k_p = SmartDashboard.getNumber("Elevator/Kp",0.0),
+        #     k_i = SmartDashboard.getNumber("Elevator/Ki",0.0),
+        #     k_d = SmartDashboard.getNumber("Elevator/Kd",0.0),
+        #     k_g = SmartDashboard.getNumber("Elevator/Kg",0.0)
+        # )
+        
+        # Temporary update PID
+        SmartDashboard.putNumber("Elevator/Kp", self.cfg_slot0.k_p)
+        SmartDashboard.putNumber("Elevator/Ki", self.cfg_slot0.k_i)
+        SmartDashboard.putNumber("Elevator/Kd", self.cfg_slot0.k_d)
+        SmartDashboard.putNumber("Elevator/Kg", self.cfg_slot0.k_g)
         
         ElevatorConstants.kTargetValueAccuracy = SmartDashboard.getNumber("Elevator/Target Value Accuracy", ElevatorConstants.kTargetValueAccuracy)
         ElevatorConstants.kTargetValueAdder = SmartDashboard.getNumber("Elevator/Target Value Adder", ElevatorConstants.kTargetValueAdder)
@@ -229,12 +249,13 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         
         # Can do this all in motor config TODO: Update & Remove
         if self.getLimitBottom():
-            self.position_voltage.limit_forward_motion = True
+            # self.position_voltage.limit_forward_motion = True
             self.elevmotor_left.set_position(0) # To zero it
-        else: 
-            self.position_voltage.limit_forward_motion = False
+            print("ITS ZERO")
+        # else: 
+        #     self.position_voltage.limit_forward_motion = False
             
-        if self.getLimitTop():
-            self.position_voltage.limit_reverse_motion = True
-        else: 
-            self.position_voltage.limit_reverse_motion = False
+        # if self.getLimitTop():
+        #     self.position_voltage.limit_reverse_motion = True
+        # else: 
+        #     self.position_voltage.limit_reverse_motion = False

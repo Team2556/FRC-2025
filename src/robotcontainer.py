@@ -298,14 +298,19 @@ class RobotContainer:
             self._joystick2.leftBumper().whileTrue(dischargeCoralRightCommand)
 
         if self.ENABLE_ELEVATOR:
+            # Home elevator at the start
+            commands2.CommandScheduler.getInstance().schedule(
+                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
+            )
+            
             # self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
             # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
             # self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
             SC = elevatorCommands.SetElevatorCommand
             self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
-            self._joystick2.x().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+            self._joystick2.x().onTrue(SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv3)()))
+            self._joystick2.y().onTrue(SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()))
 
             def doDeadband(num):
                 return 0 if num <= 0.08 and num >= -0.08 else num
@@ -316,18 +321,18 @@ class RobotContainer:
                         # - 0.05 * (self._joystick2.getRightY())
                         + 0.03)
                 if (self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown
-                    and self.elevatorSubsystem.elevmotor_left.get_velocity < 0):
+                    and self.elevatorSubsystem.elevmotor_left.get_velocity().value < 0):
                     # Lower speed if position is low enough and going down
                     speed *= ElevatorConstants.kLowEnoughSpeedMultiplier
                 return speed
 
-            self.continuousElevatorCommand = (
-                elevatorCommands.ContinuousIncrementCommand(
-                    self.elevatorSubsystem, getElevatorIncrement
-                )
-            )
+            # self.continuousElevatorCommand = (
+            #     elevatorCommands.ContinuousIncrementCommand(
+            #         self.elevatorSubsystem, getElevatorIncrement
+            #     )
+            # )
 
-            self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
+            # self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
 
             # self._joystick2.povLeft().onTrue(elevatorCommands.InstantTestFlipperCommand(
             #     self.pneumaticSubsystem

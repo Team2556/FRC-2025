@@ -17,19 +17,25 @@ class SetElevatorCommand(Command):
         self.elevatorSubsystem = elevatorSubsystem
         self.addRequirements(self.elevatorSubsystem)
         self.position = position
+        self.updateCommandsFinished(0)
         
     def initialize(self):
         self.elevatorSubsystem.update_setpoint(self.position, incremental=False)
         self.elevatorSubsystem.moveElevator()
     
+    def updateCommandsFinished(self, increment):
+        SmartDashboard.putNumber(
+            "Elevator/Commands Finished", 
+            SmartDashboard.getNumber("Elevator/Commands Finished", 0) + increment
+        )
+
     def isFinished(self):
         value = self.elevatorSubsystem.get_position()
-        return (value <= self.position + ElevatorConstants.kTargetValueAdder + ElevatorConstants.kTargetValueAccuracy
-            and value >= self.position + ElevatorConstants.kTargetValueAdder - ElevatorConstants.kTargetValueAccuracy)
+        return (value <= (self.position + ElevatorConstants.kTargetValueAdder + ElevatorConstants.kTargetValueAccuracy)
+            and value >= (self.position + ElevatorConstants.kTargetValueAdder - ElevatorConstants.kTargetValueAccuracy))
     
-    def end(self):
-        print("Elevator Command Finished!") # NOTE ITS TEMPORARY
-        pass
+    def end(self, interrupted):
+        self.updateCommandsFinished(1)
     
 class HomeElevatorCommand(Command):
     '''Moves elevator down '''
@@ -38,15 +44,20 @@ class HomeElevatorCommand(Command):
         self.addRequirements(self.elevatorSubsystem)
     
     def initialize(self):
-        self.elevatorSubsystem.incrementElevator(-1 * ElevatorConstants.kHomingRate)
+        self.slowedDown = False
+        self.elevatorSubsystem.setElevatorSpeed(-1 * ElevatorConstants.kHomingRate)
         
     def execute(self):
-        if self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown:
-            self.elevatorSubsystem.incrementElevator(
+        if self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown and not self.slowedDown:
+            self.elevatorSubsystem.setElevatorSpeed(
                 -1 * ElevatorConstants.kHomingRate * ElevatorConstants.kLowEnoughSpeedMultiplier
             )
+            self.slowedDown = True
         
     def isFinished(self): return self.elevatorSubsystem.getLimitBottom()
+    
+    def end(self, interrupted): 
+        self.elevatorSubsystem.setElevatorSpeed(0)
         
 class InstantSetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
@@ -61,7 +72,8 @@ class InstantSetElevatorCommand(Command):
     def isFinished(self):
         return True
     
-    # def end(self): self.elevatorSubsystem.elevator_motors_break()
+    # def end(self, interrupted): 
+    #   pass
         
 class IncrementElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, amount):
@@ -88,7 +100,7 @@ class ContinuousIncrementCommand(Command):
     def execute(self):
         speed = self.function()
         if not speed == 0:
-            self.elevatorSubsystem.incrementElevator(speed)
+            self.elevatorSubsystem.setElevatorSpeed(speed)
         
     def updateIncrement(self, increment):
         self.increment = increment
