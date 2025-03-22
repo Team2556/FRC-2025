@@ -15,14 +15,11 @@ class DischargeCoralCommand(Command):
     ):
         # Declare subsystems and add requirements
         self.coralTrack = coralTrack
+        self.elevatorSubsystem = elevatorSubsystem # Not a requirement; just used for getting position
         self.addRequirements(self.coralTrack)
         
-        self.elevatorSubsystem = elevatorSubsystem # Not a requirement; just used for getting position
         
         self.direction = direction # Left is -1, Right is 1 
-        
-        self.left_solenoid_channel = CoralConstants.kLeftFlipper
-        self.right_solenoid_channel = CoralConstants.kRightFlipper
         
     def getDirection(self):
         """Get Direction of Discharge using April Tags/Odometry"""

@@ -36,7 +36,8 @@ from commands import (
     algaeCommands,
     coralCommands,
     elevatorCommands,
-    climbCommands
+    climbCommands,
+    pneumaticCommands
 )
 
 from constants import ElevatorConstants, AlgaeConstants, CoralConstants
@@ -103,7 +104,7 @@ class RobotContainer:
         self.ENABLE_ELEVATOR = True
         self.ENABLE_CORAL = True
         self.ENABLE_CLIMB = True
-        self.ENABLE_PNEUMATIC = False
+        self.ENABLE_PNEUMATIC = True
 
         # Command Scheduler is needed to run periodic() function on subsystems
         # self.scheduler = commands2.CommandScheduler()
@@ -318,9 +319,9 @@ class RobotContainer:
                 elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
             )
             IC = elevatorCommands.IncrementElevatorCommand
-            self._joystick2.povUp().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, ElevatorConstants.kElevatorIncrementalStep)))
+            # self._joystick2.povUp().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, ElevatorConstants.kElevatorIncrementalStep)))
             # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -1 * ElevatorConstants.kElevatorIncrementalStep)))
+            # self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -1 * ElevatorConstants.kElevatorIncrementalStep)))
 
             SC = elevatorCommands.SetElevatorCommand
             self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
@@ -396,18 +397,8 @@ class RobotContainer:
             self._joystick.x().whileTrue(self.backwardCommand)
 
         if self.ENABLE_PNEUMATIC:
-            # Pneumatic commands
+            defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(self.pneumaticSubsystem)
+            testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
 
-            self.pneumaticSubsystem.setDefaultCommand(
-                commands2.ConditionalCommand(commands2.SequentialCommandGroup(
-                    commands2.WaitUntilCommand(lambda: self.elevatorSubsystem.get_position() > CoralConstants.kHighEnoughToActivateFlippers),
-                    commands2.WaitCommand(.015),
-                    pneumaticSubsystem.PneumaticDefaultCommand(self.pneumaticSubsystem)),
-                                             commands2.InstantCommand(),
-                                             lambda: (self.elevatorSubsystem.get_position() < CoralConstants.kHighEnoughToActivateFlippers) and not self.coralSubsystem.detect_coral()
-                                            )
-                                            )
-
-            self._joystick2.povUp().onTrue(
-                pneumaticSubsystem.PneumaticToggleCommand(self.pneumaticSubsystem, 0)
-            )
+            self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
+            self._joystick2.povUp().onTrue(testPneumaticCommand)
