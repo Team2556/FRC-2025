@@ -58,6 +58,7 @@ class HomeElevatorCommand(Command):
     
     def end(self, interrupted): 
         self.elevatorSubsystem.setElevatorSpeed(0)
+        self.elevatorSubsystem.setpoint = 0 # Make PID actually think it's 0
         
 class InstantSetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
@@ -99,5 +100,5 @@ class ContinuousIncrementCommand(Command):
     def execute(self):
         speed = self.function()
         if not speed == 0:
-            self.elevatorSubsystem.update_setpoint(self.speed, incremental=True)
+            self.elevatorSubsystem.update_setpoint(speed, incremental=True)
             self.elevatorSubsystem.moveElevator()

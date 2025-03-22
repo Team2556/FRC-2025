@@ -1360,6 +1360,175 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "25,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Commands Finished",
+              "_title": "Algae/Commands Finished",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "24,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Setpoint",
+              "_title": "Algae/Setpoint",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "26,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Left Sensor",
+              "_title": "Coral/Left Sensor",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "25,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Right Sensor",
+              "_title": "Coral/Right Sensor",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "27,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto Mode",
+              "_title": "Auto Mode",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "26,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Standered deviation multiplier",
+              "_title": "Standered deviation multiplier",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "27,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Factor",
+              "_title": "Factor",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "23,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Factor*multiplier",
+              "_title": "Factor*multiplier",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "24,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Left Sensor Value",
+              "_title": "Coral/Left Sensor Value",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "25,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Left Sensor Weight",
+              "_title": "Coral/Left Sensor Weight",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "26,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Left Sensor Offset",
+              "_title": "Coral/Left Sensor Offset",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "27,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Left Sensor Average Value",
+              "_title": "Coral/Left Sensor Average Value",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "24,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Command State",
+              "_title": "Coral/Command State",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1651,6 +1820,32 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "10,0": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Commands Finished",
+              "_title": "Commands Finished",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Setpoint",
+              "_title": "Setpoint",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1914,6 +2109,111 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Elevator/Coral L3",
               "_title": "Coral L3",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Position_calced",
+              "_title": "Position_calced",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/SetpointError_calced",
+              "_title": "SetpointError_calced",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Coral",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "SmartDashboard/Coral/",
+      "widgetPane": {
+        "gridSize": 64.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "9,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Right Sensor",
+              "_title": "Right Sensor",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Left Sensor",
+              "_title": "Left Sensor",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Left Sensor Value",
+              "_title": "Left Sensor Value",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Left Sensor Weight",
+              "_title": "Left Sensor Weight",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Coral/Command State",
+              "_title": "Command State",
               "_glyph": 148,
               "_showGlyph": false
             }
