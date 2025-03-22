@@ -30,7 +30,6 @@ from subsystems import (
     elevatorSubsystem,
     climbSubsystem,
     pneumaticSubsystem,
-    ultrasonicSubsystem,
 )
 
 from commands import (
@@ -121,7 +120,6 @@ class RobotContainer:
 
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
-            self.ultrasonisSubsystem = ultrasonicSubsystem.UltrasonicSubsystem()
 
         if self.ENABLE_CLIMB:
             self.climbSubsystem = climbSubsystem.ClimbSubsystem()

@@ -364,13 +364,6 @@ class PneumaticConstants:
 class PowerDistributionConstants:
     kPDP = CAN_Address.FIFTY
 
-class UltrasonicConstants:
-    kLeftSensorID = Rio_DIO.TWO
-    kRightSensorID = Rio_DIO.THREE
-    
-    kTargetDistance = 0.4
-
-
 class LimelightConstants:
     # for field map replacr src with /home/lvuser/py/
     '''if Path('/').resolve() == Path('/'):  # Check if root is actually root (Linux/RoboRIO)
