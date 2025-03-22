@@ -103,7 +103,7 @@ class RobotContainer:
         self.drivetrain = TunerConstants.create_drivetrain()
 
         # Path follower
-        self._auto_chooser = AutoBuilder.buildAutoChooser("Tests")
+        self._auto_chooser = AutoBuilder.buildAutoChooser("Odo_test_long")
         SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
         self.vision = VisionSubsystem(self.drivetrain, "limelight-four")
