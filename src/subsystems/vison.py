@@ -34,6 +34,8 @@ class VisionSubsystem(Subsystem):
             raise TypeError(f"All cameras must be strings! Given: {self._cameras}")
 
         self._executor = concurrent.futures.ThreadPoolExecutor()
+        SmartDashboard.putNumber("Standered deviation multiplier", 0.01)
+
 
     def periodic(self):
         super().periodic()
@@ -80,8 +82,12 @@ class VisionSubsystem(Subsystem):
 
         avg_dist = sum(f.dist_to_camera for f in estimate.raw_fiducials) / estimate.tag_count
         factor = 1 + (avg_dist ** 2 / 30)
+        SmartDashboard.putNumber("Factor", factor)
+        multiplier = SmartDashboard.getNumber("Standered deviation multiplier", 0.01)
+        SmartDashboard.putNumber("Factor*multiplier", factor*multiplier)
+        #return(0.009, 0.009, math.inf)
 
-        return 0.5 * factor, 0.5 * factor, math.inf if estimate.is_megatag_2 else (0.5 * factor)
+        return multiplier * factor, multiplier * factor, math.inf if estimate.is_megatag_2 else (multiplier * factor)
 
     def get_fiducial_with_id(self, target_id: int):
         tags = LimelightHelpers.get_raw_fiducials(self._cameras[0])

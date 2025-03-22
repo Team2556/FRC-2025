@@ -3,6 +3,7 @@
 # Open Source Software; you can modify and/or share it under the terms of
 # the WPILib BSD license file in the root directory of this project.
 #
+import math
 
 # NOTE: Please use the following naming conventions:
 # Subsystems are: name + "Subsystem"
@@ -21,7 +22,9 @@ import wpilib
 from commands2.sysid import SysIdRoutine
 
 from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
-from pathplannerlib.path import PathPlannerPath, PathConstraints
+from pathplannerlib.path import PathPlannerPath, PathConstraints, GoalEndState
+from phoenix6.swerve import Pose2d
+from wpilib import SmartDashboard
 
 from subsystems.vison import VisionSubsystem
 from commands.auto_align import AutoAlign
@@ -96,9 +99,12 @@ class RobotContainer:
 
         self.drivetrain = TunerConstants.create_drivetrain()
 
+        # Path follower
+        self._auto_chooser = AutoBuilder.buildAutoChooser("Tests")
+        SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
         self.vision = VisionSubsystem(self.drivetrain, "limelight-four")
-        self.auto_align = AutoAlign(self.drivetrain, self.vision)
+        #self.auto_align = AutoAlign(self.drivetrain, self.vision)
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
 
         self.ENABLE_ALGAE = True
@@ -125,11 +131,9 @@ class RobotContainer:
         # Configure the button bindings
         self.configureButtonBindings()
 
+
     def getAutonomousCommand(self):
-        # Load the path you want to follow using its name in the GUI
-        path = PathPlannerPath.fromPathFile("moveForeward")
-        # Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path)
+        return self._auto_chooser.getSelected()
 
     def configureButtonBindings(self) -> None:
         """
@@ -162,46 +166,32 @@ class RobotContainer:
         )
 
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
-        self._joystick.b().whileTrue(
-            self.drivetrain.apply_request(
-                lambda: self._point.with_module_direction(
-                    Rotation2d(-self._joystick.getLeftY(), -self._joystick.getLeftX())
-                )
-            )
-        )
-        self._joystick.x().whileTrue(self.auto_align)
-
-
-
-        robotCentricSpeedMultiplier = 0.2
-
-        # self._joystick.rightBumper().whileTrue(
+        # self._joystick.b().whileTrue(
         #     self.drivetrain.apply_request(
-        #         lambda: (
-        #             self._robot_centric_drive.with_velocity_x(
-        #                 ((-1 * adjust_jostick(self._joystick.getLeftY())))
-        #                 * self._max_speed
-        #                 * robotCentricSpeedMultiplier
-        #             )  # Drive forward with negative Y (forward)
-        #             .with_velocity_y(
-        #                 ((-1 * adjust_jostick(self._joystick.getLeftX())))
-        #                 * self._max_speed
-        #                 * robotCentricSpeedMultiplier
-        #             )  # Drive left with negative X (left)
-        #             .with_rotational_rate(
-        #                 ((-1 * adjust_jostick(self._joystick.getRightX())))
-        #                 * self._max_angular_rate
-        #                 * robotCentricSpeedMultiplier
-        #             )  # Drive counterclockwise with negative X (left)
+        #         lambda: self._point.with_module_direction(
+        #             Rotation2d(-self._joystick.getLeftY(), -self._joystick.getLeftX())
         #         )
         #     )
         # )
 
-        self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
-        self._joystick.b().whileTrue(
+        self._joystick.b().onTrue(self.drivetrain.runOnce(lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0))))
+        #self._joystick.x().whileTrue(self.auto_align)
+
+        self._joystick.rightBumper().whileTrue(
             self.drivetrain.apply_request(
-                lambda: self._point.with_module_direction(
-                    Rotation2d(-self._joystick.getLeftY(), -self._joystick.getLeftX())
+                lambda: (
+                    self._robot_centric_drive.with_velocity_x(
+                        (-1 * adjust_jostick(self._joystick.getLeftY()))
+                        * self._max_speed
+                    )  # Drive forward with negative Y (forward)
+                    .with_velocity_y(
+                        (-1 * adjust_jostick(self._joystick.getLeftX()))
+                        * self._max_speed
+                    )  # Drive left with negative X (left)
+                    .with_rotational_rate(
+                        (-1 * adjust_jostick(self._joystick.getRightX()))
+                        * self._max_angular_rate
+                    )  # Drive counterclockwise with negative X (left)
                 )
             )
         )
@@ -298,6 +288,41 @@ class RobotContainer:
             # Ground intake
             # Reef intake
             # Process
+
+        reefWaypoints = PathPlannerPath.waypointsFromPoses([
+            Pose2d(2, 2.0, Rotation2d.fromDegrees(90)),
+            Pose2d(2, 6.0, Rotation2d.fromDegrees(90))
+        ])
+        """
+            Kinematic path following constraints
+
+            Args:
+                maxVelocityMps (float): Max linear velocity (M/S)
+                maxAccelerationMpsSq (float): Max linear acceleration (M/S^2)
+                maxAngularVelocityRps (float): Max angular velocity (Rad/S)
+                maxAngularAccelerationRpsSq (float): Max angular acceleration (Rad/S^2)
+                nominalVoltage (float): Nominal battery voltage (Volts)
+                unlimited (bool): Should the constraints be unlimited
+            """
+        reefConstraints = PathConstraints(1.0, 1.0, (2 * math.pi) / 2,
+                                          (4 * math.pi) / 2)  # The constraints for this path.
+        # constraints = PathConstraints.unlimitedConstraints(12.0) # You can also use unlimited constraints, only limited by motor torque and nominal battery voltage
+        # Create the path using the waypoints created above
+        testPath = PathPlannerPath(
+            reefWaypoints,
+            reefConstraints,
+            None,
+            # The ideal starting state, this is only relevant for pre-planned paths, so can be None for on-the-fly paths.
+            GoalEndState(0.0, Rotation2d.fromDegrees(90))
+            # Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+        )
+
+        # Prevent the path from being flipped if the coordina6es are already correct
+        testPath.preventFlipping = False
+
+        self._joystick.y().onTrue(AutoBuilder.pathfindThenFollowPath(
+            testPath,reefConstraints
+        ))
 
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands

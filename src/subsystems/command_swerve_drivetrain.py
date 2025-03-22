@@ -238,6 +238,8 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
         if utils.is_simulation():
             self._start_sim_thread()
 
+        self._configure_auto_builder()
+
     def apply_request(
         self, request: Callable[[], swerve.requests.SwerveRequest]
     ) -> Command:
@@ -307,7 +309,6 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
 
     def _configure_auto_builder(self):
         config = RobotConfig.fromGUISettings()
-    
         AutoBuilder.configure(
             lambda: self.get_state().pose,   # Supplier of current robot pose
             self.reset_pose,                 # Consumer for seeding pose against auto
@@ -321,14 +322,13 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
             ),
             PPHolonomicDriveController(
                 # PID constants for translation
-                PIDConstants(1.0, 0.0, 0.0),
+                PIDConstants(5.0, 0.0, 0.0),
                 # PID constants for rotation
-                PIDConstants(.004, 0.0, 0.0)
+                PIDConstants(3.5, 0.0, 0.0)
             ),
             config,
             # Assume the path needs to be flipped for Red vs Blue, this is normally the case
-            #  don't know what the 'or' is for ... lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed,
-            lambda: DriverStation.getAlliance()  == DriverStation.Alliance.kRed, #has no effect in sim as it is init happens before color selection
+            lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed,
             self # Subsystem for requirements
         )
         

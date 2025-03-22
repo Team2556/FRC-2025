@@ -59,7 +59,6 @@ class AutoAlign(Command):
 
         self.rotational_rate = self.rotational_pid.calculate(2 * -1 * fiducial.txyc, 0.0) * 0.675
         self.velocity_y = self.y_pid.calculate(fiducial.dist_to_robot, 0.65) * -1 * 0.7 # Scaled speed factor
-        self.velocity_x = self.x_pid.calculate(fiducial.dist_to_robot, 0.65) * -1 * 0.7  # Scaled
 
         if self.rotational_pid.atSetpoint() and self.y_pid.atSetpoint():
             self.end(True)
@@ -71,7 +70,7 @@ class AutoAlign(Command):
         )
 
         SmartDashboard.putNumber("txyc", fiducial.txyc)
-        print(fiducial.dist_to_robot)
+        #print(fiducial.dist_to_robot)
         SmartDashboard.putNumber("rotationalPidController", self.rotational_rate)
         SmartDashboard.putNumber("xPidController", self.velocity_x)
 
@@ -82,7 +81,7 @@ class AutoAlign(Command):
 
 
     def isFinished(self):
-        return self.rotational_pid.atSetpoint() and self.x_pid.atSetpoint()
+        return self.rotational_pid.atSetpoint() and self.y_pid.atSetpoint()
 
 
     def end(self, interrupted: bool):
