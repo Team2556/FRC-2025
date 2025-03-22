@@ -1,6 +1,6 @@
 '''Has a command for changing the position of the pivot motor and the speed of the intake motor'''
 
-from wpilib import Timer
+from wpilib import Timer, SmartDashboard
 from commands2 import Command, InterruptionBehavior
 from subsystems import algaeSubsystem
 from constants import AlgaeConstants
@@ -14,20 +14,27 @@ class AlgaeCommand(Command):
         
         self.position = position
         self.intakeSpeed = intakeSpeed
+        
+        self.updateCommandsFinished(0)
     
     def initialize(self):
         self.algaeSubsystem.spinIntakeMotor(self.intakeSpeed)
         self.algaeSubsystem.updatePivotSetpoint(self.position)
         self.algaeSubsystem.changePivotPosition()
         
+    def updateCommandsFinished(self, increment):
+        SmartDashboard.putNumber(
+            "Algae/Commands Finished", 
+            SmartDashboard.getNumber("Algae/Commands Finished", 0) + increment
+        )
+        
     def isFinished(self):
         value = self.algaeSubsystem.getPivotPosition()
         return (value <= self.position + AlgaeConstants.kTargetValueAdder + AlgaeConstants.kTargetValueAccuracy
             and value >= self.position + AlgaeConstants.kTargetValueAdder - AlgaeConstants.kTargetValueAccuracy)
         
-    def end(self): 
-        print("Algae Command Finished!") # NOTE ITS TEMPORARY
-        pass
+    def end(self, interrupted): 
+        self.updateCommandsFinished(1)
 
 class AlgaeIntakeCommand(Command):
     '''Super simple command that sets intake motors and that's it'''
@@ -73,9 +80,10 @@ class AlgaeHomeCommand(Command):
     def isFinished(self): 
         return self.algaeSubsystem.getBottomLimitSwitchActive()
     
-    def end(self):
-        self.algaeSubsystem.spinPivotMotor(0)
-        self.algaeSubsystem.pivotMotor.set_position(0)
+    def end(self, interrupted):
+        if not interrupted:
+            self.algaeSubsystem.spinPivotMotor(0)
+            self.algaeSubsystem.pivotMotor.set_position(0)
 
 class AlgaeLiftArmCommand(Command):
     def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):

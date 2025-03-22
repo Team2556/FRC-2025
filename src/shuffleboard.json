@@ -1360,6 +1360,32 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "25,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Commands Finished",
+              "_title": "Algae/Commands Finished",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "24,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Setpoint",
+              "_title": "Algae/Setpoint",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1648,6 +1674,32 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Algae/Processing Delay",
               "_title": "Processing Delay",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "10,0": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Commands Finished",
+              "_title": "Commands Finished",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Setpoint",
+              "_title": "Setpoint",
               "_glyph": 148,
               "_showGlyph": false
             }

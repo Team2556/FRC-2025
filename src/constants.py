@@ -266,10 +266,10 @@ class AlgaeConstants:
     kPeakReverseTorqueCurrent = -20
     
     # All the following stuff are tunable in SmartDashboard
-    kPivotp = 2
+    kPivotp = 1.3
     kPivoti = 0
     kPivotd = 0
-    kPivotg = 0
+    kPivotg = 0.3
     
     # If the motor is stalled then it's trying to intake an algae more than it can
     # So this detects if it shouldn't spin anymore
@@ -283,9 +283,9 @@ class AlgaeConstants:
     kPivotMinHeight = 0
     
     # Values to set pivoting motor to
-    kPivotReefIntakingValue = 2.5 # Pivot position when grabbing algae
+    kPivotReefIntakingValue = 2.75 # Pivot position when grabbing algae
     kPivotGroundIntakingValue = 2 # Pivot position when grabbing algae from the FLOOR (not being used)
-    kPivotAfterGroundIntakingValue = 1.85
+    kPivotAfterGroundIntakingValue = 1.7
     kPivotProcessingValue = 2 # Pivot position when about to send to processor
     
     # The time it takes to switch between pivoting positions

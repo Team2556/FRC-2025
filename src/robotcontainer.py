@@ -262,21 +262,24 @@ class RobotContainer:
             # ALGAE AFTER GROUND INTAKE COMMAND
             algaeAfterGroundIntakeCommand = algaeCommands.AlgaeCommand(
                 self.algaeSubsystem,
-                AlgaeConstants.kPivotGroundIntakingValue,
+                AlgaeConstants.kPivotAfterGroundIntakingValue,
                 0 * AlgaeConstants.kIntakeMultiplier,
             )
 
             algaeHomeCommand = algaeCommands.AlgaeHomeCommand(self.algaeSubsystem)
 
-            self._joystick.povUp().onTrue(algaeReefIntakeCommand)
+            self._joystick.y().onTrue(algaeReefIntakeCommand)
             self._joystick.rightTrigger().onTrue(algaeGroundIntakeCommand)
             self._joystick.leftTrigger().onTrue(algaeProcessCommand)
             self._joystick.leftStick().onTrue(algaeHomeCommand)
+            
+            # For testing so I don't have to hit the joystick perfectly
+            self._joystick.povDown().onTrue(algaeHomeCommand)
 
-            self._joystick.povUp().onFalse(algaeHomeCommand) # algaeAfterGroundIntakeCommand)
+            self._joystick.y().onFalse(algaeHomeCommand) # algaeAfterGroundIntakeCommand)
             self._joystick.rightTrigger().onFalse(algaeAfterGroundIntakeCommand)
             self._joystick.leftTrigger().onFalse(algaeHomeCommand)
-            # self._joystick.povDown().onFalse()
+            # self._joystick.leftStick().onFalse()
 
             # WE NEED
             # Ground intake
@@ -352,12 +355,12 @@ class RobotContainer:
             # self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -1 * ElevatorConstants.kElevatorIncrementalStep)))
 
             def doDeadband(num):
-                return 0 if num <= 0.08 and num >= -0.08 else num
+                return 0 if num <= 0.1 and num >= -0.1 else num
             
             def getElevatorIncrement():
                 speed = (
-                    (0.3 * (self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis())
-                    + 0.1 * (-1 * doDeadband(self._joystick2.getLeftY()))
+                    (0.9 * (self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis())
+                    + 0.3 * (-1 * doDeadband(self._joystick2.getLeftY()))
                     # - 0.05 * (self._joystick2.getRightY())
                     ) * ElevatorConstants.kElevatorIncrementalStep
                 )
@@ -391,5 +394,5 @@ class RobotContainer:
             # Button detections:
             # TODO: consider auto trigger when latched on (with debounce of course)
             # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
-            self._joystick.y().whileTrue(self.forwardCommand)
-            self._joystick.x().whileTrue(self.backwardCommand)
+            self._joystick.povLeft().whileTrue(self.forwardCommand)
+            self._joystick.povRight().whileTrue(self.backwardCommand)

@@ -175,6 +175,7 @@ class AlgaeSubsystem(Subsystem):
         SmartDashboard.putString("Algae/Intake Speed", self.intakeMotor.get().__str__())
         SmartDashboard.putBoolean("Algae/Bottom Limit Switch", self.getBottomLimitSwitchActive())
         SmartDashboard.putBoolean("Algae/Top Limit Switch", self.getTopLimitSwitchActive())
+        SmartDashboard.putNumber("Algae/Setpoint", self.setpoint)
         
         # Tuning values
         self.updatePIDvalues(
