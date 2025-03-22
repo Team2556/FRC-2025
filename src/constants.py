@@ -200,63 +200,56 @@ class Override_DriveConstant: ...
 class ElevatorConstants:
     kLeftMotorPort = CAN_Address.THIRTEEN
     kRightMotorPort = CAN_Address.FOURTEEN
-    kJoystickPort = 0
+
+    kElevatorSensorToMech = (1 / 6) * 1.4397 * math.pi
+    
     kpeak_forward_torque_current = 35  # 120
     kpeak_reverse_torque_current = -35  # -120
-    kincrement_m_per_sec_held = 0.25
+    # kincrement_m_per_sec_held = 0.25
     
-    # All the speed stuff
-    kHomingRate = 1 / 10  # 1 meter every 10 seconds
-    kElevatorSpeed = 1 / 10 # 1 meter every 10 seconds
-
-    kElevatorKp = 5.0
+    # THIS ONE has a max apeed of 1, so 0.10 is 10% of elevator's max speed
+    kHomingRate = 0.10
+    # All the speed stuff (in rotations per second)
+    kElevatorSpeed = 2.5 # 10
+    
+    kElevatorKp = 0.6
     kElevatorKi = 0.0
     kElevatorKd = 0.0
-    kElevatorGearing = 6  # 10.0
-    kElevatorDrumRadius = 0.035 / 2  # half of 35mm in meters
-    kCarriageMass = 22.68  # 4 kg
-
-    kMinElevatorHeight = 0.00 #0.0508  # 2 inches
-    kMaxElevatorHeight = inchesToMeters(26)  # 50 inches TODO: make this smaller
-    # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.00002 sorry Jack
+    kElevatorKg = 0.4
     
-    ScaredSafetyFactor = 5 # Set ScaredSafetyFactor to 1 once we get SUPER confident
-    # All the elevator levels to do stuff
-    kCoralIntakePosition = -0.05 #/ ScaredSafetyFactor
-    # kCoralLv1 = 0.1 / ScaredSafetyFactor # Height in meters
-    kCoralLv2 = 0.1 #/ ScaredSafetyFactor # 556
-    kCoralLv3 = 0.2 #/ ScaredSafetyFactor
-    kCoralLv4 = 0.25 #/ ScaredSafetyFactor # All the elevator levels below aren't tuned
-    kAlgaeProcess = 0.15 #/ ScaredSafetyFactor
-    kAlgaeGroundIntake = 0.21 #/ ScaredSafetyFactor
-    kAlgaeLv2 = 0.2 #/ ScaredSafetyFactor
-    kAlgaeLv3 = 0.4 #/ ScaredSafetyFactor
-    kZero = 0
+    safetyFactor = 0.5
 
-    # The command decides the position's close enough if it's within this range (in meters?)
-    kTargetValueAccuracy = 0.02
+    kMinElevatorHeight = 0
+    kMaxElevatorHeight = 39.5 - safetyFactor # 35
+    # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
+    
+    # So the robot doesn't slam into the ground
+    kLowEnoughToSlowDown = 6
+    kLowEnoughSpeedMultiplier = 0.3
+    
+    kCoralLv3 = 16 # 11.2
+    kAlgaeLv3 = 23
+    kCoralLv4 = 37 # 25.5 # All the elevator levels below aren't tuned
+    kCoralLv4_JumpScore = 39.49 - safetyFactor
+
+    kElevatorIncrementalStep = .071
+    # The command decides the position's close enough if it's within this range (in rotations of a sort)
+    # This doesn't delete the setpoint, it just declared the command's finished
+    kTargetValueAccuracy = 1
     kTargetValueAdder = 0 # If it setpoints to a value a bit more or less than you want to to
 
-    kMaxVelocityMetersPerSecond = 1.5/ScaredSafetyFactor
-    kMaxAccelerationMetersPerSecSquared = 0.5/ScaredSafetyFactor
-
-    kSVolts = 0
-    kGVolts = 0.01
-
-    kVVoltSecondPerMeter = 0 #1.5
-    kAVoltSecondSquaredPerMeter = 0 #0.75
+    kVVoltSecondPerMeter = 0 # 1.5
+    kAVoltSecondSquaredPerMeter = 0 # 0.75
 
     kElevatorOffsetMeters = 0 #Used in softlimit minimum
 
     kBottomLeftLimitSwitchChannel = Rio_DIO.EIGHT
     kBottomRightLimitSwitchChannel = Rio_DIO.NINE
-    # kTopLeftLimitSwitchChannel = Rio_DIO.TWO
-    kTopRightLimitSwitchChannel = Rio_DIO.SEVEN  # TODO: ? two on top also?
-
+    
+    kTopLimitSwitchChannel = Rio_DIO.SEVEN  # TODO: ? two on top also?
 
 # endregion
 class Override_DriveConstant: ...
-
 
 class AlgaeConstants:
     # Motor Channels
@@ -283,17 +276,17 @@ class AlgaeConstants:
     kAmpValueToDetectIfMotorStalled = 90
     
     # The command decides the position's close enough if it's within this range (in rotations)
-    kTargetValueAccuracy = 0.01
+    kTargetValueAccuracy = 0.1
+    kTargetValueAdder = 0 # If it setpoints to a value a bit more or less than you want to to
     
     kPivotMaxHeight = 0.25
     kPivotMinHeight = 0
     
     # Values to set pivoting motor to
-    kPivotReefIntakingValue = 2.1 # Pivot position when grabbing algae
-    kPivotGroundIntakingValue = 1.3 # Pivot position when grabbing algae from the FLOOR (not being used)
-    kPivotAfterGroundIntakingValue = 1
+    kPivotReefIntakingValue = 2.5 # Pivot position when grabbing algae
+    kPivotGroundIntakingValue = 2 # Pivot position when grabbing algae from the FLOOR (not being used)
+    kPivotAfterGroundIntakingValue = 1.85
     kPivotProcessingValue = 1.2 # Pivot position when about to send to processor
-    kPivotIdleValue = 0.05 # Pivot position when idle
     # The time it takes to switch between pivoting positions
     kPivotRotationsPerSecond = 2
     
@@ -325,32 +318,18 @@ class CoralConstants:
 
 class ClimbConstants:
     kClimbMotorPort = CAN_Address.TWENTYSEVEN
-    kTopLimitSwitchChannel = Rio_DIO.FIVE
-    kBottomLimitSwitchChannel = Rio_DIO.SIX
-    kClimbHookZeroEntry = 1
-    kSpeed = 1.0
-    kMaxAccelerationMetersPerSecondSquared = 0.5
-    #kPClimbController = 1
-    #kIClimbController = 0
-    #kDClimbController = 0
-    kClimbMaxHeight = 1.6081375
-    kClimbMinHeight = 0.815975
-    # kClimbSlightlyExtendedHeight = 0.9
-    # kClimbMinHeightEncoderEstimate = -3583.037109375
-    kS = 0
-    kV = 0
-    kA = 0
-    kClimbMaxPosConfirmationExtraHeight = 0.1
-    GEAR_RATIO = 15376/45
-    kPositionConversionFactor = 0.1965
-    GAINS = (Slot0Configs()
-                .with_k_p(1.0)
-                .with_k_i(0.0)
-                .with_k_d(0.0)
-                .with_k_s(0.0)
-                .with_k_v(0.0)
-                .with_k_a(0.0)
-            )
+
+    kCaptureCageSwitchChannel = Rio_DIO.TWO
+
+    kSpeedForwardIn = 0.30
+    kSpeedForwardIn_gripped = 0.99
+    kSpeedBackOut = -0.20
+    
+
+    # PID stuff for coral:
+    kMotorKp = 1
+    kMotorKi = 0
+    kMotorKd = 0
 
 class PneumaticConstants:
     kHub = CAN_Address.FORTY

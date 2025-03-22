@@ -1002,6 +1002,364 @@
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
+          },
+          "18,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Kp",
+              "_title": "Elevator/Kp",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "18,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Ki",
+              "_title": "Elevator/Ki",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "18,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Kd",
+              "_title": "Elevator/Kd",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "18,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Kg",
+              "_title": "Elevator/Kg",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Position",
+              "_title": "Elevator/Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/SetpointError",
+              "_title": "Elevator/SetpointError",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "19,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Velocity",
+              "_title": "Elevator/Velocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Coral L3",
+              "_title": "Elevator/Coral L3",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "19,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Coral L4",
+              "_title": "Elevator/Coral L4",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "21,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Target Value Adder",
+              "_title": "Algae/Target Value Adder",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Target Value Accuracy",
+              "_title": "Elevator/Target Value Accuracy",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "21,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Target Value Adder",
+              "_title": "Elevator/Target Value Adder",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "19,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Homing Speed",
+              "_title": "Elevator/Homing Speed",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Height To Slow Down",
+              "_title": "Elevator/Height To Slow Down",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "21,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Slow Down Multiplier",
+              "_title": "Elevator/Slow Down Multiplier",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight_Interface",
+              "_title": "limelight_Interface",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight_Stream",
+              "_title": "limelight_Stream",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight_PipelineName",
+              "_title": "limelight_PipelineName",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "19,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight-four_Interface",
+              "_title": "limelight-four_Interface",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight-four_Stream",
+              "_title": "limelight-four_Stream",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "21,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/limelight-four_PipelineName",
+              "_title": "limelight-four_PipelineName",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "23,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Commands Finished",
+              "_title": "Elevator/Commands Finished",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,3": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Elevator/Top Limit Switch",
+              "_title": "Elevator/Top Limit Switch",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "8,4": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Elevator/Bottom Limit Switch",
+              "_title": "Elevator/Bottom Limit Switch",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "23,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Tag being tracked",
+              "_title": "Tag being tracked",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "10,4": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Field",
+              "_title": "Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "k2024Crescendo",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false
+            }
+          },
+          "24,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Number of Tags",
+              "_title": "Number of Tags",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1017,7 +1375,7 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "0,0": {
+          "1,1": {
             "size": [
               1,
               1
@@ -1030,7 +1388,7 @@
               "_showGlyph": false
             }
           },
-          "1,0": {
+          "2,1": {
             "size": [
               1,
               1
@@ -1043,7 +1401,7 @@
               "_showGlyph": false
             }
           },
-          "2,0": {
+          "3,1": {
             "size": [
               1,
               1
@@ -1056,7 +1414,7 @@
               "_showGlyph": false
             }
           },
-          "3,0": {
+          "4,1": {
             "size": [
               1,
               1
@@ -1069,20 +1427,7 @@
               "_showGlyph": false
             }
           },
-          "6,0": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Algae/Amp Value to Detect if Stalled",
-              "_title": "Amp Value to Detect if Stalled",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "9,0": {
+          "2,3": {
             "size": [
               3,
               1
@@ -1091,32 +1436,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Algae/Target Value Accuracy",
               "_title": "Target Value Accuracy",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "6,3": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Algae/Pivot Max Height",
-              "_title": "Pivot Max Height",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "2,2": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Algae/Pivot Min Height",
-              "_title": "Pivot Min Height",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1147,7 +1466,7 @@
               "_showGlyph": false
             }
           },
-          "9,1": {
+          "6,3": {
             "size": [
               3,
               1
@@ -1160,20 +1479,7 @@
               "_showGlyph": false
             }
           },
-          "9,2": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Algae/Pivot Idle Value",
-              "_title": "Pivot Idle Value",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "9,3": {
+          "10,3": {
             "size": [
               3,
               1
@@ -1186,7 +1492,7 @@
               "_showGlyph": false
             }
           },
-          "9,4": {
+          "10,4": {
             "size": [
               3,
               1
@@ -1199,33 +1505,7 @@
               "_showGlyph": false
             }
           },
-          "6,4": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Algae/Intaking Delay",
-              "_title": "Intaking Delay",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "6,5": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Algae/Processing Delay",
-              "_title": "Processing Delay",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "9,5": {
+          "10,1": {
             "size": [
               3,
               1
@@ -1238,20 +1518,7 @@
               "_showGlyph": false
             }
           },
-          "0,1": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Algae/Intake Speed",
-              "_title": "Intake Speed",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "13,3": {
+          "14,3": {
             "size": [
               2,
               1
@@ -1266,7 +1533,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "13,2": {
+          "14,2": {
             "size": [
               2,
               1
@@ -1280,15 +1547,385 @@
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
+          },
+          "2,4": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Target Value Adder",
+              "_title": "Target Value Adder",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,4": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Intake Speed",
+              "_title": "Intake Speed",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Amp Value to Detect if Stalled",
+              "_title": "Amp Value to Detect if Stalled",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Pivot Max Height",
+              "_title": "Pivot Max Height",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Pivot Min Height",
+              "_title": "Pivot Min Height",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Pivot Idle Value",
+              "_title": "Pivot Idle Value",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Intaking Delay",
+              "_title": "Intaking Delay",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Algae/Processing Delay",
+              "_title": "Processing Delay",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Elevator",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "SmartDashboard/Elevator/",
+      "widgetPane": {
+        "gridSize": 64.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "1,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Kp",
+              "_title": "Kp",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Ki",
+              "_title": "Ki",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Kd",
+              "_title": "Kd",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Kg",
+              "_title": "Kg",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Velocity",
+              "_title": "Velocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Coral L4",
+              "_title": "Coral L4",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Setpoint",
+              "_title": "Setpoint",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Position",
+              "_title": "Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/SetpointError",
+              "_title": "SetpointError",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "11,1": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Target Value Accuracy",
+              "_title": "Target Value Accuracy",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "11,2": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Target Value Adder",
+              "_title": "Target Value Adder",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "11,3": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Homing Speed",
+              "_title": "Homing Speed",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              4,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Height To Slow Down",
+              "_title": "Height To Slow Down",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,2": {
+            "size": [
+              4,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Slow Down Multiplier",
+              "_title": "Slow Down Multiplier",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Commands Finished",
+              "_title": "Commands Finished",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "14,1": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Elevator/Top Limit Switch",
+              "_title": "Top Limit Switch",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "14,3": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Elevator/Bottom Limit Switch",
+              "_title": "Bottom Limit Switch",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "4,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "doesnt work :(",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": []
+            }
+          },
+          "4,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Elevator/Coral L3",
+              "_title": "Coral L3",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
     }
   ],
   "windowGeometry": {
-    "x": 0.0,
-    "y": 0.0,
-    "width": 1366.0,
-    "height": 720.0
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1382.0,
+    "height": 736.0
   }
 }

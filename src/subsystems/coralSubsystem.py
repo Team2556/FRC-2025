@@ -6,7 +6,6 @@ from rev import SparkMaxConfig, SparkBase, SparkFlex
 
 from constants import CoralConstants
 
-
 class CoralTrack(Subsystem):
     def __init__(self):
         print("CoralTrack init ---/n---/n--/n")
