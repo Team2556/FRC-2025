@@ -230,9 +230,9 @@ class ElevatorConstants:
     kLowEnoughSpeedMultiplier = 0.25
     
     # All the speed stuff (in rotations per second)
-    kElevatorSpeed = 2.5 # 10
+    kElevatorSpeed = 1.5 # was too fast 2.5 # 10
     
-    kElevatorKp = 0.6
+    kElevatorKp = 0.4
     kElevatorKi = 0.0
     kElevatorKd = 0.0
     kElevatorKg = 0.4
@@ -241,9 +241,9 @@ class ElevatorConstants:
     kMaxElevatorHeight = 38 # 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
-    kCoralLv3 = 16 # 11.2
+    kCoralLv3 = 12.25 #14.25 #was 16, why different # 11.2
     kAlgaeLv3 = 23
-    kCoralLv4 = 35.5 # 25.5 # All the elevator levels below aren't tuned
+    kCoralLv4 = 35.05 # 25.5 # All the elevator levels below aren't tuned
     kCoralLv4_JumpScore = 37
 
     # Goes up of down by this much every 50th of a second

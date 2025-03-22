@@ -19,6 +19,7 @@ class CoralTrack(Subsystem):
 
         self.left_detector = DigitalInput(CoralConstants.kLeftBreakerLight)
         self.right_detector = DigitalInput(CoralConstants.kRightBreakerLight)
+        self.coralFiring = False
 
     def set_motor(self, speed):
         """Sets Coral Track motor to a specific speed"""

@@ -290,7 +290,7 @@ class RobotContainer:
 
             algaeHomeCommand = algaeCommands.AlgaeHomeCommand(self.algaeSubsystem)
 
-            self._joystick.y().onTrue(algaeReefIntakeCommand)
+            # self._joystick.y().onTrue(algaeReefIntakeCommand)
             self._joystick.rightTrigger().onTrue(algaeGroundIntakeCommand)
             self._joystick.leftTrigger().onTrue(algaeProcessCommand)
             self._joystick.leftStick().onTrue(algaeHomeCommand)
@@ -298,7 +298,7 @@ class RobotContainer:
             # For testing so I don't have to hit the joystick perfectly
             self._joystick.povDown().onTrue(algaeHomeCommand)
 
-            self._joystick.y().onFalse(algaeHomeCommand) # algaeAfterGroundIntakeCommand)
+            # self._joystick.y().onFalse(algaeHomeCommand) # algaeAfterGroundIntakeCommand)
             self._joystick.rightTrigger().onFalse(algaeAfterGroundIntakeCommand)
             self._joystick.leftTrigger().onFalse(algaeHomeCommand)
             # self._joystick.leftStick().onFalse()
@@ -432,12 +432,12 @@ class RobotContainer:
             self._joystick.x().whileTrue(self.backwardCommand)
 
         if self.ENABLE_PNEUMATIC:
-            defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(
-                self.pneumaticSubsystem,
-                self.elevatorSubsystem,
-                self.coralSubsystem,
-            )
+            # defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(
+            #     self.pneumaticSubsystem,
+            #     self.elevatorSubsystem,
+            #     self.coralSubsystem,
+            # )
             testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
 
-            self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
+            # self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
             self._joystick2.povUp().onTrue(testPneumaticCommand)

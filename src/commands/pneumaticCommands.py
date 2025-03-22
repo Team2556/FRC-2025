@@ -45,7 +45,9 @@ class DefaultPneumaticCommand(Command):
         self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kRightRetractSolenoid)
         
     def execute(self):
-        if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 1 and not self.coralSubsystem.detect_coral()):
+        if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 1 and
+            self.coralSubsystem.coralFiring and
+             not self.coralSubsystem.detect_coral()):
             self.timer.start()
             if self.timer.get() >= PneumaticConstants.kScoreDelay:
                 self.activatePneumatics()

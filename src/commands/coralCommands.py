@@ -17,7 +17,10 @@ class DischargeCoralCommand(Command):
         self.elevatorSubsystem = elevatorSubsystem # Not a requirement; just used for getting position
         self.addRequirements(self.coralTrack)
         
+        
         self.direction = direction # Left is -1, Right is 1 
+    def initialize(self):
+        self.coralFiring = True
         
     def execute(self):
         # Constantly set the motor speed so default command doesn't run (which does work indeed)
@@ -31,6 +34,8 @@ class DischargeCoralCommand(Command):
         return self.direction # Right now just manually find the direction
         
     # def isFinished(self): return True
+    def end(self, interrupted):
+        self.coralFiring = False
 
 class CoralDefaultCommand(Command):
     '''The default command for coral... it does all the centering'''
@@ -38,9 +43,11 @@ class CoralDefaultCommand(Command):
         # Declare subsystems and add requirements
         self.coralSubsystem = coralSubsystem
         self.addRequirements(self.coralSubsystem)
+
         
     def execute(self):
         # Look guys it's Aidan's original code v5
+        
         is_Left = self.coralSubsystem.left_detector.get()
         is_Right = self.coralSubsystem.right_detector.get()
 
