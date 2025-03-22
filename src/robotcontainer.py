@@ -28,7 +28,8 @@ from subsystems import (
     algaeSubsystem,
     coralSubsystem,
     elevatorSubsystem,
-    climbSubsystem
+    climbSubsystem,
+    ultrasonicSubsystem,
 )
 
 from commands import (
@@ -117,8 +118,7 @@ class RobotContainer:
 
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
-            # self.scheduler.registerSubsystem(self.coralSubsystem)
-            # self.scheduler.schedule()
+            self.ultrasonisSubsystem = ultrasonicSubsystem.UltrasonicSubsystem()
 
         if self.ENABLE_CLIMB:
             self.climbSubsystem = climbSubsystem.ClimbSubsystem()
@@ -139,6 +139,22 @@ class RobotContainer:
         instantiating a :GenericHID or one of its subclasses (Joystick or XboxController),
         and then passing it to a JoystickButton.
         """
+        
+        # Slow Down on right bumper stuff
+        self.slowSpeedMultiplier = 1
+        self.slowRotationMultiplier = 1
+        
+        def changeSlowMultipliers(speed = 1, rotation = 1): 
+            self.slowSpeedMultiplier = speed
+            self.slowRotationMultiplier = rotation
+
+        self._joystick.rightBumper().onTrue(
+            commands2.cmd.runOnce(changeSlowMultipliers(0.2, 0.35))
+        )
+
+        self._joystick.rightBumper().onFalse(
+            commands2.cmd.runOnce(changeSlowMultipliers(1, 1))
+        )
 
         # Note that X is defined as forward according to WPILib convention,
         # and Y is defined as to the left according to WPILib convention.
@@ -149,20 +165,21 @@ class RobotContainer:
                     self._drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
                         -adjust_jostick(self._joystick.getLeftY(), smooth=True)
-                        * self._max_speed
+                        * self._max_speed * self.slowSpeedMultiplier
                     )  # Drive forward with negative Y (forward)
                     .with_velocity_y(
                         adjust_jostick(-self._joystick.getLeftX(), smooth=True)
-                        * self._max_speed
+                        * self._max_speed * self.slowSpeedMultiplier
                     )  # Drive left with negative X (left)
                     .with_rotational_rate(
                         adjust_jostick(-self._joystick.getRightX(), smooth=True)
-                        * self._max_angular_rate
+                        * self._max_angular_rate * self.slowRotationMultiplier
                     )  # Drive counterclockwise with negative X (left)
                 )
             )
         )
 
+        # We don't need this I think
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
         self._joystick.b().whileTrue(
             self.drivetrain.apply_request(
@@ -293,13 +310,13 @@ class RobotContainer:
 
             dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
-                self.elevatorSubsystem,
+                # self.elevatorSubsystem,
                 direction = -1,  # Left is -1, Right is 1
             )
 
             dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
-                self.elevatorSubsystem,
+                # self.elevatorSubsystem,
                 direction = 1,  # Left is -1, Right is 1
             )
             
@@ -316,44 +333,61 @@ class RobotContainer:
             )
 
             SC = elevatorCommands.SetElevatorCommand
-            self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
-            self._joystick2.x().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
-            self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
             # For testing until pneumatics works because it will and it's amazing
             JS_left = commands2.SequentialCommandGroup(
                 SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
                 commands2.ParallelRaceGroup(
-                    dischargeCoralRightCommand,
+                    coralCommands.DischargeCoralCommand(self.coralSubsystem, direction = -1),
                     commands2.SequentialCommandGroup(
                         commands2.WaitCommand(0.5), # TODO make these constants if they actually work
                         SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
                         commands2.WaitCommand(0.3),
                     )
-                )
+                ),
+                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
             )
 
             JS_right = commands2.SequentialCommandGroup(
                 SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
                 commands2.ParallelRaceGroup(
-                    dischargeCoralLeftCommand,
+                    coralCommands.DischargeCoralCommand(self.coralSubsystem, direction = 1),
                     commands2.SequentialCommandGroup(
                         commands2.WaitCommand(0.5), # TODO same for here too
                         SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
                         commands2.WaitCommand(0.3),
                     )
-                )
+                ),
+                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
             )
+            
+            L3ScoreLeft = commands2.SequentialCommandGroup(
+                SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3),
+                commands2.ParallelRaceGroup(
+                    coralCommands.DischargeCoralCommand(self.coralSubsystem, direction = -1),
+                    commands2.WaitCommand(0.75),
+                ),
+                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
+            )
+            
+            L3ScoreRight = commands2.SequentialCommandGroup(
+                SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3),
+                commands2.ParallelRaceGroup(
+                    coralCommands.DischargeCoralCommand(self.coralSubsystem, direction = 1),
+                    commands2.WaitCommand(0.75),
+                ),
+                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
+            )
+            
+            self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
+            self._joystick2.x().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
+            self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
+            self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
             self._joystick2.povLeft().onTrue(JS_left)
             self._joystick2.povRight().onTrue(JS_right)
-            
-            # old elevator increment
-            # IC = elevatorCommands.IncrementElevatorCommand
-            # self._joystick2.povUp().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, ElevatorConstants.kElevatorIncrementalStep)))
-            # self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -1 * ElevatorConstants.kElevatorIncrementalStep)))
 
+            # *NEW* Elevator Increment
             def doDeadband(num):
                 return 0 if num <= 0.1 and num >= -0.1 else num
             
@@ -369,8 +403,7 @@ class RobotContainer:
                     # Lower speed if position is low enough and going down
                     speed *= ElevatorConstants.kLowEnoughSpeedMultiplier
                 return speed
-
-            # *NEW* Elevator Increment
+            
             self.continuousElevatorCommand = (
                 elevatorCommands.ContinuousIncrementCommand(
                     self.elevatorSubsystem, getElevatorIncrement
@@ -378,10 +411,6 @@ class RobotContainer:
             )
 
             self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
-
-            # self._joystick2.povLeft().onTrue(elevatorCommands.InstantTestFlipperCommand(
-            #     self.pneumaticSubsystem
-            # ))
 
         if self.ENABLE_CLIMB:
 

@@ -208,7 +208,11 @@ class ElevatorConstants:
     # kincrement_m_per_sec_held = 0.25
     
     # THIS ONE has a max apeed of 1, so 0.10 is 10% of elevator's max speed
-    kHomingRate = 0.10
+    kHomingRate = 0.15
+    # So the robot doesn't slam into the ground
+    kLowEnoughToSlowDown = 6
+    kLowEnoughSpeedMultiplier = 0.25
+    
     # All the speed stuff (in rotations per second)
     kElevatorSpeed = 2.5 # 10
     
@@ -221,17 +225,13 @@ class ElevatorConstants:
     kMaxElevatorHeight = 38.5 # 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
-    # So the robot doesn't slam into the ground
-    kLowEnoughToSlowDown = 6
-    kLowEnoughSpeedMultiplier = 0.3
-    
     kCoralLv3 = 16 # 11.2
     kAlgaeLv3 = 23
-    kCoralLv4 = 37 # 25.5 # All the elevator levels below aren't tuned
-    kCoralLv4_JumpScore = 38.5
+    kCoralLv4 = 36 # 25.5 # All the elevator levels below aren't tuned
+    kCoralLv4_JumpScore = 38
 
     # Goes up of down by this much every 50th of a second
-    kElevatorIncrementalStep = 0.07
+    kElevatorIncrementalStep = 0.1
     
     # The command decides the position's close enough if it's within this range (in rotations of a sort)
     # This doesn't delete the setpoint, it just declared the command's finished
@@ -309,7 +309,7 @@ class CoralConstants:
     kRightFlipper = 2
     
     kIntakeMultiplier = 0.15
-    kDischargeMultiplier = 0.25
+    kDischargeMultiplier = 0.30
     
     kFlipperPulseDuration = 1
     
@@ -340,10 +340,10 @@ class PowerDistributionConstants:
     kPDP = CAN_Address.FIFTY
 
 class UltrasonicConstants:
-    frontLeft = Rio_DIO.TWO
-    frontRight = Rio_DIO.THREE
-    # backLeft = Rio_DIO.FOUR
-    # backRight = Rio_DIO.THREE
+    kLeftSensorID = Rio_DIO.TWO
+    kRightSensorID = Rio_DIO.THREE
+    
+    kTargetDistance = 0.4
 
 
 class LimelightConstants:

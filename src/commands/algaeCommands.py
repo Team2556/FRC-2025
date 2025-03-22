@@ -35,7 +35,25 @@ class AlgaeCommand(Command):
         
     def end(self, interrupted): 
         self.updateCommandsFinished(1)
+    
+class AlgaeHomeCommand(Command):
+    def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):
+        self.algaeSubsystem = algaeSubsystem
+        self.addRequirements(self.algaeSubsystem)
 
+    def initialize(self):
+        self.algaeSubsystem.spinPivotMotor(AlgaeConstants.kPivotHomingRate)
+        self.algaeSubsystem.spinIntakeMotor(0)
+
+    def isFinished(self): 
+        return self.algaeSubsystem.getBottomLimitSwitchActive()
+    
+    def end(self, interrupted):
+        self.algaeSubsystem.spinPivotMotor(0)
+        if not interrupted:
+            self.algaeSubsystem.pivotMotor.set_position(0)
+
+# All these shouldn't be used wight now I think
 class AlgaeIntakeCommand(Command):
     '''Super simple command that sets intake motors and that's it'''
     def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem, speed):
@@ -67,23 +85,6 @@ class AlgaeInstantCommand(Command):
     #     self.algaeSubsystem.changePivotPosition(2)#self.algaeSubsystem.setpoint)
     
     def isFinished(self): return True
-    
-class AlgaeHomeCommand(Command):
-    def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):
-        self.algaeSubsystem = algaeSubsystem
-        self.addRequirements(self.algaeSubsystem)
-
-    def initialize(self):
-        self.algaeSubsystem.spinPivotMotor(AlgaeConstants.kPivotHomingRate)
-        self.algaeSubsystem.spinIntakeMotor(0)
-
-    def isFinished(self): 
-        return self.algaeSubsystem.getBottomLimitSwitchActive()
-    
-    def end(self, interrupted):
-        if not interrupted:
-            self.algaeSubsystem.spinPivotMotor(0)
-            self.algaeSubsystem.pivotMotor.set_position(0)
 
 class AlgaeLiftArmCommand(Command):
     def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem):
