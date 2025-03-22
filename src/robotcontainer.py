@@ -29,7 +29,7 @@ from subsystems import (
     coralSubsystem,
     elevatorSubsystem,
     climbSubsystem,
-    pneumaticSubsystem
+    pneumaticSubsystem,
     ultrasonicSubsystem,
 )
 
