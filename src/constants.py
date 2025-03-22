@@ -238,13 +238,13 @@ class ElevatorConstants:
     kElevatorKg = 0.4
 
     kMinElevatorHeight = 0
-    kMaxElevatorHeight = 38.5 # 35
+    kMaxElevatorHeight = 38 # 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
     kCoralLv3 = 16 # 11.2
     kAlgaeLv3 = 23
-    kCoralLv4 = 36 # 25.5 # All the elevator levels below aren't tuned
-    kCoralLv4_JumpScore = 38
+    kCoralLv4 = 35.5 # 25.5 # All the elevator levels below aren't tuned
+    kCoralLv4_JumpScore = 37
 
     # Goes up of down by this much every 50th of a second
     kElevatorIncrementalStep = 0.1
@@ -357,6 +357,9 @@ class PneumaticConstants:
     kLeftRetractSolenoid = 13
     kRightScoreSolenoid = 14
     kRightRetractSolenoid = 15
+    
+    # For getting delay between coral leaving beam breaks and activatings
+    kScoreDelay = 0.2
 
 class PowerDistributionConstants:
     kPDP = CAN_Address.FIFTY

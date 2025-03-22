@@ -434,7 +434,11 @@ class RobotContainer:
             self._joystick.x().whileTrue(self.backwardCommand)
 
         if self.ENABLE_PNEUMATIC:
-            defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(self.pneumaticSubsystem)
+            defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(
+                self.pneumaticSubsystem,
+                self.elevatorSubsystem,
+                self.coralSubsystem,
+            )
             testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
 
             self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)

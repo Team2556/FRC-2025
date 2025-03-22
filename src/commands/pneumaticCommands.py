@@ -2,25 +2,55 @@ from commands2 import Command, InterruptionBehavior
 from wpilib import Timer
 
 from subsystems import coralSubsystem, elevatorSubsystem, pneumaticSubsystem
-from constants import PneumaticConstants
+from constants import PneumaticConstants, ElevatorConstants
 
 
 class DefaultPneumaticCommand(Command):
-    def __init__(self, pneumaticSubsystem: pneumaticSubsystem.PneumaticSubsystem):
+    def __init__(
+        self, 
+        pneumaticSubsystem: pneumaticSubsystem.PneumaticSubsystem,
+        elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem,
+        coralSubsystem: coralSubsystem.CoralTrack,
+    ):
         self.pneumaticSubsystem = pneumaticSubsystem
+        self.elevatorSubsystem = elevatorSubsystem
+        self.coralSubsystem = coralSubsystem
+        
+        # Only require pneumatics because it's just getting the data of the other two
         self.addRequirements(self.pneumaticSubsystem)
 
         self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
+        
+        # For getting delay between coral leaving beam breaks and activating
+        self.timer = Timer()
 
     def initialize(self):
-        self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kRightScoreSolenoid)
-        self.pneumaticSubsystem.enable_solenoid(
-            PneumaticConstants.kRightRetractSolenoid
-        )
-
+        # self.disablePneumatics()
+        pass
+        
+    def activatePneumatics(self):
+        self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kRightScoreSolenoid)
+        self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kLeftScoreSolenoid)
+        
+        self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kRightRetractSolenoid)
+        self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kLeftRetractSolenoid)
+        
+    def disablePneumatics(self):
         self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kLeftScoreSolenoid)
+        self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kRightScoreSolenoid)
+        
         self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kLeftRetractSolenoid)
-
+        self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kRightRetractSolenoid)
+        
+    def execute(self):
+        if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 1 and not self.coralSubsystem.detect_coral()):
+            self.timer.start()
+            if self.timer.get() >= PneumaticConstants.kScoreDelay:
+                self.activatePneumatics()
+                self.timer.reset()
+        else:
+            self.disablePneumatics()
+            
 
 class PulseFlippersCommand(Command):
     def __init__(self, pneumaticSubsystem: pneumaticSubsystem.PneumaticSubsystem):
@@ -30,7 +60,7 @@ class PulseFlippersCommand(Command):
         self.InterruptionBehavior = InterruptionBehavior.kCancelSelf
         self.timer = Timer()
 
-        self.pulse_duration = 1
+        self.pulse_duration = 0.5
 
     def initialize(self):
         self.timer.reset()
