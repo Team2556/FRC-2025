@@ -1,5 +1,5 @@
 from commands2 import Command, InterruptionBehavior
-from wpilib import Timer
+from wpilib import Timer, SmartDashboard
 
 from subsystems import coralSubsystem, elevatorSubsystem, pneumaticSubsystem
 from constants import PneumaticConstants, ElevatorConstants
@@ -29,6 +29,7 @@ class DefaultPneumaticCommand(Command):
         pass
         
     def activatePneumatics(self):
+        SmartDashboard.putBoolean("Coral/Pneumatics Activated", True)
         self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kRightScoreSolenoid)
         self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kLeftScoreSolenoid)
         
@@ -36,6 +37,7 @@ class DefaultPneumaticCommand(Command):
         self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kLeftRetractSolenoid)
         
     def disablePneumatics(self):
+        SmartDashboard.putBoolean("Coral/Pneumatics Activated", False)
         self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kLeftScoreSolenoid)
         self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kRightScoreSolenoid)
         
@@ -57,7 +59,7 @@ class PulseFlippersCommand(Command):
         self.pneumaticSubsystem = pneumaticSubsystem
         self.addRequirements(self.pneumaticSubsystem)
 
-        self.InterruptionBehavior = InterruptionBehavior.kCancelSelf
+        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
         self.timer = Timer()
 
         self.pulse_duration = 0.5
@@ -68,6 +70,7 @@ class PulseFlippersCommand(Command):
 
     def execute(self):
         if self.timer.get() < self.pulse_duration:
+            SmartDashboard.putBoolean("Coral/Pneumatics Activated", True)
             # Extend the flippers
             self.pneumaticSubsystem.enable_solenoid(
                 PneumaticConstants.kRightScoreSolenoid
