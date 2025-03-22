@@ -14,9 +14,8 @@ class DischargeCoralCommand(Command):
     ):
         # Declare subsystems and add requirements
         self.coralTrack = coralTrack
+        self.elevatorSubsystem = elevatorSubsystem # Not a requirement; just used for getting position
         self.addRequirements(self.coralTrack)
-        
-        # self.elevatorSubsystem = elevatorSubsystem # Not a requirement; just used for getting position probably
         
         self.direction = direction # Left is -1, Right is 1 
         
@@ -26,7 +25,6 @@ class DischargeCoralCommand(Command):
         self.coralTrack.set_motor(speed)
         # Check for flippers (TODO)
         SmartDashboard.putString("Coral/Command State", f"Discharging ({speed})")
-        
     def getDirection(self):
         """Get Direction of Discharge using April Tags/Odometry"""
         # TODO Use April Tags to automatically identify the needed direction for discharge
