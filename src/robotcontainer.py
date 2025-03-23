@@ -15,6 +15,7 @@ import math
 # If you wish to change any of these, be sure to change all
 # instances of the rule unless you're really desperate on time
 
+# from imaplib import Commands
 import commands2
 import commands2.button
 import commands2.cmd
@@ -36,12 +37,14 @@ from subsystems import (
     algaeSubsystem,
     coralSubsystem,
     elevatorSubsystem,
+    climbSubsystem
 )
 
 from commands import (
     algaeCommands,
     coralCommands,
     elevatorCommands,
+    climbCommands
 )
 
 from constants import ElevatorConstants, AlgaeConstants, CoralConstants
@@ -136,7 +139,8 @@ class RobotContainer:
             self.coralSubsystem = coralSubsystem.CoralTrack()
 
         if self.ENABLE_CLIMB:
-            ...
+            self.climbSubsystem = climbSubsystem.ClimbSubsystem()
+            # self.scheduler.registerSubsystem(self.climbSubsystem)
 
         if self.ENABLE_VISON:
             self.vision = vison.VisionSubsystem(self.drivetrain)
@@ -220,18 +224,21 @@ class RobotContainer:
 
         # Run SysId routines when holding back/start and X/Y.
         # Note that each routine should be run exactly once in a single log.
-        (self._joystick.back() & self._joystick.y()).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
-        )
-        (self._joystick.back() & self._joystick.x()).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse)
-        )
-        (self._joystick.start() & self._joystick.y()).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
-        )
-        (self._joystick.start() & self._joystick.x()).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse)
-        )
+        # (self._joystick.back() & self._joystick.y()).whileTrue(
+        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
+        # )
+        # (self._joystick.back() & self._joystick.x()).whileTrue(
+        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse) # Commented out by Aida for climb - disable climb if needed.
+        # )
+        # (self._joystick.start() & self._joystick.y()).whileTrue(
+        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
+        # )
+        # (self._joystick.start() & self._joystick.x()).whileTrue(
+        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse) # Commented out by Aidan for climb - disable climb if needed.
+        # )
+
+
+        # Elevator button press detection:
 
         # reset the field-centric heading on left bumper press
         self._joystick.leftStick().onTrue(
@@ -248,7 +255,7 @@ class RobotContainer:
         if self.ENABLE_ALGAE:
             # TODO: Make these sequential commands when you actually have time
 
-            # ALGAE INTAKE COMMAND
+            # ALGAE REEF INTAKE COMMAND
             algaeReefIntakeCommand = algaeCommands.AlgaeInstantCommand(
                 self.algaeSubsystem,
                 AlgaeConstants.kPivotReefIntakingValue,
@@ -256,60 +263,43 @@ class RobotContainer:
             )
 
             # ALGAE PROCESS COMMAND
-            algaeProcessCommand = algaeCommands.AlgaeInstantCommand(
+            algaeProcessCommand = algaeCommands.AlgaeCommand(
                 self.algaeSubsystem,
                 AlgaeConstants.kPivotReefIntakingValue,
                 -1 * AlgaeConstants.kIntakeMultiplier,
             )
 
-            # ALGAE PROCESS COMMAND
-            algaeGroundIntakeCommand = algaeCommands.AlgaeInstantCommand(
+            # ALGAE GROUND INTAKE COMMAND
+            algaeGroundIntakeCommand = algaeCommands.AlgaeCommand(
                 self.algaeSubsystem,
-                AlgaeConstants.kPivotGroundIntakingValue - 0.1,
+                AlgaeConstants.kPivotGroundIntakingValue,
                 1 * AlgaeConstants.kIntakeMultiplier,
             )
-
-            # ALGAE IDLE COMMAND
-            algaeIdleCommand = algaeCommands.AlgaeInstantCommand(
+            
+            # ALGAE AFTER GROUND INTAKE COMMAND
+            algaeAfterGroundIntakeCommand = algaeCommands.AlgaeCommand(
                 self.algaeSubsystem,
-                AlgaeConstants.kPivotIdleValue,
+                AlgaeConstants.kPivotGroundIntakingValue,
                 0 * AlgaeConstants.kIntakeMultiplier,
             )
 
-            algaeAfterGroundIntakeCommand = algaeCommands.AlgaeInstantCommand(
-                self.algaeSubsystem,
-                AlgaeConstants.kPivotAfterGroundIntakingValue,
-                0 * AlgaeConstants.kIntakeMultiplier,
-            )
-
-            # RESET HOMING TO ZERO
-            algaeHomeCommand = algaeCommands.AlgaeInstantCommand(
-                self.algaeSubsystem,
-                AlgaeConstants.kPivotIdleValue,
-                0 * AlgaeConstants.kIntakeMultiplier,
-            )
-
-            algaeHoldHomeCommand = algaeCommands.AlgaeSetPivotSpeedCommand(
-                self.algaeSubsystem, -0.05
-            )
-            algaeStopHoldHomeCommand = algaeCommands.AlgaeSetPivotSpeedCommand(
-                self.algaeSubsystem, 0
-            )
+            algaeHomeCommand = algaeCommands.AlgaeSetPivotSpeedCommand(self.algaeSubsystem, speed = -0.05)
 
             self._joystick.povUp().onTrue(algaeReefIntakeCommand)
             self._joystick.rightTrigger().onTrue(algaeGroundIntakeCommand)
             self._joystick.leftTrigger().onTrue(algaeProcessCommand)
-            self._joystick.povDown().onTrue(algaeHoldHomeCommand)
+            self._joystick.povDown().onTrue(algaeHomeCommand)
 
-            # Might work
-            self._joystick.povUp().onFalse(algaeIdleCommand)
+            self._joystick.povUp().onFalse(algaeAfterGroundIntakeCommand)
             self._joystick.rightTrigger().onFalse(algaeAfterGroundIntakeCommand)
-            self._joystick.leftTrigger().onFalse(algaeIdleCommand)
-            self._joystick.povDown().onFalse(algaeStopHoldHomeCommand)
+            self._joystick.leftTrigger().onFalse(algaeHomeCommand)
+            # self._joystick.povDown().onFalse()
 
+            # WE NEED
             # Ground intake
             # Reef intake
             # Process
+            # Home
 
         reefWaypoints = PathPlannerPath.waypointsFromPoses([
             Pose2d(2, 2.0, Rotation2d.fromDegrees(90)),
@@ -353,14 +343,15 @@ class RobotContainer:
             dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
                 self.elevatorSubsystem,
-                direction=-1,  # Left is -1, Right is 1
+                direction = -1,  # Left is -1, Right is 1
             )
 
             dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
                 self.elevatorSubsystem,
-                direction=1,  # Left is -1, Right is 1
+                direction = 1,  # Left is -1, Right is 1
             )
+            
             # 0.53 0.27
             self.coralSubsystem.setDefaultCommand(defaultCoralCommand)
             # Cayden said to invert these
@@ -368,82 +359,87 @@ class RobotContainer:
             self._joystick2.leftBumper().whileTrue(dischargeCoralRightCommand)
 
         if self.ENABLE_ELEVATOR:
-            IC = (
-                elevatorCommands.InstantSetElevatorCommand
-            )  # So I can actually see all the code
-            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralIntakePosition))
+            # Home elevator at the start
+            commands2.CommandScheduler.getInstance().schedule(
+                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
+            )
+            IC = elevatorCommands.IncrementElevatorCommand
+            self._joystick2.povUp().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, ElevatorConstants.kElevatorIncrementalStep)))
             # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            # self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
-            # self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
-            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorCon stants.kAlgaeGroundIntake))
-            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv2))
-            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
-            # self._joystick2.x().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kAlgaeProcess))
-            # TEST THESE
-            # self._joystick2.povUp().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
-            # self._joystick2.povRight().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            # self._joystick2.povDown().onTrue(IC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+            self._joystick2.povDown().whileTrue(commands2.RepeatCommand(IC(self.elevatorSubsystem, -1 * ElevatorConstants.kElevatorIncrementalStep)))
 
-            # ALSO TEST THESE
-            # SC = elevatorCommands.SetElevatorCommand
-            # FOR TESTING
-            # self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv2))
-            # self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
-            # self._joystick2.a().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+            SC = elevatorCommands.SetElevatorCommand
+            self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
+            self._joystick2.x().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
+            self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
+            self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
+
+            JS_right = commands2.SequentialCommandGroup(
+                SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
+                commands2.ParallelRaceGroup(
+                    dischargeCoralLeftCommand,
+                    commands2.SequentialCommandGroup(
+                        commands2.WaitCommand(0.5),
+                        SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
+                        commands2.WaitCommand(0.5),
+                    )
+                )
+            )
+
+            JS_left = commands2.SequentialCommandGroup(
+                SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
+                commands2.ParallelRaceGroup(
+                    dischargeCoralRightCommand,
+                    commands2.SequentialCommandGroup(
+                        commands2.WaitCommand(0.5),
+                        SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
+                        commands2.WaitCommand(0.5),
+                    )
+                )
+            )
+
+            (self._joystick2.b() & self._joystick2.rightTrigger()).onTrue(JS_right)
+            (self._joystick2.b() & self._joystick2.leftTrigger()).onTrue(JS_left)
 
             def doDeadband(num):
                 return 0 if num <= 0.08 and num >= -0.08 else num
             
-            self.kElevatorL3position = -11.2 # TUNE THIS
-            self.kElevatorL4position = -26.9 # TUNE THIS
-            self.kElevatorSlowGoingDown = -5.6 # TUNE THIS
-            
-            self.stopPastL3 = False
-            self.stopPastL4 = False
-            
-            def doStopPastL3(): self.stopPastL3 = True
-            def dontStopPastL3(): self.stopPastL3 = False
-            
-            def doStopPastL4(): self.stopPastL4 = True
-            def dontStopPastL4(): self.stopPastL4 = False
-
-            self._joystick2.x().whileTrue(commands2.cmd.runOnce(doStopPastL3))
-            self._joystick2.x().whileFalse(commands2.cmd.runOnce(dontStopPastL3))
-            
-            self._joystick2.y().whileTrue(commands2.cmd.runOnce(doStopPastL4))
-            self._joystick2.y().whileFalse(commands2.cmd.runOnce(dontStopPastL4))
-            
             def getElevatorIncrement():
-                speed = (-0.3 * (self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis())
-                        - 0.1 * (-self._joystick2.getLeftY())
+                speed = (0.3 * (self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis())
+                        + 0.1 * (-1 * doDeadband(self._joystick2.getLeftY()))
                         # - 0.05 * (self._joystick2.getRightY())
-                        - 0.03)
-                if (self.stopPastL3 and self.elevatorSubsystem.elevmotor_left.get_position().value < self.kElevatorL3position
-                    and speed < -0.03):
-                    return -0.03
-                elif (self.stopPastL4 and self.elevatorSubsystem.elevmotor_left.get_position().value < self.kElevatorL4position
-                    and speed < -0.03):
-                    return -0.03
-                elif (self.elevatorSubsystem.elevmotor_left.get_position().value > self.kElevatorSlowGoingDown
-                    and speed > -0.03):
-                    return speed * 0.65
-                else:
-                    return speed
+                        + 0.03)
+                if (self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown
+                    and self.elevatorSubsystem.elevmotor_left.get_velocity().value < 0):
+                    # Lower speed if position is low enough and going down
+                    speed *= ElevatorConstants.kLowEnoughSpeedMultiplier
+                return speed
 
-            self.continuousElevatorCommand = (
-                elevatorCommands.ContinuousIncrementCommand(
-                    self.elevatorSubsystem, getElevatorIncrement
-                )
-            )
+            # self.continuousElevatorCommand = (
+            #     elevatorCommands.ContinuousIncrementCommand(
+            #         self.elevatorSubsystem, getElevatorIncrement
+            #     )
+            # )
 
-            self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
+            # self.elevatorSubsystem.setDefaultCommand(self.continuousElevatorCommand)
 
             # self._joystick2.povLeft().onTrue(elevatorCommands.InstantTestFlipperCommand(
             #     self.pneumaticSubsystem
             # ))
 
         if self.ENABLE_CLIMB:
-            ...
+
+            # Reeling command:
+            self.forwardCommand = climbCommands.Forward(self.climbSubsystem)
+
+            # Unreeling command:
+            self.backwardCommand = climbCommands.Backward(self.climbSubsystem)
+
+            # Button detections:
+            # TODO: consider auto trigger 
+            # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
+            self._joystick.y().whileTrue(self.forwardCommand)
+            self._joystick.x().whileTrue(self.backwardCommand)
 
     def getHumanPlayerAngle(self)-> float:
         offset = 0
