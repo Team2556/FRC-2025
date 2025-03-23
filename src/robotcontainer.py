@@ -315,13 +315,13 @@ class RobotContainer:
 
             dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
-                # self.elevatorSubsystem,
+                self.elevatorSubsystem,
                 direction = -1,  # Left is -1, Right is 1
             )
 
             dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
-                # self.elevatorSubsystem,
+                self.elevatorSubsystem,
                 direction = 1,  # Left is -1, Right is 1
             )
             
