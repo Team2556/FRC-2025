@@ -192,16 +192,8 @@ class RobotContainer:
         )
 
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
-        # self._joystick.b().whileTrue(
-        #     self.drivetrain.apply_request(
-        #         lambda: self._point.with_module_direction(
-        #             Rotation2d(-self._joystick.getLeftY(), -self._joystick.getLeftX())
-        #         )
-        #     )
-        # )
-
         self._joystick.b().onTrue(self.drivetrain.runOnce(lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0))))
-        #self._joystick.x().whileTrue(self.auto_align)
+
 
         self._joystick.rightBumper().whileTrue(
             self.drivetrain.apply_request(
@@ -221,22 +213,6 @@ class RobotContainer:
                 )
             )
         )
-
-        # Run SysId routines when holding back/start and X/Y.
-        # Note that each routine should be run exactly once in a single log.
-        # (self._joystick.back() & self._joystick.y()).whileTrue(
-        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
-        # )
-        # (self._joystick.back() & self._joystick.x()).whileTrue(
-        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse) # Commented out by Aida for climb - disable climb if needed.
-        # )
-        # (self._joystick.start() & self._joystick.y()).whileTrue(
-        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
-        # )
-        # (self._joystick.start() & self._joystick.x()).whileTrue(
-        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse) # Commented out by Aidan for climb - disable climb if needed.
-        # )
-
 
         # Elevator button press detection:
 
@@ -438,8 +414,8 @@ class RobotContainer:
             # Button detections:
             # TODO: consider auto trigger 
             # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
-            self._joystick.y().whileTrue(self.forwardCommand)
-            self._joystick.x().whileTrue(self.backwardCommand)
+            self._joystick.x().whileTrue(self.forwardCommand)
+            self._joystick.rightStick().whileTrue(self.backwardCommand)
 
     def getHumanPlayerAngle(self)-> float:
         offset = 0

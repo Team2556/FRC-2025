@@ -3,6 +3,7 @@
   "robotLength": 0.712,
   "holonomicMode": true,
   "pathFolders": [
+    "OHIO ",
     "Odo test paths"
   ],
   "autoFolders": [
