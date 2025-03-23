@@ -350,32 +350,32 @@ class RobotContainer:
             self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
             self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
-            JS_right = commands2.SequentialCommandGroup(
-                SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
-                commands2.ParallelRaceGroup(
-                    dischargeCoralLeftCommand,
-                    commands2.SequentialCommandGroup(
-                        commands2.WaitCommand(0.5),
-                        SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
-                        commands2.WaitCommand(0.5),
-                    )
-                )
-            )
-
-            JS_left = commands2.SequentialCommandGroup(
-                SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
-                commands2.ParallelRaceGroup(
-                    dischargeCoralRightCommand,
-                    commands2.SequentialCommandGroup(
-                        commands2.WaitCommand(0.5),
-                        SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
-                        commands2.WaitCommand(0.5),
-                    )
-                )
-            )
-
-            (self._joystick2.b() & self._joystick2.rightTrigger()).onTrue(JS_right)
-            (self._joystick2.b() & self._joystick2.leftTrigger()).onTrue(JS_left)
+            # JS_right = commands2.SequentialCommandGroup(
+            #     SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
+            #     commands2.ParallelRaceGroup(
+            #         dischargeCoralLeftCommand,
+            #         commands2.SequentialCommandGroup(
+            #             commands2.WaitCommand(0.5),
+            #             SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
+            #             commands2.WaitCommand(0.5),
+            #         )
+            #     )
+            # )
+            #
+            # JS_left = commands2.SequentialCommandGroup(
+            #     SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
+            #     commands2.ParallelRaceGroup(
+            #         dischargeCoralRightCommand,
+            #         commands2.SequentialCommandGroup(
+            #             commands2.WaitCommand(0.5),
+            #             SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
+            #             commands2.WaitCommand(0.5),
+            #         )
+            #     )
+            # )
+            #
+            # (self._joystick2.b() & self._joystick2.rightTrigger()).onTrue(JS_right)
+            # (self._joystick2.b() & self._joystick2.leftTrigger()).onTrue(JS_left)
 
             def doDeadband(num):
                 return 0 if num <= 0.08 and num >= -0.08 else num

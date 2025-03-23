@@ -47,12 +47,12 @@ class PathOnTheFlyAutoAlign(Command):
         #17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
 
         poseList = [
-            Pose2d(3.776, 2.970, Rotation2d.fromDegrees(60-90)),
-            Pose2d(3.249, 4.049, Rotation2d.fromDegrees(0-90)),
-            Pose2d(3.944, 5.176, Rotation2d.fromDegrees(-60-90)),
-            Pose2d(5.227, 5.080, Rotation2d.fromDegrees(-120-90)),
-            Pose2d(5.754, 3.905, Rotation2d.fromDegrees(180-90)),
-            Pose2d(5.06+0.05, 2.96+0.05, Rotation2d.fromDegrees(33.84))
+            Pose2d(3.84+0.05+0.03, 2.94+0.04-0.07, Rotation2d.fromDegrees(-28.78)),
+            Pose2d(3.26, 3.9, Rotation2d.fromDegrees(-88)),
+            Pose2d(3.9, 5.15, Rotation2d.fromDegrees(-145.79)),
+            Pose2d(5.1, 4.91, Rotation2d.fromDegrees(152.94)),
+            Pose2d(5.93, 3.96, Rotation2d.fromDegrees(94.58)),
+            Pose2d(5.06, 2.96, Rotation2d.fromDegrees(33.84))
         ]
 
         initialPoseList = [

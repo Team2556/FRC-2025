@@ -12,11 +12,6 @@ class CoralTrack(Subsystem):
         self.motor_controller = SparkFlex(
             CoralConstants.kCoralMotorPort, SparkFlex.MotorType.kBrushless
         )
-        # self.motor_controller.configure(
-        #     SparkMaxConfig(),
-        #     SparkBase.ResetMode.kResetSafeParameters,
-        #     SparkBase.PersistMode.kPersistParameters,
-        # )
 
         self.left_detector = DigitalInput(CoralConstants.kLeftBreakerLight)
         self.right_detector = DigitalInput(CoralConstants.kRightBreakerLight)
