@@ -12,10 +12,24 @@ from wpimath.units import (
     inches,
 )
 from wpimath.trajectory import TrapezoidProfile
+from wpimath.geometry import (
+    Translation2d,
+    Pose2d,
+    Translation3d,
+    Pose3d,
+    Rotation2d,
+    Transform2d,
+    Transform3d,
+    Rotation3d,
+)
 from wpilib import SmartDashboard
 from phoenix6.configs.config_groups import Slot0Configs
 from pathlib import Path
 
+class AprilTagConstants:
+    kCompFieldType = apriltag.AprilTagField.k2025ReefscapeWelded
+    kPoleOffset = inchesToMeters(inches(12.94)/2  )
+    kOrigStandoff = 1 # meter  inchesToMeters(inches(16) ) # 12.94
 class AprilTags_height:
     def tag_heights():  # height of apriltags by order of number, in centimeters
         heights = numpy.array(
@@ -191,7 +205,11 @@ class CAN_Address(IntEnum):
     FIFTYONE = auto()
     
 class RobotDimensions:
-    WIDTH_w_bumpers = inches(36)  # inches inchesToMeters(36)#(26+2*3.25)
+    WIDTH_w_bumpers = inches(28+2*3.25)  # inches inchesToMeters(36)#(26+2*3.25)
+    ROBOT_CENTER_FROM_LEFT_SHOOTER = Translation2d(inchesToMeters(inches(-9)), inchesToMeters(inches(-18.5)))
+    ROBOT_CENTER_FROM_RIGHT_SHOOTER = Translation2d(inchesToMeters(inches(-9)), inchesToMeters(inches(18.5)))
+    LEFT_SHOOTER_ROBOT_SPACE = Transform2d(ROBOT_CENTER_FROM_LEFT_SHOOTER, Rotation2d(degreesToRadians(90)))
+    RIGHT_SHOOTER_ROBOT_SPACE = Transform2d(ROBOT_CENTER_FROM_RIGHT_SHOOTER, Rotation2d(degreesToRadians(-90)))
 
 class Override_DriveConstant: ...
 
