@@ -23,9 +23,12 @@ from commands2.sysid import SysIdRoutine
 
 from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
 from pathplannerlib.path import PathPlannerPath, PathConstraints, GoalEndState
-from phoenix6.swerve import Pose2d
-from wpilib import SmartDashboard
+from phoenix6.swerve import Pose2d, SwerveModule
+from phoenix6.swerve.requests import FieldCentricFacingAngle
+from wpilib import SmartDashboard, DriverStation
 
+from commands.path_on_the_fly_auto_align import PathOnTheFlyAutoAlign
+from subsystems import vison
 from subsystems.vison import VisionSubsystem
 from commands.auto_align import AutoAlign
 # NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
@@ -73,7 +76,7 @@ class RobotContainer:
         )  # 3/4 of a rotation per second max angular velocity
 
         # Setting up bindings for necessary control of the swerve drive platform
-        self._drive = (
+        self._field_centric_drive = (
             swerve.requests.FieldCentric()
             .with_deadband(0.1)
             .with_rotational_deadband(0.1)  # Add a 10% deadband
@@ -91,6 +94,13 @@ class RobotContainer:
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )  # Use open-loop control for drive motors
         )
+        self.field_centric_request = (FieldCentricFacingAngle()
+                                      .with_heading_pid(5, 0, 0)
+                                      .with_max_abs_rotational_rate(2 * math.pi)
+                                      .with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)
+                                      .with_deadband(self._max_speed * 0.1)
+                                      )
+
 
         self._logger = Telemetry(self._max_speed)
 
@@ -111,6 +121,7 @@ class RobotContainer:
         self.ENABLE_ELEVATOR = True
         self.ENABLE_CORAL = True
         self.ENABLE_CLIMB = True
+        self.ENABLE_VISON = True
 
         # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE PLEASE
 
@@ -124,9 +135,11 @@ class RobotContainer:
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
 
-
         if self.ENABLE_CLIMB:
             ...
+
+        if self.ENABLE_VISON:
+            self.vision = vison.VisionSubsystem(self.drivetrain)
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -148,7 +161,7 @@ class RobotContainer:
             # Drivetrain will execute this command periodically
             self.drivetrain.apply_request(
                 lambda: (
-                    self._drive.with_velocity_x(
+                    self._field_centric_drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
                         -adjust_jostick(self._joystick.getLeftY(), smooth=True)
                         * self._max_speed
@@ -162,6 +175,15 @@ class RobotContainer:
                         * self._max_angular_rate
                     )  # Drive counterclockwise with negative X (left)
                 )
+            )
+        )
+
+        self._joystick.leftBumper().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: self.field_centric_request
+                .with_velocity_x(-self._joystick.getLeftY() * self._max_speed)
+                .with_velocity_y(-self._joystick.getLeftX() * self._max_speed)
+                .with_target_direction(Rotation2d.fromDegrees(self.getHumanPlayerAngle()))
             )
         )
 
@@ -212,7 +234,7 @@ class RobotContainer:
         )
 
         # reset the field-centric heading on left bumper press
-        self._joystick.leftBumper().onTrue(
+        self._joystick.leftStick().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
 
@@ -319,10 +341,10 @@ class RobotContainer:
 
         # Prevent the path from being flipped if the coordina6es are already correct
         testPath.preventFlipping = False
+        self.auto_align = PathOnTheFlyAutoAlign(self.drivetrain, self.vision)
 
-        self._joystick.y().onTrue(AutoBuilder.pathfindThenFollowPath(
-            testPath,reefConstraints
-        ))
+        self._joystick.y().whileTrue(self.auto_align)
+
 
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands
@@ -422,3 +444,9 @@ class RobotContainer:
 
         if self.ENABLE_CLIMB:
             ...
+
+    def getHumanPlayerAngle(self)-> float:
+        offset = 0
+        if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            offset = 70 + 180
+        return (235 + offset) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset)
