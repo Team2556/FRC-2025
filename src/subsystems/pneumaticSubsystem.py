@@ -1,5 +1,6 @@
 import commands2
 import wpilib
+from wpilib import SmartDashboard
 from constants import PneumaticConstants
 
 
@@ -19,6 +20,15 @@ class PneumaticSubsystem(commands2.Subsystem):
             )
             for channel in range(16) # Number of solenoid channels in the hub
         ]
+        self.solenoids_states = [sol.get for sol in self.solenoids]
+        SmartDashboard.putBooleanArray("Pneumatics/Compressor States", self.solenoids_states)
+
+    def periodic(self):
+        '''update solenoid states on smartdashboard'''
+        self.solenoids_states = [sol.get() for sol in self.solenoids]
+        SmartDashboard.putBooleanArray("Pneumatics/Compressor Sates", self.solenoids_states)
+
+        
         
     def enable_solenoid(self, channel):
         """Enables a Solenoid based on channel."""
@@ -62,3 +72,9 @@ class PneumaticSubsystem(commands2.Subsystem):
             if not solenoid: continue
             
             solenoid.set(False)
+    
+    def simple_toggle_all(self):
+        ''''toggle current values of solenoids'''
+        for solenoid in self.solenoids:
+            if not solenoid: continue
+            solenoid.toggle()

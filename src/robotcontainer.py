@@ -432,12 +432,17 @@ class RobotContainer:
             self._joystick.x().whileTrue(self.backwardCommand)
 
         if self.ENABLE_PNEUMATIC:
-            # defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(
-            #     self.pneumaticSubsystem,
-            #     self.elevatorSubsystem,
-            #     self.coralSubsystem,
-            # )
+            defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(
+                self.pneumaticSubsystem,
+                self.elevatorSubsystem,
+                self.coralSubsystem,
+            )
+            # TODO: removed timer may need new command or time put on via factory here
             testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
 
-            # self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
-            self._joystick2.povUp().onTrue(testPneumaticCommand)
+            self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
+
+            togggle_flippers = commands2.cmd.runOnce(self.pneumaticSubsystem.simple_toggle_all(), self.pneumaticSubsystem)
+
+            self._joystick2.povUp().onTrue((lambda: togggle_flippers)())
+            # self._joystick2.povUp().whileTrue(testPneumaticCommand)

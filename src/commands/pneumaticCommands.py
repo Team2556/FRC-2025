@@ -62,34 +62,61 @@ class PulseFlippersCommand(Command):
         self.addRequirements(self.pneumaticSubsystem)
 
         self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
-        self.timer = Timer()
+        # self.timer = Timer()
 
-        self.pulse_duration = 0.5
+        # self.pulse_duration = 0.5
 
     def initialize(self):
-        self.timer.reset()
-        self.timer.start()
+        pass
+        # self.timer.reset()
+        # self.timer.start()
 
     def execute(self):
-        if self.timer.get() < self.pulse_duration:
-            SmartDashboard.putBoolean("Coral/Pneumatics Activated", True)
-            # Extend the flippers
-            self.pneumaticSubsystem.enable_solenoid(
-                PneumaticConstants.kRightScoreSolenoid
-            )
-            self.pneumaticSubsystem.enable_solenoid(
-                PneumaticConstants.kLeftScoreSolenoid
-            )
+        # if self.timer.get() < self.pulse_duration:
+        SmartDashboard.putBoolean("Coral/Pneumatics Activated", True)
+        # Extend the flippers
+        self.LeftFlippersUp
+        self.RightFlippersUp
 
-            self.pneumaticSubsystem.disable_solenoid(
-                PneumaticConstants.kRightRetractSolenoid
-            )
-            self.pneumaticSubsystem.disable_solenoid(
-                PneumaticConstants.kLeftRetractSolenoid
-            )
 
-    def isFinished(self):
-        return self.timer.get() > self.pulse_duration
+    # def isFinished(self):
+    #     # return self.timer.get() > self.pulse_duration
+    #     return True
 
     def end(self, interrupted):
-        self.timer.stop()
+        self.LeftFlippersDown
+        self.RightFlippersDown
+        # self.timer.stop()
+
+
+    def LeftFlippersUp(self):
+        self.pneumaticSubsystem.enable_solenoid(
+            PneumaticConstants.kLeftScoreSolenoid
+        )
+        self.pneumaticSubsystem.disable_solenoid(
+            PneumaticConstants.kLeftRetractSolenoid
+        )
+    def RightFlippersUp(self):
+
+        self.pneumaticSubsystem.enable_solenoid(
+            PneumaticConstants.kRightScoreSolenoid
+        )
+        self.pneumaticSubsystem.disable_solenoid(
+            PneumaticConstants.kRightRetractSolenoid
+        )
+
+    def LeftFlippersDown(self):
+        self.pneumaticSubsystem.disable_solenoid(
+            PneumaticConstants.kLeftScoreSolenoid
+        )
+        self.pneumaticSubsystem.enable_solenoid(
+            PneumaticConstants.kLeftRetractSolenoid
+        )
+
+    def RightFlippersDown(self):
+        self.pneumaticSubsystem.disable_solenoid(
+            PneumaticConstants.kRightScoreSolenoid
+        )
+        self.pneumaticSubsystem.enable_solenoid(
+            PneumaticConstants.kRightRetractSolenoid
+        )
