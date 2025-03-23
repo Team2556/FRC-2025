@@ -50,6 +50,8 @@ class DefaultPneumaticCommand(Command):
                 self.timer.start()
             if self.timer.get() >= PneumaticConstants.kScoreDelay:
                 self.activatePneumatics()
+            else:
+                self.disablePneumatics()
         else:
             self.timer.reset()
             self.disablePneumatics()
