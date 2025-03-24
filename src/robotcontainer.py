@@ -382,7 +382,7 @@ class RobotContainer:
             self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
             # self._joystick2.povUp().whileTrue(pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem))
             
-            self._joystick2.povUp().whileTrue(testPneumaticCommand)
+            # self._joystick2.povUp().whileTrue(testPneumaticCommand)
 
     def getHumanPlayerAngle(self)-> float:
         offset = 70 + 180
