@@ -67,6 +67,7 @@ class RobotContainer:
 
     def __init__(self) -> None:
 
+        AutoBuilder._configured = False
         self._max_speed = (
             TunerConstants.speed_at_12_volts
         )  # speed_at_12_volts desired top speed
@@ -151,13 +152,13 @@ class RobotContainer:
                 # self.elevatorSubsystem,
                 direction = -1,  # Left is -1, Right is 1
             ))
-        AutoBuilder._configured = False
+
+        # Path follower
+        self._auto_chooser = AutoBuilder.buildAutoChooser("Tests")
+        SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
     def getAutonomousCommand(self):
-        # Load the path you want to follow using its name in the GUI
-        path = PathPlannerPath.fromPathFile("moveForeward")
-        # Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path)
+        return self._auto_chooser.getSelected()
 
     def configureButtonBindings(self) -> None:
         """
@@ -174,14 +175,22 @@ class RobotContainer:
             self.slowSpeedMultiplier = speed
             self.slowRotationMultiplier = rotation
 
-        self._joystick.rightBumper().onTrue(
-            commands2.cmd.runOnce(changeSlowMultipliers(
-                Override_DriveConstant.kSlowMove, 
-                Override_DriveConstant.kSlowRotate
-            ))
-        ).onFalse(
-            commands2.cmd.runOnce(changeSlowMultipliers(1, 1))
-        )
+        self._joystick.rightBumper().whileTrue(self.drivetrain.apply_request(lambda:(self._robot_centric_drive.with_velocity_x(
+                        # self._robot_centric_drive.with_velocity_x(
+                        -adjust_jostick(self._joystick.getLeftY(), smooth=True)
+                        * self._max_speed * Override_DriveConstant.kSlowMove
+                    )  # Drive forward with negative Y (forward)
+                    .with_velocity_y(
+                        adjust_jostick(-self._joystick.getLeftX(), smooth=True)
+                        * self._max_speed * Override_DriveConstant.kSlowMove
+                    )  # Drive left with negative X (left)
+                    .with_rotational_rate(
+                        adjust_jostick(-self._joystick.getRightX(), smooth=True)
+                        * self._max_angular_rate * Override_DriveConstant.kSlowRotate
+                        )
+                    )
+                )
+           )
 
         # Note that X is defined as forward according to WPILib convention,
         # and Y is defined as to the left according to WPILib convention.
@@ -222,23 +231,6 @@ class RobotContainer:
                                                else Pose2d(17.065,6.47, Rotation2d.fromDegrees(180.0)))
         ))
 
-        # Run SysId routines when holding back/start and X/Y.
-        # Note that each routine should be run exactly once in a single log.
-        # (self._joystick.back() & self._joystick.y()).whileTrue(
-        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward)
-        # )
-        # (self._joystick.back() & self._joystick.x()).whileTrue(
-        #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse) # Commented out by Aida for climb - disable climb if needed.
-        # )
-        # (self._joystick.start() & self._joystick.y()).whileTrue(
-        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward)
-        # )
-        # (self._joystick.start() & self._joystick.x()).whileTrue(
-        #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse) # Commented out by Aidan for climb - disable climb if needed.
-        # )
-
-
-        # Elevator button press detection:
 
         # reset the field-centric heading on left bumper press
         self._joystick.leftStick().onTrue(
@@ -387,8 +379,7 @@ class RobotContainer:
             # self._joystick2.povUp().whileTrue(testPneumaticCommand)
 
     def getHumanPlayerAngle(self)-> float:
-        offset = 70 + 180
+        offset = 180
         if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            if self.drivetrain.get_state().pose.y <= 3.8:
-                return (-235 - offset)
-        return (235 + offset)
+            offset = 70 + 180
+        return (235 + offset) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset)

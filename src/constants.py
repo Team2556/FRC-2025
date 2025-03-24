@@ -216,8 +216,8 @@ class ElevatorConstants:
     kTopLimitSwitchChannel = Rio_DIO.SEVEN  # TODO: ? two on top also?
 
 class Override_DriveConstant:
-    kSlowMove = 0.3 # Percent speed for slow mode movement
-    kSlowRotate = 0.3 # Percent speed for slow mode rotation
+    kSlowMove = 0.25 # Percent speed for slow mode movement
+    kSlowRotate = 0.25 # Percent speed for slow mode rotation
 
 class AlgaeConstants:
     # Motor Channels
