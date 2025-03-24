@@ -111,8 +111,8 @@ class RobotContainer:
         self.drivetrain = TunerConstants.create_drivetrain()
 
         # Path follower
-        self._auto_chooser = AutoBuilder.buildAutoChooser("Tests")
-        SmartDashboard.putData("Auto Mode", self._auto_chooser)
+        # self._auto_chooser = AutoBuilder.buildAutoChooser("Tests")
+        # SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
         self.vision = VisionSubsystem(self.drivetrain, "limelight-four")
         #self.auto_align = AutoAlign(self.drivetrain, self.vision)
@@ -152,8 +152,8 @@ class RobotContainer:
         self.configureButtonBindings()
 
 
-    def getAutonomousCommand(self):
-        return self._auto_chooser.getSelected()
+    # def getAutonomousCommand(self):
+    #     return self._auto_chooser.getSelected()
 
     def configureButtonBindings(self) -> None:
         """
@@ -283,7 +283,7 @@ class RobotContainer:
 
             algaeHomeCommand = algaeCommands.AlgaeHomeCommand(self.algaeSubsystem)
 
-            self._joystick.y().onTrue(algaeReefIntakeCommand) # Reef Intake
+            self._joystick.povUp().onTrue(algaeReefIntakeCommand) # Reef Intake
             self._joystick.rightTrigger().onTrue(algaeGroundIntakeCommand) # Reef Ground
             self._joystick.leftTrigger().onTrue(algaeProcessCommand) # Reef Process
             self._joystick.leftStick().onTrue(algaeHomeCommand) # Home
@@ -291,7 +291,7 @@ class RobotContainer:
             # For testing so I don't have to hit the joystick perfectly
             self._joystick.povDown().onTrue(algaeHomeCommand)
 
-            self._joystick.y().onFalse(algaeAfterGroundIntakeCommand) # algaeAfterGroundIntakeCommand)
+            self._joystick.povUp().onFalse(algaeAfterGroundIntakeCommand) # algaeAfterGroundIntakeCommand)
             self._joystick.rightTrigger().onFalse(algaeAfterGroundIntakeCommand)
             self._joystick.leftTrigger().onFalse(algaeHomeCommand)
             # self._joystick.leftStick().onFalse()
@@ -368,18 +368,7 @@ class RobotContainer:
             # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
             self._joystick.x().whileTrue(self.forwardCommand)
             self._joystick.rightStick().whileTrue(self.backwardCommand)
-
-    def getHumanPlayerAngle(self)-> float:
-        offset = 180
-        if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            offset = 70+180
-        return (235 + offset ) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset )
-
-    def set_slow_mode(self, value):
-
-        self.slow_mode_multiplier = value
-
-        
+            
         if self.ENABLE_PNEUMATIC:
             defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(
                 self.pneumaticSubsystem,
@@ -392,3 +381,16 @@ class RobotContainer:
 
             self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
             # self._joystick2.povUp().whileTrue(pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem))
+            
+            self._joystick2.povUp().whileTrue(testPneumaticCommand)
+
+    def getHumanPlayerAngle(self)-> float:
+        offset = 70 + 180
+        if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            if self.drivetrain.get_state().pose.y <= 3.8:
+                return (-235 - offset)
+        return (235 + offset)
+
+    def set_slow_mode(self, value):
+
+        self.slow_mode_multiplier = value
