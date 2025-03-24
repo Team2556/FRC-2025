@@ -67,14 +67,6 @@ class RobotContainer:
 
     def __init__(self) -> None:
 
-        AutoBuilder._configured = False
-        
-        self.Coral1 = (coralCommands.DischargeCoralCommand(
-                self.coralSubsystem,
-                self.elevatorSubsystem,
-                direction = -1,  # Left is -1, Right is 1
-            ))
-
         self._max_speed = (
             TunerConstants.speed_at_12_volts
         )  # speed_at_12_volts desired top speed
@@ -116,10 +108,6 @@ class RobotContainer:
 
         self.drivetrain = TunerConstants.create_drivetrain()
 
-        # Path follower
-        # self._auto_chooser = AutoBuilder.buildAutoChooser("Tests")
-        # SmartDashboard.putData("Auto Mode", self._auto_chooser)
-
         self.vision = VisionSubsystem(self.drivetrain, "limelight-four")
         #self.auto_align = AutoAlign(self.drivetrain, self.vision)
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
@@ -157,9 +145,19 @@ class RobotContainer:
         # Configure the button bindings
         self.configureButtonBindings()
 
+        # Make Auto Command so it actually corals
+        self.Coral1 = (coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                # self.elevatorSubsystem,
+                direction = -1,  # Left is -1, Right is 1
+            ))
+        AutoBuilder._configured = False
 
-    # def getAutonomousCommand(self):
-    #     return self._auto_chooser.getSelected()
+    def getAutonomousCommand(self):
+        # Load the path you want to follow using its name in the GUI
+        path = PathPlannerPath.fromPathFile("moveForeward")
+        # Create a path following command using AutoBuilder. This will also trigger event markers.
+        return AutoBuilder.followPath(path)
 
     def configureButtonBindings(self) -> None:
         """
@@ -177,12 +175,10 @@ class RobotContainer:
             self.slowRotationMultiplier = rotation
 
         self._joystick.rightBumper().onTrue(
-            # THESE HERE ARE THE VALUES TO TUNE YAY     vvv  vvvv
             commands2.cmd.runOnce(changeSlowMultipliers(
                 Override_DriveConstant.kSlowMove, 
                 Override_DriveConstant.kSlowRotate
             ))
-            # THESE HERE ARE THE VALUES TO TUNE YAY     ^^^  ^^^^
         ).onFalse(
             commands2.cmd.runOnce(changeSlowMultipliers(1, 1))
         )
