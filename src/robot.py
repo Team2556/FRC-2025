@@ -53,22 +53,16 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
-        # self.autonomousCommand = self.container.getAutonomousCommand()
+        self.autonomousCommand = self.container.getAutonomousCommand()
 
         # if self.autonomousCommand:
         #     self.autonomousCommand.schedule()
-        pass
+        #pass
             
 
     def autonomousPeriodic(self) -> None:
         """This function is called periodically during autonomous"""
-        self.container.drivetrain.apply_request(
-            commands2.cmd.runOnce(
-                lambda: (
-                    self.container._drive.with_velocity_x(2).with_velocity_y(2)
-                )
-            )
-        )
+        pass
 
     def teleopInit(self) -> None:
         # This makes sure that the autonomous stops running when
