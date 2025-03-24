@@ -1,14 +1,14 @@
-import wpilib
 from commands2 import Command
+from phoenix6 import utils
 from phoenix6.swerve import SwerveModule
 from phoenix6.swerve.requests import RobotCentric, Idle
 from wpilib import SmartDashboard
 from wpimath._controls._controls.controller import PIDController
 
-from lib.limelight import RawFiducial
-
+from robotUtils.limelight import RawFiducial
 from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 from subsystems.vison import VisionSubsystem
+
 
 class AutoAlign(Command):
     def __init__(self, drivetrain: CommandSwerveDrivetrain, vision: VisionSubsystem):
@@ -47,16 +47,18 @@ class AutoAlign(Command):
         fiducial = self.vision.get_fiducial_with_id(self.tag_id)
 
         if fiducial is None:
-            self.drivetrain.set_control(self.align_request.with_velocity_x(0).with_velocity_y(0).with_rotational_rate(0.0))
-            return
-            fiducial = RawFiducial()
-            fiducial.id = 7  # Example tag ID
-            fiducial.txyc = 10  # Random normalized x position
-            fiducial.tync = 1  # Random normalized y position
-            fiducial.ta = 1.5  # Random target area
-            fiducial.dist_to_camera = 1  # 2 meters away from the camera
-            fiducial.dist_to_robot = 1  # Slightly farther from the robot center
-            fiducial.ambiguity = 0.1  # Low ambiguity (good detection)
+            if not utils.is_simulation():
+                self.drivetrain.set_control(self.align_request.with_velocity_x(0).with_velocity_y(0).with_rotational_rate(0.0))
+            else:
+                # Random sim values
+                fiducial = RawFiducial()
+                fiducial.id = 7
+                fiducial.txyc = 10
+                fiducial.tync = 1
+                fiducial.ta = 1.5
+                fiducial.dist_to_camera = 1
+                fiducial.dist_to_robot = 1
+                fiducial.ambiguity = 0.1
 
         self.rotational_rate = self.rotational_pid.calculate(2 * -1 * fiducial.txyc, 0.0) * 0.675
         self.velocity_y = self.y_pid.calculate(fiducial.dist_to_robot, 0.65) * -1 * 0.7 # Scaled speed factor
@@ -71,7 +73,6 @@ class AutoAlign(Command):
         )
 
         SmartDashboard.putNumber("txyc", fiducial.txyc)
-        #print(fiducial.dist_to_robot)
         SmartDashboard.putNumber("rotationalPidController", self.rotational_rate)
         SmartDashboard.putNumber("xPidController", self.velocity_x)
 

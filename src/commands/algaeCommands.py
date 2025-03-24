@@ -1,10 +1,12 @@
 '''Has a command for changing the position of the pivot motor and the speed of the intake motor'''
 
-from wpilib import Timer
 from commands2 import Command, InterruptionBehavior
-from subsystems import algaeSubsystem
+from wpilib import Timer
+
 from constants import AlgaeConstants
-    
+from subsystems import algaeSubsystem
+
+
 class AlgaeCommand(Command):
     '''THE algae command that sets a pivot and rotation value'''
     def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem, position, intakeSpeed):

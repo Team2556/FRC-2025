@@ -1,10 +1,11 @@
 '''The coral subsystem yay'''
 
-from wpilib import DigitalInput
 from commands2 import Subsystem
-from rev import SparkMaxConfig, SparkBase, SparkFlex
+from rev import SparkFlex
+from wpilib import DigitalInput
 
 from constants import CoralConstants
+
 
 class CoralTrack(Subsystem):
     def __init__(self):

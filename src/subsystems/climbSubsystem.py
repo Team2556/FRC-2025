@@ -1,9 +1,11 @@
 import math
+
 import phoenix6
-from phoenix6 import signals
-from phoenix6.hardware import TalonFX
 import wpilib
-from constants import ClimbConstants, CoralConstants
+from phoenix6.hardware import TalonFX
+
+from constants import ClimbConstants
+
 
 class ClimbSubsystem():
     ''' Subsystem that handles the climb mechanic '''

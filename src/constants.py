@@ -1,68 +1,23 @@
-import numpy
-import robotpy_apriltag as apriltag
-from enum import IntEnum, auto
 import math
-from phoenix6.units import *
+from enum import IntEnum, auto
+
+import robotpy_apriltag as apriltag
+from wpimath.geometry import (
+    Translation2d,
+    Rotation2d,
+    Transform2d,
+)
 from wpimath.units import (
-    degrees,
-    radians,
     degreesToRadians,
-    radiansToDegrees,
     inchesToMeters,
     inches,
 )
-from wpimath.trajectory import TrapezoidProfile
-from wpimath.geometry import (
-    Translation2d,
-    Pose2d,
-    Translation3d,
-    Pose3d,
-    Rotation2d,
-    Transform2d,
-    Transform3d,
-    Rotation3d,
-)
-from wpilib import SmartDashboard
-from phoenix6.configs.config_groups import Slot0Configs
-from pathlib import Path
+
 
 class AprilTagConstants:
     kCompFieldType = apriltag.AprilTagField.k2025ReefscapeWelded
     kPoleOffset = inchesToMeters(inches(12.94)/2  )
     kOrigStandoff = 1 # meter  inchesToMeters(inches(16) ) # 12.94
-class AprilTags_height:
-    def tag_heights():  # height of apriltags by order of number, in centimeters
-        heights = numpy.array(
-            [
-                135,
-                135,
-                117,
-                178,
-                178,
-                17,
-                17,
-                17,
-                17,
-                17,
-                17,
-                135,
-                135,
-                117,
-                178,
-                178,
-                17,
-                17,
-                17,
-                17,
-                17,
-                17,
-            ]
-        )
-        heights = numpy.array(
-            # FIXME: "AprilTags" is not defined   vvvvvvvvv that one
-            #[numpy.nan] + [tag.pose.Z for tag in AprilTags]
-        )  # put nan at front so index from 1 works better
-        return heights
 
 """ ID X Y Z Z-Rotation Y-Rotation (in inches)
  1 657.37 25.80 58.50 126 0
@@ -111,7 +66,6 @@ class Rio_DIO(IntEnum):
     SIXTEEN = auto()
     SEVENTEEN = auto()
 
-
 class Rio_Pnue(IntEnum):
     ZERO = 0
     ONE = auto()
@@ -121,7 +75,6 @@ class Rio_Pnue(IntEnum):
     FIVE = auto()
     SIX = auto()
     SEVEN = auto()
-
 
 class Rio_PWM(IntEnum):
     ONE = 0
@@ -135,13 +88,11 @@ class Rio_PWM(IntEnum):
     NINE = auto()
     TEN = auto()
 
-
 class Rio_Relay(IntEnum):
     ZERO = 0
     ONE = auto()
     TWO = auto()
     THREE = auto()
-
 
 class Rio_Analog(IntEnum):
     ZERO = 0
@@ -149,7 +100,6 @@ class Rio_Analog(IntEnum):
     TWO = auto()
     THREE = auto()
 
-# TODO: Do we really need this (i guess so?)
 class CAN_Address(IntEnum):
     ZERO = 0
     ONE = auto()
@@ -211,7 +161,6 @@ class RobotDimensions:
     LEFT_SHOOTER_ROBOT_SPACE = Transform2d(ROBOT_CENTER_FROM_LEFT_SHOOTER, Rotation2d(degreesToRadians(90)))
     RIGHT_SHOOTER_ROBOT_SPACE = Transform2d(ROBOT_CENTER_FROM_RIGHT_SHOOTER, Rotation2d(degreesToRadians(-90)))
 
-class Override_DriveConstant: ...
 
 # NOTE: ALL OF THE BELOW CLASSES ARE FOR SUBSYSTEMS
 
@@ -266,8 +215,8 @@ class ElevatorConstants:
     
     kTopLimitSwitchChannel = Rio_DIO.SEVEN  # TODO: ? two on top also?
 
-# endregion
-class Override_DriveConstant: ...
+class Override_DriveConstant:
+    kSlowMode = 0.3 # Percent speed for slow mode
 
 class AlgaeConstants:
     # Motor Channels
@@ -384,5 +333,3 @@ class LimelightConstants:
     kLL4roll = 2.8
     kLL4pitch = 37.6
     kLL4yaw = -90
-
-    

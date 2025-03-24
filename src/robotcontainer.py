@@ -5,40 +5,17 @@
 #
 import math
 
-# NOTE: Please use the following naming conventions:
-# Subsystems are: name + "Subsystem"
-# Commands are: name + "Command"
-# Command modules are: name + "Commands" (in camel case)
-# Enable variables are in MACRO_CASE just like constants
-# Constant classes are: name + "Constants" (also in camel case)
-
-# If you wish to change any of these, be sure to change all
-# instances of the rule unless you're really desperate on time
-
-# from imaplib import Commands
 import commands2
 import commands2.button
 import commands2.cmd
-import wpilib
-from commands2.sysid import SysIdRoutine
-
-from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
-from pathplannerlib.path import PathPlannerPath, PathConstraints, GoalEndState
+from commands2.cmd import runOnce
+from pathplannerlib.auto import AutoBuilder
+from phoenix6 import swerve
 from phoenix6.swerve import Pose2d, SwerveModule
 from phoenix6.swerve.requests import FieldCentricFacingAngle
 from wpilib import SmartDashboard, DriverStation
-
-from commands.path_on_the_fly_auto_align import PathOnTheFlyAutoAlign
-from subsystems import vison
-from subsystems.vison import VisionSubsystem
-from commands.auto_align import AutoAlign
-# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
-from subsystems import (
-    algaeSubsystem,
-    coralSubsystem,
-    elevatorSubsystem,
-    climbSubsystem
-)
+from wpimath.geometry import Rotation2d
+from wpimath.units import rotationsToRadians
 
 from commands import (
     algaeCommands,
@@ -46,17 +23,30 @@ from commands import (
     elevatorCommands,
     climbCommands
 )
-
-from constants import ElevatorConstants, AlgaeConstants, CoralConstants
-
-from robotUtils.adjustJoystick import adjust_jostick
-
+from commands.path_on_the_fly_auto_align import PathOnTheFlyAutoAlign
+from constants import ElevatorConstants, AlgaeConstants, Override_DriveConstant
 from generated.tuner_constants import TunerConstants
+from robotUtils.adjustJoystick import adjust_jostick
+# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
+from subsystems import (
+    algaeSubsystem,
+    coralSubsystem,
+    elevatorSubsystem,
+    climbSubsystem
+)
+from subsystems import vison
+from subsystems.vison import VisionSubsystem
 from telemetry import Telemetry
 
-from phoenix6 import swerve
-from wpimath.geometry import Rotation2d
-from wpimath.units import rotationsToRadians
+
+# NOTE: Please use the following naming conventions:
+# Subsystems are: name + "Subsystem"
+# Commands are: name + "Command"
+# Command modules are: name + "Commands" (in camel case)
+# Enable variables are in MACRO_CASE just like constants
+# Constant classes are: name + "Constants" (also in camel case)
+# If you wish to change any of these, be sure to change all
+# instances of the rule unless you're really desperate on time
 
 
 class RobotContainer:
@@ -97,13 +87,13 @@ class RobotContainer:
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )  # Use open-loop control for drive motors
         )
-        self.field_centric_request = (FieldCentricFacingAngle()
-                                      .with_heading_pid(5, 0, 0)
-                                      .with_max_abs_rotational_rate(2 * math.pi)
-                                      .with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)
-                                      .with_deadband(self._max_speed * 0.1)
-                                      )
-
+        self.field_centric_angle_lock = (FieldCentricFacingAngle()
+                                         .with_heading_pid(5, 0, 0)
+                                         .with_max_abs_rotational_rate(2 * math.pi)
+                                         .with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)
+                                         .with_deadband(self._max_speed * 0.1)
+                                         )
+        self.slow_mode_multiplier = 1.0 # 1 or kSlowMode constant
 
         self._logger = Telemetry(self._max_speed)
 
@@ -168,15 +158,15 @@ class RobotContainer:
                     self._field_centric_drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
                         -adjust_jostick(self._joystick.getLeftY(), smooth=True)
-                        * self._max_speed
+                        * self._max_speed * self.slow_mode_multiplier
                     )  # Drive forward with negative Y (forward)
                     .with_velocity_y(
                         adjust_jostick(-self._joystick.getLeftX(), smooth=True)
-                        * self._max_speed
+                        * self._max_speed * self.slow_mode_multiplier
                     )  # Drive left with negative X (left)
                     .with_rotational_rate(
                         adjust_jostick(-self._joystick.getRightX(), smooth=True)
-                        * self._max_angular_rate
+                        * self._max_angular_rate * self.slow_mode_multiplier
                     )  # Drive counterclockwise with negative X (left)
                 )
             )
@@ -184,35 +174,20 @@ class RobotContainer:
 
         self._joystick.leftBumper().whileTrue(
             self.drivetrain.apply_request(
-                lambda: self.field_centric_request
-                .with_velocity_x(-self._joystick.getLeftY() * self._max_speed)
-                .with_velocity_y(-self._joystick.getLeftX() * self._max_speed)
+                lambda: self.field_centric_angle_lock
+                .with_velocity_x(-self._joystick.getLeftY() * self._max_speed * self.slow_mode_multiplier)
+                .with_velocity_y(-self._joystick.getLeftX() * self._max_speed * self.slow_mode_multiplier)
                 .with_target_direction(Rotation2d.fromDegrees(self.getHumanPlayerAngle()))
             )
         )
 
+        self._joystick.rightBumper().onTrue(runOnce(lambda: self.set_slow_mode(Override_DriveConstant.kSlowMode))).onFalse(runOnce(lambda: self.set_slow_mode(1.0)))
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
-        self._joystick.b().onTrue(self.drivetrain.runOnce(lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0))))
-
-
-        self._joystick.rightBumper().whileTrue(
-            self.drivetrain.apply_request(
-                lambda: (
-                    self._robot_centric_drive.with_velocity_x(
-                        (-1 * adjust_jostick(self._joystick.getLeftY()))
-                        * self._max_speed
-                    )  # Drive forward with negative Y (forward)
-                    .with_velocity_y(
-                        (-1 * adjust_jostick(self._joystick.getLeftX()))
-                        * self._max_speed
-                    )  # Drive left with negative X (left)
-                    .with_rotational_rate(
-                        (-1 * adjust_jostick(self._joystick.getRightX()))
-                        * self._max_angular_rate
-                    )  # Drive counterclockwise with negative X (left)
-                )
-            )
-        )
+        self._joystick.b().onTrue(self.drivetrain.runOnce(
+            lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0)
+                                               if (DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.Blue)
+                                               else Pose2d(17.065,6.47, Rotation2d.fromDegrees(180.0)))
+        ))
 
         # Elevator button press detection:
 
@@ -277,36 +252,6 @@ class RobotContainer:
             # Process
             # Home
 
-        reefWaypoints = PathPlannerPath.waypointsFromPoses([
-            Pose2d(2, 2.0, Rotation2d.fromDegrees(90)),
-            Pose2d(2, 6.0, Rotation2d.fromDegrees(90))
-        ])
-        """
-            Kinematic path following constraints
-
-            Args:
-                maxVelocityMps (float): Max linear velocity (M/S)
-                maxAccelerationMpsSq (float): Max linear acceleration (M/S^2)
-                maxAngularVelocityRps (float): Max angular velocity (Rad/S)
-                maxAngularAccelerationRpsSq (float): Max angular acceleration (Rad/S^2)
-                nominalVoltage (float): Nominal battery voltage (Volts)
-                unlimited (bool): Should the constraints be unlimited
-            """
-        reefConstraints = PathConstraints(1.0, 1.0, (2 * math.pi) / 2,
-                                          (4 * math.pi) / 2)  # The constraints for this path.
-        # constraints = PathConstraints.unlimitedConstraints(12.0) # You can also use unlimited constraints, only limited by motor torque and nominal battery voltage
-        # Create the path using the waypoints created above
-        testPath = PathPlannerPath(
-            reefWaypoints,
-            reefConstraints,
-            None,
-            # The ideal starting state, this is only relevant for pre-planned paths, so can be None for on-the-fly paths.
-            GoalEndState(0.0, Rotation2d.fromDegrees(90))
-            # Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
-        )
-
-        # Prevent the path from being flipped if the coordina6es are already correct
-        testPath.preventFlipping = False
         self.auto_align = PathOnTheFlyAutoAlign(self.drivetrain, self.vision)
 
         self._joystick.y().whileTrue(self.auto_align)
@@ -422,3 +367,6 @@ class RobotContainer:
         if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             offset = 70 + 180
         return (235 + offset) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset)
+
+    def set_slow_mode(self, value):
+        self.slow_mode_multiplier = value

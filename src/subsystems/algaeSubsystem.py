@@ -1,9 +1,11 @@
 # Thing that controls the algae
 
-from wpilib import SmartDashboard, DigitalInput
-from constants import AlgaeConstants
-from commands2.subsystem import Subsystem
 import phoenix6
+from commands2.subsystem import Subsystem
+from wpilib import SmartDashboard, DigitalInput
+
+from constants import AlgaeConstants
+
 
 class AlgaeSubsystem(Subsystem):
     '''This thing does algae intake and discharge.'''

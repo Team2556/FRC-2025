@@ -1,6 +1,8 @@
 import commands2
 import wpilib
+
 from constants import PneumaticConstants
+
 
 class PneumaticSubsystem(commands2.Subsystem):
     def __init__(self):

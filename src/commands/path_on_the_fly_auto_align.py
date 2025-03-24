@@ -1,22 +1,15 @@
-from typing import List
-
 from commands2 import Command
-from pathplannerlib.path import PathPlannerPath, PathConstraints, GoalEndState
 from phoenix6 import utils
-from wpimath.geometry import Pose2d, Rotation2d, Translation2d, Transform2d
-import math
-
-from robotUtils.limelight import LimelightHelpers
-
-from commands2 import Command
 from phoenix6.swerve import SwerveModule
-from phoenix6.swerve.requests import RobotCentric, Idle, FieldCentric
+from phoenix6.swerve.requests import FieldCentric
 from wpilib import SmartDashboard
 from wpimath._controls._controls.controller import PIDController
+from wpimath.geometry import Pose2d, Rotation2d, Translation2d, Transform2d
 
-from lib.limelight import RawFiducial
+from robotUtils.limelight import LimelightHelpers
 from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 from subsystems.vison import VisionSubsystem
+
 
 def get_fiducial_id(limelight_name):
     pass
@@ -64,7 +57,7 @@ class PathOnTheFlyAutoAlign(Command):
             i:j for i,j in zip(self.tagID,poseList)
         }
 
-        self.initiallReefWaypoints = {
+        self.initialReefWaypoints = {
             i: j for i, j in zip(self.tagID, initialPoseList)
         }
 
@@ -80,7 +73,7 @@ class PathOnTheFlyAutoAlign(Command):
             self.end(True)
         else:
             SmartDashboard.putNumber("Seen Tag", self.seen_tag_ID)
-            self.endpose = self.initiallReefWaypoints[self.seen_tag_ID]
+            self.endpose = self.initialReefWaypoints[self.seen_tag_ID]
             self.rotational_pid.setTolerance(1)
             self.x_pid.setTolerance(0.1)
             self.y_pid.setTolerance(0.1)
@@ -89,10 +82,10 @@ class PathOnTheFlyAutoAlign(Command):
         if not self.seen_tag_ID in self.tagID or self.seen_tag_ID is None:
             self.end(True)
             return
-        currentPose = self.swerve.get_state().pose
-        self.rotational_rate = self.rotational_pid.calculate(currentPose.rotation().degrees(), self.endpose.rotation().degrees())
-        self.velocity_y = self.y_pid.calculate(currentPose.y, self.endpose.y)
-        self.velocity_x = self.x_pid.calculate(currentPose.x, self.endpose.x)
+        current_pose = self.swerve.get_state().pose
+        self.rotational_rate = self.rotational_pid.calculate(current_pose.rotation().degrees(), self.endpose.rotation().degrees())
+        self.velocity_y = self.y_pid.calculate(current_pose.y, self.endpose.y)
+        self.velocity_x = self.x_pid.calculate(current_pose.x, self.endpose.x)
 
         if self.rotational_pid.atSetpoint() and self.y_pid.atSetpoint() and self.x_pid.atSetpoint():
             if not self.initialReached:
@@ -101,9 +94,9 @@ class PathOnTheFlyAutoAlign(Command):
                 self.rotational_pid.setTolerance(SmartDashboard.getNumber("rotationalPID set tolerance", 0.2))
                 self.x_pid.setTolerance(SmartDashboard.getNumber("xPID set tolerance", 0.025))
                 self.y_pid.setTolerance(SmartDashboard.getNumber("yPID set tolerance", 0.025))
-                self.rotational_rate = self.rotational_pid.calculate(currentPose.rotation().degrees(),self.endpose.rotation().degrees())
-                self.velocity_y = self.y_pid.calculate(currentPose.y, self.endpose.y)
-                self.velocity_x = self.x_pid.calculate(currentPose.x, self.endpose.x)
+                self.rotational_rate = self.rotational_pid.calculate(current_pose.rotation().degrees(),self.endpose.rotation().degrees())
+                self.velocity_y = self.y_pid.calculate(current_pose.y, self.endpose.y)
+                self.velocity_x = self.x_pid.calculate(current_pose.x, self.endpose.x)
             else:
                 self.end(True)
                 return

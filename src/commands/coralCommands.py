@@ -1,18 +1,17 @@
-'''Has a command for discharging and a default command for intaking'''
+"""Has a command for discharging and a default command for intaking"""
 
-from commands2 import Command, InterruptionBehavior
-from wpilib import Timer
+from commands2 import Command
 
-from subsystems import coralSubsystem, elevatorSubsystem
 from constants import CoralConstants
+from subsystems import coralSubsystem
+from subsystems.coralSubsystem import CoralTrack
+from subsystems.elevatorSubsystem import ElevatorSubsystem
+
 
 class DischargeCoralCommand(Command):
-    def __init__(
-        self, 
-        coralTrack: coralSubsystem.CoralTrack, 
-        elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem,
-        direction = 1,
-    ):
+    def __init__(self, coralTrack: CoralTrack, elevatorSubsystem: ElevatorSubsystem,
+                 direction=1):
+        super().__init__()
         # Declare subsystems and add requirements
         self.coralTrack = coralTrack
         self.addRequirements(self.coralTrack)
@@ -35,20 +34,21 @@ class DischargeCoralCommand(Command):
         # Check for flippers
 
 class CoralDefaultCommand(Command):
-    '''The default command for coral... it does all the centering'''
+    """The default command for coral... it does all the centering"""
     def __init__(self, coralSubsystem: coralSubsystem.CoralTrack):
-        # Declare subsystems and add requirements
+        super().__init__()
+        # Declare subsystem and add requirement
         self.coralSubsystem = coralSubsystem
         self.addRequirements(self.coralSubsystem)
         
     def execute(self):
         # Look guys it's Aidan's original code v4
-        is_Left = self.coralSubsystem.left_detector.get()
-        is_Right = self.coralSubsystem.right_detector.get()
+        is_left = self.coralSubsystem.left_detector.get()
+        is_right = self.coralSubsystem.right_detector.get()
 
-        if is_Left and not is_Right:
+        if is_left and not is_right:
             self.coralSubsystem.set_motor(1 * CoralConstants.kIntakeMultiplier)
-        elif is_Right and not is_Left:
+        elif is_right and not is_left:
             self.coralSubsystem.set_motor(-1 * CoralConstants.kIntakeMultiplier)
         else:
             self.coralSubsystem.disable_motor()

@@ -3,10 +3,10 @@ import math
 
 import wpilib
 from commands2 import Subsystem
+from robotUtils.limelight import PoseEstimate, LimelightHelpers
 from phoenix6 import utils
 from wpilib import SmartDashboard
 
-from lib.limelight import PoseEstimate, LimelightHelpers
 from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 
 
@@ -34,12 +34,11 @@ class VisionSubsystem(Subsystem):
             raise TypeError(f"All cameras must be strings! Given: {self._cameras}")
 
         self._executor = concurrent.futures.ThreadPoolExecutor()
-        SmartDashboard.putNumber("Standered deviation multiplier", 0.01)
+        SmartDashboard.putNumber("Standard deviation multiplier", 0.01)
 
 
     def periodic(self):
         super().periodic()
-
 
         if abs(self._swerve.pigeon2.get_angular_velocity_z_world().value) > 720:
             return
@@ -83,7 +82,7 @@ class VisionSubsystem(Subsystem):
         avg_dist = sum(f.dist_to_camera for f in estimate.raw_fiducials) / estimate.tag_count
         factor = 1 + (avg_dist ** 2 / 30)
         SmartDashboard.putNumber("Factor", factor)
-        multiplier = SmartDashboard.getNumber("Standered deviation multiplier", 0.01)
+        multiplier = SmartDashboard.getNumber("Standard deviation multiplier", 0.01)
         SmartDashboard.putNumber("Factor*multiplier", factor*multiplier)
         #return(0.009, 0.009, math.inf)
 
@@ -97,5 +96,3 @@ class VisionSubsystem(Subsystem):
                 return tag
 
         return None
-
-

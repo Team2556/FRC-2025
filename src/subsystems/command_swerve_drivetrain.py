@@ -1,13 +1,14 @@
+import math
+from typing import Callable, overload
+
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
-import math
+from pathplannerlib.auto import AutoBuilder, RobotConfig
+from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
 from phoenix6 import SignalLogger, swerve, units, utils
-from typing import Callable, overload
 from wpilib import DriverStation, Notifier, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Pose2d, Rotation2d
-from pathplannerlib.auto import AutoBuilder, RobotConfig
-from pathplannerlib.controller import PIDConstants, PPHolonomicDriveController
 
 
 class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
