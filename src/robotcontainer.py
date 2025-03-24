@@ -391,7 +391,7 @@ class RobotContainer:
             )
             
             # TODO: removed timer may need new command or time put on via factory here
-            testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
+            # testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
 
             self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
-            self._joystick2.povUp().whileTrue(testPneumaticCommand)
+            # self._joystick2.povUp().whileTrue(pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem))
