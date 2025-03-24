@@ -5,9 +5,9 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
-import wpilib
-import commands2
 import typing
+
+import commands2
 
 from robotcontainer import RobotContainer
 

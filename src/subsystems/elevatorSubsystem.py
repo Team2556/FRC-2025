@@ -1,13 +1,13 @@
 
 import commands2
-from wpilib import SmartDashboard, DigitalInput
-import wpimath.trajectory
 import phoenix6
-from phoenix6 import hardware, controls, configs, StatusCode, signals
+from phoenix6 import controls, configs, signals
 from phoenix6.controls import Follower
+from phoenix6.hardware import TalonFX
 from phoenix6.signals import NeutralModeValue
+from wpilib import SmartDashboard, DigitalInput
+
 from constants import ElevatorConstants
-from math import pi
 
 
 # Create a new ElevatorSubsystem... using phonix6 PID
@@ -19,23 +19,17 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         self.setpoint = 0
 
         # Declare the motors
-        self.elevmotor_right = phoenix6.hardware.TalonFX(ElevatorConstants.kRightMotorPort, "rio")
-        self.elevmotor_left = phoenix6.hardware.TalonFX(ElevatorConstants.kLeftMotorPort, "rio")
+        self.elevmotor_right = TalonFX(ElevatorConstants.kRightMotorPort, "rio")
+        self.elevmotor_left = TalonFX(ElevatorConstants.kLeftMotorPort, "rio")
         
         # Make the right motor follow the left (so moving the left one moves the right one in the opposite direction)
         # TODO: Actually make this work it's important we kinda need it
         self.elevmotor_right.set_control(Follower(self.elevmotor_left.device_id, 
                                                   #the motors ar configured such that positive id up on the motor when they act individually, therefore they do not oppose
                                                   oppose_master_direction = True))
-        
-        # Make it so when motor speed is set to 0 then it stays at 0 and resists movement against it
-        # or not
-        # self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
-        # self.elevmotor_left.setNeutralMode(NeutralModeValue.BRAKE)
-        
-        # Declare the encoders (they're not referenced later but still needed?)
-        self.elevCANcoder_left = phoenix6.hardware.CANcoder(ElevatorConstants.kLeftMotorPort)
-        self.elevCANcoder_right = phoenix6.hardware.CANcoder(ElevatorConstants.kRightMotorPort)
+
+        self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
+        self.elevmotor_left.setNeutralMode(NeutralModeValue.BRAKE)
         
         # Declare Limit switches (2 on each direction)
         self.limit_bottomLeft = DigitalInput(ElevatorConstants.kBottomLeftLimitSwitchChannel)
@@ -48,22 +42,13 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         cfg.slot0.k_i = ElevatorConstants.kElevatorKi
         cfg.slot0.k_d = ElevatorConstants.kElevatorKd
         cfg.slot0.k_g = ElevatorConstants.kElevatorKg
-        
-        # cfg.slot0.integralZone = 0
-        # cfg.slot0.forwardSoftLimitThreshold = 0
 
         cfg.slot0.gravity_type = signals.GravityTypeValue.ELEVATOR_STATIC
         cfg.slot0.static_feedforward_sign = signals.StaticFeedforwardSignValue.USE_VELOCITY_SIGN
-        
-        # cfg.slot0.k_a = ElevatorConstants.kAVoltSecondSquaredPerMeter
-        # cfg.slot0.k_v = ElevatorConstants.kVVoltSecondPerMeter
-        # cfg.slot0.maxIntegralAccumulator = 0
 
-        # cfg.voltage.peak_output_forward = 8
-        # cfg.stator_current_limit_enable = True
         cfg.torque_current.peak_forward_torque_current = ElevatorConstants.kpeak_forward_torque_current
         cfg.torque_current.peak_reverse_torque_current = ElevatorConstants.kpeak_reverse_torque_current
-        # Would only work with CAN based (prob CRTE only) sensors as limitswitches
+
         elevmotorLimitswitch_cfg = (configs.HardwareLimitSwitchConfigs()
                                        .with_forward_limit_enable(True)
                                        .with_forward_limit_autoset_position_enable(False)
@@ -77,9 +62,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
                                        .with_reverse_limit_type(signals.ReverseLimitTypeValue.NORMALLY_OPEN)
                                        )
         cfg.with_hardware_limit_switch(elevmotorLimitswitch_cfg)
- 
-        # cfg.with_current_limits(
-        # configs.CurrentLimitsConfigs().with_supply_current_limit()
+
 
         elevmotorSoftLimits_cfg = (configs.SoftwareLimitSwitchConfigs()
                                    .with_forward_soft_limit_enable(True)
@@ -100,17 +83,11 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         
         self.cfg_slot0 = cfg.slot0
 
-        # Retry config apply up to 5 times, report if failure (for both elevator motors)
-        status = StatusCode.STATUS_CODE_NOT_INITIALIZED
         for _ in range(0, 5):
             status = self.elevmotor_left.configurator.apply(cfg)
-            # status = self.elevmotor_right.configurator.apply(cfg)
             if status.is_ok():
                 break
-            
-        status = StatusCode.STATUS_CODE_NOT_INITIALIZED
         for _ in range(0, 5):
-            # status = self.elevmotor_left.configurator.apply(cfg)
             status = self.elevmotor_right.configurator.apply(cfg)
             if status.is_ok():
                 break
@@ -132,18 +109,22 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         self.setupSmartDashboard()
         
         self.elevmotor_left.set_position(0)
+        
+        self.isHoming = False
 
     def moveElevator(self) -> None:
-        '''Setpoint is in meters of elevator elevation from lowest physical limit'''
+        """Setpoint is in meters of elevator elevation from the lowest physical limit"""
         self.elevmotor_left.set_control(self.position_voltage.with_position(self.setpoint)
                                         .with_velocity(ElevatorConstants.kElevatorSpeed))
+        self.isHoming = False
 
     def setElevatorSpeed(self, increment):
         # Manual moving the elevator
         self.elevmotor_left.set_control(self.home_voltage.with_output(increment))
+        self.isHoming = True
         
     def updateSlot0(self, k_p: float = None, k_i: float = None, k_d: float = None, k_g: float = None) -> None:
-        '''Don't update it too much because it causes problems so it only does it when it needs to'''
+        """Don't update it too much because it causes problems so it only does it when it needs to"""
         updated = False
         if self.cfg_slot0.k_p != k_p: 
             self.cfg_slot0.k_p = k_p
@@ -159,15 +140,15 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
             updated = True
         # TODO: add others if needed
         if updated:
-            #repete up to 5 times
-            status: StatusCode = StatusCode.STATUS_CODE_NOT_INITIALIZED
             for _ in range(0, 5):
                 status = self.elevmotor_left.configurator.apply(self.cfg_slot0 )
                 if status.is_ok():
                     break
 
-    def getLimitBottom(self):
+    def getLimitBottom(self): 
+        # Changed from "or" to "and" because one of these accidentally setting off will be a big problem
         return not self.limit_bottomLeft.get() and not self.limit_bottomRight.get()
+    
     def getLimitTop(self):
         return not self.limit_top.get()
     
@@ -201,6 +182,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         SmartDashboard.putNumber("Elevator/Target Value Adder", ElevatorConstants.kTargetValueAdder)
         
         SmartDashboard.putNumber("Elevator/Coral L3", ElevatorConstants.kCoralLv3)
+        SmartDashboard.putNumber("Elevator/Algae L3", ElevatorConstants.kAlgaeLv3)
         SmartDashboard.putNumber("Elevator/Coral L4", ElevatorConstants.kCoralLv4)
         
         SmartDashboard.putNumber("Elevator/Height To Slow Down", ElevatorConstants.kLowEnoughToSlowDown)
@@ -234,6 +216,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         
         # Setpoint Stuff
         ElevatorConstants.kCoralLv3 = SmartDashboard.getNumber("Elevator/Coral L3", ElevatorConstants.kCoralLv3)
+        ElevatorConstants.kAlgaeLv3 = SmartDashboard.getNumber("Elevator/Algae L3", ElevatorConstants.kAlgaeLv3)
         ElevatorConstants.kCoralLv4 = SmartDashboard.getNumber("Elevator/Coral L4", ElevatorConstants.kCoralLv4)   
         
         self.position_voltage.velocity = SmartDashboard.getNumber("Elevator/Velocity", ElevatorConstants.kElevatorSpeed)
@@ -245,8 +228,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
     def periodic(self):
         self.updateSmartDashboard()
         
-        # Can do this all in motor config TODO: Update & Remove
-        if self.getLimitBottom():
+        # Can do this all in motor config maybe TODO: update & remove yay
+        if self.getLimitBottom() and self.isHoming:
             # self.position_voltage.limit_forward_motion = True
             self.elevmotor_left.set_position(0) # To zero it
         # else: 

@@ -1,24 +1,22 @@
 '''The coral subsystem yay'''
 
-from wpilib import DigitalInput
 from commands2 import Subsystem
-from rev import SparkMaxConfig, SparkBase, SparkFlex
+from rev import SparkFlex
+from wpilib import DigitalInput
 
 from constants import CoralConstants
 
+
 class CoralTrack(Subsystem):
     def __init__(self):
+        print("CoralTrack init ---/n---/n--/n")
         self.motor_controller = SparkFlex(
             CoralConstants.kCoralMotorPort, SparkFlex.MotorType.kBrushless
         )
-        # self.motor_controller.configure(
-        #     SparkMaxConfig(),
-        #     SparkBase.ResetMode.kResetSafeParameters,
-        #     SparkBase.PersistMode.kPersistParameters,
-        # )
 
         self.left_detector = DigitalInput(CoralConstants.kLeftBreakerLight)
         self.right_detector = DigitalInput(CoralConstants.kRightBreakerLight)
+        self.coralFiring = False
 
     def set_motor(self, speed):
         """Sets Coral Track motor to a specific speed"""
@@ -38,7 +36,8 @@ class CoralTrack(Subsystem):
     
     def detect_coral(self):
         """Returns True if Coral detected on track"""
-        return self.left_detector.get() or self.right_detector.get()
+        # Does "not" because beam breaks return False whan it sees coral
+        return not self.left_detector.get() or not self.right_detector.get()
     
     def periodic(self):
-        ...# TODO: Add SmartDashboard tining HERE NOW i9de0mycuw8bfvuygtr7yf8btryoncgyoji
+        ...# TODO: Add SmartDashboard tining HERE NOW or not

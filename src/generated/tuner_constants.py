@@ -1,7 +1,7 @@
 from phoenix6 import CANBus, configs, hardware, signals, swerve, units
-from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 from wpimath.units import inchesToMeters
-from networktables import NetworkTables
+
+from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 
 
 class TunerConstants:

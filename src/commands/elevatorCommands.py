@@ -1,16 +1,11 @@
 '''Commands that set elevator to a position and increment elevator up or down'''
 
-from commands2 import Command, InterruptionBehavior
-from wpilib import XboxController, SmartDashboard
-from wpimath.controller import PIDController
-from wpimath.units import meters, inches, seconds, metersToInches, inchesToMeters
-from phoenix6 import hardware
+from commands2 import Command
+from wpilib import SmartDashboard
+
 from constants import ElevatorConstants
-from math import pi
-import numpy as np
-import time
-from robotUtils import controlAugment
 from subsystems import elevatorSubsystem
+
 
 class SetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
@@ -58,6 +53,7 @@ class HomeElevatorCommand(Command):
     
     def end(self, interrupted): 
         self.elevatorSubsystem.setElevatorSpeed(0)
+        self.elevatorSubsystem.setpoint = 0 # Make PID actually think it's 0
         
 class InstantSetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
@@ -99,5 +95,5 @@ class ContinuousIncrementCommand(Command):
     def execute(self):
         speed = self.function()
         if not speed == 0:
-            self.elevatorSubsystem.update_setpoint(self.speed, incremental=True)
+            self.elevatorSubsystem.update_setpoint(speed, incremental=True)
             self.elevatorSubsystem.moveElevator()
