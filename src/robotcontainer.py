@@ -178,11 +178,12 @@ class RobotContainer:
 
         self._joystick.rightBumper().onTrue(
             # THESE HERE ARE THE VALUES TO TUNE YAY     vvv  vvvv
-            commands2.cmd.runOnce(changeSlowMultipliers(0.2, 0.35))
+            commands2.cmd.runOnce(changeSlowMultipliers(
+                Override_DriveConstant.kSlowMove, 
+                Override_DriveConstant.kSlowRotate
+            ))
             # THESE HERE ARE THE VALUES TO TUNE YAY     ^^^  ^^^^
-        )
-
-        self._joystick.rightBumper().onFalse(
+        ).onFalse(
             commands2.cmd.runOnce(changeSlowMultipliers(1, 1))
         )
 
@@ -218,7 +219,6 @@ class RobotContainer:
             )
         )
 
-        self._joystick.rightBumper().onTrue(runOnce(lambda: self.set_slow_mode(Override_DriveConstant.kSlowMode))).onFalse(runOnce(lambda: self.set_slow_mode(1.0)))
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
         self._joystick.b().onTrue(self.drivetrain.runOnce(
             lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0)
@@ -396,7 +396,3 @@ class RobotContainer:
             if self.drivetrain.get_state().pose.y <= 3.8:
                 return (-235 - offset)
         return (235 + offset)
-
-    def set_slow_mode(self, value):
-
-        self.slow_mode_multiplier = value
