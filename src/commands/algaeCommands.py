@@ -3,8 +3,8 @@
 from wpilib import Timer, SmartDashboard
 from commands2 import Command, InterruptionBehavior
 from subsystems import algaeSubsystem
-from constants import AlgaeConstants
-    
+
+
 class AlgaeCommand(Command):
     '''THE algae command that sets a pivot and rotation value'''
     def __init__(self, algaeSubsystem: algaeSubsystem.AlgaeSubsystem, position, intakeSpeed):

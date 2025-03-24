@@ -1,14 +1,17 @@
 # Thing that controls the algae
 
-from wpilib import SmartDashboard, DigitalInput
-from constants import AlgaeConstants
-from commands2.subsystem import Subsystem
 import phoenix6
+from commands2.subsystem import Subsystem
+from wpilib import SmartDashboard, DigitalInput
+
+from constants import AlgaeConstants
+
 
 class AlgaeSubsystem(Subsystem):
     '''This thing does algae intake and discharge.'''
     
     def __init__(self):
+        super().__init__()
         # Declare motor controllers
         self.pivotMotor = phoenix6.hardware.TalonFX(AlgaeConstants.kPivotMotorChannel, "rio")
         self.intakeMotor = phoenix6.hardware.TalonFX(AlgaeConstants.kIntakeWheelsChannel, "rio")

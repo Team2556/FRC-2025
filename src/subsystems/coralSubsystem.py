@@ -1,21 +1,18 @@
 '''The coral subsystem yay'''
 
-from wpilib import DigitalInput
 from commands2 import Subsystem
-from rev import SparkMaxConfig, SparkBase, SparkFlex
+from rev import SparkFlex
+from wpilib import DigitalInput
 
 from constants import CoralConstants
 
+
 class CoralTrack(Subsystem):
     def __init__(self):
+        print("CoralTrack init ---/n---/n--/n")
         self.motor_controller = SparkFlex(
             CoralConstants.kCoralMotorPort, SparkFlex.MotorType.kBrushless
         )
-        # self.motor_controller.configure(
-        #     SparkMaxConfig(),
-        #     SparkBase.ResetMode.kResetSafeParameters,
-        #     SparkBase.PersistMode.kPersistParameters,
-        # )
 
         self.left_detector = DigitalInput(CoralConstants.kLeftBreakerLight)
         self.right_detector = DigitalInput(CoralConstants.kRightBreakerLight)

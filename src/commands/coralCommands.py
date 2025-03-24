@@ -1,9 +1,13 @@
-'''Has a command for discharging and a default command for intaking'''
+"""Has a command for discharging and a default command for intaking"""
 
 from commands2 import Command, InterruptionBehavior
 from wpilib import Timer, SmartDashboard
 from subsystems import coralSubsystem, elevatorSubsystem
 from constants import CoralConstants
+from subsystems import coralSubsystem
+from subsystems.coralSubsystem import CoralTrack
+from subsystems.elevatorSubsystem import ElevatorSubsystem
+
 
 class DischargeCoralCommand(Command):
     def __init__(

@@ -1,16 +1,11 @@
 '''Commands that set elevator to a position and increment elevator up or down'''
 
-from commands2 import Command, InterruptionBehavior
-from wpilib import XboxController, SmartDashboard
-from wpimath.controller import PIDController
-from wpimath.units import meters, inches, seconds, metersToInches, inchesToMeters
-from phoenix6 import hardware
+from commands2 import Command
+from wpilib import SmartDashboard
+
 from constants import ElevatorConstants
-from math import pi
-import numpy as np
-import time
-from robotUtils import controlAugment
 from subsystems import elevatorSubsystem
+
 
 class SetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):

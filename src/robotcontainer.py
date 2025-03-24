@@ -3,34 +3,31 @@
 # Open Source Software; you can modify and/or share it under the terms of
 # the WPILib BSD license file in the root directory of this project.
 #
+import math
 
-# NOTE: Please use the following naming conventions:
-# Subsystems are: name + "Subsystem"
-# Commands are: name + "Command"
-# Command modules are: name + "Commands" (in camel case)
-# Enable variables are in MACRO_CASE just like constants
-# Constant classes are: name + "Constants" (also in camel case)
-
-# If you wish to change any of these, be sure to change all
-# instances of the rule unless you're really desperate on time
-
-# from imaplib import Commands
 import commands2
 import commands2.button
 import commands2.cmd
-from commands2.sysid import SysIdRoutine
-
-from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
-from pathplannerlib.path import PathPlannerPath, PathConstraints
+from commands2.cmd import runOnce
+from pathplannerlib.auto import AutoBuilder
+from phoenix6 import swerve
+from phoenix6.swerve import Pose2d, SwerveModule
+from phoenix6.swerve.requests import FieldCentricFacingAngle
+from wpilib import SmartDashboard, DriverStation
+from wpimath.geometry import Rotation2d
+from wpimath.units import rotationsToRadians
 
 # NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
 from subsystems import (
     algaeSubsystem,
-    coralSubsystem,
     elevatorSubsystem,
+    coralSubsystem,
     climbSubsystem,
     pneumaticSubsystem,
 )
+
+from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
+from pathplannerlib.path import PathPlannerPath, PathConstraints
 
 from commands import (
     algaeCommands,
@@ -39,18 +36,26 @@ from commands import (
     climbCommands,
     pneumaticCommands
 )
-
-from constants import ElevatorConstants, AlgaeConstants, CoralConstants
-
-from robotUtils.adjustJoystick import adjust_jostick
-
+from commands.path_on_the_fly_auto_align import PathOnTheFlyAutoAlign
+from constants import ElevatorConstants, AlgaeConstants, Override_DriveConstant
 from generated.tuner_constants import TunerConstants
+from robotUtils.adjustJoystick import adjust_jostick
+# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
+from subsystems import (
+    algaeSubsystem,
+    coralSubsystem,
+    elevatorSubsystem,
+    climbSubsystem
+)
+from subsystems import vison
+from subsystems.vison import VisionSubsystem
 from telemetry import Telemetry
 
 from phoenix6 import swerve
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 from wpilib import SmartDashboard
+
 
 class RobotContainer:
     """
@@ -61,9 +66,9 @@ class RobotContainer:
     """
 
     def __init__(self) -> None:
-        
+
         AutoBuilder._configured = False
-        
+
         self._max_speed = (
             TunerConstants.speed_at_12_volts
         )  # speed_at_12_volts desired top speed
@@ -72,7 +77,7 @@ class RobotContainer:
         )  # 3/4 of a rotation per second max angular velocity
 
         # Setting up bindings for necessary control of the swerve drive platform
-        self._drive = (
+        self._field_centric_drive = (
             swerve.requests.FieldCentric()
             .with_deadband(0.1)
             .with_rotational_deadband(0.1)  # Add a 10% deadband
@@ -82,14 +87,21 @@ class RobotContainer:
         )
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
-        # self._robot_centric_drive = (
-        #     swerve.requests.RobotCentric()
-        #     .with_deadband(0.1)
-        #     .with_rotational_deadband(0.1)  # Add a 10% deadband
-        #     .with_drive_request_type(
-        #         swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
-        #     )  # Use open-loop control for drive motors
-        # )
+        self._robot_centric_drive = (
+            swerve.requests.RobotCentric()
+            .with_deadband(0.1)
+            .with_rotational_deadband(0.1)  # Add a 10% deadband
+            .with_drive_request_type(
+                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
+            )  # Use open-loop control for drive motors
+        )
+        self.field_centric_angle_lock = (FieldCentricFacingAngle()
+                                         .with_heading_pid(5, 0, 0)
+                                         .with_max_abs_rotational_rate(2 * math.pi)
+                                         .with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)
+                                         .with_deadband(self._max_speed * 0.1)
+                                         )
+        self.slow_mode_multiplier = 1.0 # 1 or kSlowMode constant
 
         self._logger = Telemetry(self._max_speed)
 
@@ -98,6 +110,12 @@ class RobotContainer:
 
         self.drivetrain = TunerConstants.create_drivetrain()
 
+        # Path follower
+        self._auto_chooser = AutoBuilder.buildAutoChooser("Tests")
+        SmartDashboard.putData("Auto Mode", self._auto_chooser)
+
+        self.vision = VisionSubsystem(self.drivetrain, "limelight-four")
+        #self.auto_align = AutoAlign(self.drivetrain, self.vision)
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
 
         self.ENABLE_ALGAE = True
@@ -105,15 +123,13 @@ class RobotContainer:
         self.ENABLE_CORAL = True
         self.ENABLE_CLIMB = True
         self.ENABLE_PNEUMATIC = True
+        self.ENABLE_VISON = True
 
-        # Command Scheduler is needed to run periodic() function on subsystems
-        # self.scheduler = commands2.CommandScheduler()
-
-        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE PLS
+        # NOTE: DECLARE ALL SUBSYSTEMS HERE AND NOWHERE ELSE PLEASE
 
         if self.ENABLE_ALGAE:
             self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
-            # self.scheduler.registerSubsystem(self.algaeSubsystem)
+
 
         if self.ENABLE_ELEVATOR:
             self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
@@ -129,14 +145,15 @@ class RobotContainer:
             self.pneumaticSubsystem = pneumaticSubsystem.PneumaticSubsystem()
             # self.scheduler.registerSubsystem(self.pneumaticSubsystem)
 
+        if self.ENABLE_VISON:
+            self.vision = vison.VisionSubsystem(self.drivetrain)
+
         # Configure the button bindings
         self.configureButtonBindings()
 
-    def getAutonomousCommand():
-        # Load the path you want to follow using its name in the GUI
-        path = PathPlannerPath.fromPathFile("moveForeward")
-        # Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path)
+
+    def getAutonomousCommand(self):
+        return self._auto_chooser.getSelected()
 
     def configureButtonBindings(self) -> None:
         """
@@ -169,7 +186,7 @@ class RobotContainer:
             # Drivetrain will execute this command periodically
             self.drivetrain.apply_request(
                 lambda: (
-                    self._drive.with_velocity_x(
+                    self._field_centric_drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
                         -adjust_jostick(self._joystick.getLeftY(), smooth=True)
                         * self._max_speed * self.slowSpeedMultiplier
@@ -186,26 +203,22 @@ class RobotContainer:
             )
         )
 
-        # We don't need this I think
-        self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
-        self._joystick.b().whileTrue(
+        self._joystick.leftBumper().whileTrue(
             self.drivetrain.apply_request(
-                lambda: self._point.with_module_direction(
-                    Rotation2d(-self._joystick.getLeftY(), -self._joystick.getLeftX())
-                )
+                lambda: self.field_centric_angle_lock
+                .with_velocity_x(-self._joystick.getLeftY() * self._max_speed * self.slow_mode_multiplier)
+                .with_velocity_y(-self._joystick.getLeftX() * self._max_speed * self.slow_mode_multiplier)
+                .with_target_direction(Rotation2d.fromDegrees(self.getHumanPlayerAngle()))
             )
         )
 
-        robotCentricSpeedMultiplier = 0.2
-
+        self._joystick.rightBumper().onTrue(runOnce(lambda: self.set_slow_mode(Override_DriveConstant.kSlowMode))).onFalse(runOnce(lambda: self.set_slow_mode(1.0)))
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
-        self._joystick.b().whileTrue(
-            self.drivetrain.apply_request(
-                lambda: self._point.with_module_direction(
-                    Rotation2d(-self._joystick.getLeftY(), -self._joystick.getLeftX())
-                )
-            )
-        )
+        self._joystick.b().onTrue(self.drivetrain.runOnce(
+            lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0)
+                                               if (DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kBlue)
+                                               else Pose2d(17.065,6.47, Rotation2d.fromDegrees(180.0)))
+        ))
 
         # Run SysId routines when holding back/start and X/Y.
         # Note that each routine should be run exactly once in a single log.
@@ -222,8 +235,11 @@ class RobotContainer:
         #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse) # Commented out by Aidan for climb - disable climb if needed.
         # )
 
+
+        # Elevator button press detection:
+
         # reset the field-centric heading on left bumper press
-        self._joystick.leftBumper().onTrue(
+        self._joystick.leftStick().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
 
@@ -280,6 +296,10 @@ class RobotContainer:
             self._joystick.leftTrigger().onFalse(algaeHomeCommand)
             # self._joystick.leftStick().onFalse()
 
+        self.auto_align = PathOnTheFlyAutoAlign(self.drivetrain, self.vision)
+
+        self._joystick.y().whileTrue(self.auto_align)
+
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands
             defaultCoralCommand = coralCommands.CoralDefaultCommand(self.coralSubsystem)
@@ -315,10 +335,7 @@ class RobotContainer:
             self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
             self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
-            # self._joystick2.povLeft().onTrue(JS_left)
-            # self._joystick2.povRight().onTrue(JS_right)
-
-            # *NEW* Elevator Increment
+            
             def doDeadband(num):
                 return 0 if num <= 0.1 and num >= -0.1 else num
             
@@ -349,9 +366,19 @@ class RobotContainer:
             # Button detections:
             # TODO: consider auto trigger when latched on (with debounce of course)
             # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
-            self._joystick.y().whileTrue(self.forwardCommand)
-            self._joystick.x().whileTrue(self.backwardCommand)
+            self._joystick.x().whileTrue(self.forwardCommand)
+            self._joystick.rightStick().whileTrue(self.backwardCommand)
 
+    def getHumanPlayerAngle(self)-> float:
+        offset = 0
+            offset = 70 + 180
+        if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+        return (235 + offset) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset)
+    def set_slow_mode(self, value):
+
+        self.slow_mode_multiplier = value
+
+        
         if self.ENABLE_PNEUMATIC:
             defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(
                 self.pneumaticSubsystem,
