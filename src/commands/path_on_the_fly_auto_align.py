@@ -40,7 +40,7 @@ class PathOnTheFlyAutoAlign(Command):
         #17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
 
         poseList = [
-            Pose2d(3.84+0.05+0.03, 2.94+0.04-0.07, Rotation2d.fromDegrees(-28.78)),
+            Pose2d(3.86, 2.9, Rotation2d.fromDegrees(-27)),
             Pose2d(3.26, 3.9, Rotation2d.fromDegrees(-88)),
             Pose2d(3.9, 5.15, Rotation2d.fromDegrees(-145.79)),
             Pose2d(5.1, 4.91, Rotation2d.fromDegrees(152.94)),
@@ -108,6 +108,7 @@ class PathOnTheFlyAutoAlign(Command):
         SmartDashboard.putNumber("rotationalPID set tolerance", 0.2)
         SmartDashboard.putNumber("xPID set tolerance", 0.025)
         SmartDashboard.putNumber("yPID set tolerance", 0.025)
+
 
         self.swerve.set_control(
             self.align_request.with_rotational_rate(self.rotational_rate)

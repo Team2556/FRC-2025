@@ -185,7 +185,7 @@ class RobotContainer:
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
         self._joystick.b().onTrue(self.drivetrain.runOnce(
             lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0)
-                                               if (DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.Blue)
+                                               if (DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kBlue)
                                                else Pose2d(17.065,6.47, Rotation2d.fromDegrees(180.0)))
         ))
 
