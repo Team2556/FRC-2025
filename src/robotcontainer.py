@@ -62,6 +62,12 @@ class RobotContainer:
         
         AutoBuilder._configured = False
         
+        self.Coral1 = (coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                self.elevatorSubsystem,
+                direction = -1,  # Left is -1, Right is 1
+            ))
+
         self._max_speed = (
             TunerConstants.speed_at_12_volts
         )  # speed_at_12_volts desired top speed
