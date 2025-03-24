@@ -55,7 +55,6 @@ class MyRobot(commands2.TimedCommandRobot):
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
         # Uncomment this when it actually works
         # self.autonomousCommand = self.container.getAutonomousCommand()
-            
 
     def autonomousPeriodic(self) -> None:
         """This function is called periodically during autonomous"""
