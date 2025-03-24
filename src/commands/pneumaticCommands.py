@@ -15,7 +15,7 @@ class DefaultPneumaticCommand(Command):
         self.pneumaticSubsystem = pneumaticSubsystem
         self.elevatorSubsystem = elevatorSubsystem
         self.coralSubsystem = coralSubsystem
-        
+
         # Only require pneumatics because it's just getting the data of the other two
         self.addRequirements(self.pneumaticSubsystem)
 

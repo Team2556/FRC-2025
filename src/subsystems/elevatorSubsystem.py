@@ -109,15 +109,19 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         self.setupSmartDashboard()
         
         self.elevmotor_left.set_position(0)
+        
+        self.isHoming = False
 
     def moveElevator(self) -> None:
         """Setpoint is in meters of elevator elevation from the lowest physical limit"""
         self.elevmotor_left.set_control(self.position_voltage.with_position(self.setpoint)
                                         .with_velocity(ElevatorConstants.kElevatorSpeed))
+        self.isHoming = False
 
     def setElevatorSpeed(self, increment):
         # Manual moving the elevator
         self.elevmotor_left.set_control(self.home_voltage.with_output(increment))
+        self.isHoming = True
         
     def updateSlot0(self, k_p: float = None, k_i: float = None, k_d: float = None, k_g: float = None) -> None:
         """Don't update it too much because it causes problems so it only does it when it needs to"""
@@ -141,8 +145,9 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
                 if status.is_ok():
                     break
 
-    def getLimitBottom(self):
-        return not self.limit_bottomLeft.get() or not self.limit_bottomRight.get()
+    def getLimitBottom(self): 
+        # Changed from "or" to "and" because one of these accidentally setting off will be a big problem
+        return not self.limit_bottomLeft.get() and not self.limit_bottomRight.get()
     
     def getLimitTop(self):
         return not self.limit_top.get()
@@ -224,7 +229,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         self.updateSmartDashboard()
         
         # Can do this all in motor config maybe TODO: update & remove yay
-        if self.getLimitBottom():
+        if self.getLimitBottom() and self.isHoming:
             # self.position_voltage.limit_forward_motion = True
             self.elevmotor_left.set_position(0) # To zero it
         # else: 
