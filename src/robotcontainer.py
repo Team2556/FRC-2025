@@ -370,13 +370,10 @@ class RobotContainer:
             self._joystick.rightStick().whileTrue(self.backwardCommand)
 
     def getHumanPlayerAngle(self)-> float:
-        offset = 70 + 180
+        offset = 180
         if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            if self.drivetrain.get_state().pose.y <= 3.8:
-                return (-235 - offset)
-        return (235 + offset)
-
-
+            offset = 70+180
+        return (235 + offset ) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset )
 
     def set_slow_mode(self, value):
 
