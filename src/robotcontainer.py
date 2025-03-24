@@ -154,7 +154,9 @@ class RobotContainer:
             self.slowRotationMultiplier = rotation
 
         self._joystick.rightBumper().onTrue(
+            # THESE HERE ARE THE VALUES TO TUNE YAY     vvv  vvvv
             commands2.cmd.runOnce(changeSlowMultipliers(0.2, 0.35))
+            # THESE HERE ARE THE VALUES TO TUNE YAY     ^^^  ^^^^
         )
 
         self._joystick.rightBumper().onFalse(
@@ -196,28 +198,6 @@ class RobotContainer:
 
         robotCentricSpeedMultiplier = 0.2
 
-        # self._joystick.rightBumper().whileTrue(
-        #     self.drivetrain.apply_request(
-        #         lambda: (
-        #             self._robot_centric_drive.with_velocity_x(
-        #                 ((-1 * adjust_jostick(self._joystick.getLeftY())))
-        #                 * self._max_speed
-        #                 * robotCentricSpeedMultiplier
-        #             )  # Drive forward with negative Y (forward)
-        #             .with_velocity_y(
-        #                 ((-1 * adjust_jostick(self._joystick.getLeftX())))
-        #                 * self._max_speed
-        #                 * robotCentricSpeedMultiplier
-        #             )  # Drive left with negative X (left)
-        #             .with_rotational_rate(
-        #                 ((-1 * adjust_jostick(self._joystick.getRightX())))
-        #                 * self._max_angular_rate
-        #                 * robotCentricSpeedMultiplier
-        #             )  # Drive counterclockwise with negative X (left)
-        #         )
-        #     )
-        # )
-
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
         self._joystick.b().whileTrue(
             self.drivetrain.apply_request(
@@ -241,9 +221,6 @@ class RobotContainer:
         # (self._joystick.start() & self._joystick.x()).whileTrue(
         #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse) # Commented out by Aidan for climb - disable climb if needed.
         # )
-
-
-        # Elevator button press detection:
 
         # reset the field-centric heading on left bumper press
         self._joystick.leftBumper().onTrue(
@@ -290,10 +267,10 @@ class RobotContainer:
 
             algaeHomeCommand = algaeCommands.AlgaeHomeCommand(self.algaeSubsystem)
 
-            self._joystick.y().onTrue(algaeReefIntakeCommand)
-            self._joystick.rightTrigger().onTrue(algaeGroundIntakeCommand)
-            self._joystick.leftTrigger().onTrue(algaeProcessCommand)
-            self._joystick.leftStick().onTrue(algaeHomeCommand)
+            self._joystick.y().onTrue(algaeReefIntakeCommand) # Reef Intake
+            self._joystick.rightTrigger().onTrue(algaeGroundIntakeCommand) # Reef Ground
+            self._joystick.leftTrigger().onTrue(algaeProcessCommand) # Reef Process
+            self._joystick.leftStick().onTrue(algaeHomeCommand) # Home
             
             # For testing so I don't have to hit the joystick perfectly
             self._joystick.povDown().onTrue(algaeHomeCommand)
@@ -302,12 +279,6 @@ class RobotContainer:
             self._joystick.rightTrigger().onFalse(algaeAfterGroundIntakeCommand)
             self._joystick.leftTrigger().onFalse(algaeHomeCommand)
             # self._joystick.leftStick().onFalse()
-
-            # WE NEED
-            # Ground intake
-            # Reef intake
-            # Process
-            # Home
 
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands
@@ -387,12 +358,9 @@ class RobotContainer:
                 self.elevatorSubsystem,
                 self.coralSubsystem,
             )
+            
             # TODO: removed timer may need new command or time put on via factory here
             testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
 
             self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
-
-            togggle_flippers = commands2.cmd.runOnce(self.pneumaticSubsystem.simple_toggle_all(), self.pneumaticSubsystem)
-
-            # self._joystick2.povUp().onTrue(togggle_flippers)
             self._joystick2.povUp().whileTrue(testPneumaticCommand)
