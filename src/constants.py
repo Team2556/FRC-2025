@@ -178,7 +178,7 @@ class ElevatorConstants:
     kHomingRate = 0.2
     # So the robot doesn't slam into the ground
     kLowEnoughToSlowDown = 6
-    kLowEnoughSpeedMultiplier = 0.5
+    kLowEnoughSpeedMultiplier = 0.39
     
     # All the speed stuff (in rotations per second)
     kElevatorSpeed = 1.5 # was too fast 2.5 # 10
