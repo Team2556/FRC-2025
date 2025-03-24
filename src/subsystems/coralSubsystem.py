@@ -39,7 +39,8 @@ class CoralTrack(Subsystem):
     
     def detect_coral(self):
         """Returns True if Coral detected on track"""
-        return self.left_detector.get() or self.right_detector.get()
+        # Does "not" because beam breaks return False whan it sees coral
+        return not self.left_detector.get() or not self.right_detector.get()
     
     def periodic(self):
         ...# TODO: Add SmartDashboard tining HERE NOW or not

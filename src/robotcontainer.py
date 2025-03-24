@@ -50,7 +50,7 @@ from telemetry import Telemetry
 from phoenix6 import swerve
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
-
+from wpilib import SmartDashboard
 
 class RobotContainer:
     """
@@ -290,7 +290,7 @@ class RobotContainer:
 
             algaeHomeCommand = algaeCommands.AlgaeHomeCommand(self.algaeSubsystem)
 
-            # self._joystick.y().onTrue(algaeReefIntakeCommand)
+            self._joystick.y().onTrue(algaeReefIntakeCommand)
             self._joystick.rightTrigger().onTrue(algaeGroundIntakeCommand)
             self._joystick.leftTrigger().onTrue(algaeProcessCommand)
             self._joystick.leftStick().onTrue(algaeHomeCommand)
@@ -298,7 +298,7 @@ class RobotContainer:
             # For testing so I don't have to hit the joystick perfectly
             self._joystick.povDown().onTrue(algaeHomeCommand)
 
-            # self._joystick.y().onFalse(algaeHomeCommand) # algaeAfterGroundIntakeCommand)
+            self._joystick.y().onFalse(algaeAfterGroundIntakeCommand) # algaeAfterGroundIntakeCommand)
             self._joystick.rightTrigger().onFalse(algaeAfterGroundIntakeCommand)
             self._joystick.leftTrigger().onFalse(algaeHomeCommand)
             # self._joystick.leftStick().onFalse()
@@ -315,13 +315,13 @@ class RobotContainer:
 
             dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
-                self.elevatorSubsystem,
+                # self.elevatorSubsystem,
                 direction = -1,  # Left is -1, Right is 1
             )
 
             dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
-                self.elevatorSubsystem,
+                # self.elevatorSubsystem,
                 direction = 1,  # Left is -1, Right is 1
             )
             
@@ -338,59 +338,14 @@ class RobotContainer:
             )
 
             SC = elevatorCommands.SetElevatorCommand
-
-            # For testing until pneumatics works because it will and it's amazing
-            JS_left = commands2.SequentialCommandGroup(
-                SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
-                commands2.ParallelRaceGroup(
-                    coralCommands.DischargeCoralCommand(self.coralSubsystem, direction = -1),
-                    commands2.SequentialCommandGroup(
-                        commands2.WaitCommand(0.5), # TODO make these constants if they actually work
-                        SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
-                        commands2.WaitCommand(0.3),
-                    )
-                ),
-                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
-            )
-
-            JS_right = commands2.SequentialCommandGroup(
-                SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4)()),
-                commands2.ParallelRaceGroup(
-                    coralCommands.DischargeCoralCommand(self.coralSubsystem, direction = 1),
-                    commands2.SequentialCommandGroup(
-                        commands2.WaitCommand(0.5), # TODO same for here too
-                        SC(self.elevatorSubsystem, (lambda: ElevatorConstants.kCoralLv4_JumpScore)()),
-                        commands2.WaitCommand(0.3),
-                    )
-                ),
-                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
-            )
-            
-            L3ScoreLeft = commands2.SequentialCommandGroup(
-                SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3),
-                commands2.ParallelRaceGroup(
-                    coralCommands.DischargeCoralCommand(self.coralSubsystem, direction = -1),
-                    commands2.WaitCommand(0.75),
-                ),
-                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
-            )
-            
-            L3ScoreRight = commands2.SequentialCommandGroup(
-                SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3),
-                commands2.ParallelRaceGroup(
-                    coralCommands.DischargeCoralCommand(self.coralSubsystem, direction = 1),
-                    commands2.WaitCommand(0.75),
-                ),
-                elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem)
-            )
             
             self._joystick2.a().onTrue(elevatorCommands.HomeElevatorCommand(self.elevatorSubsystem))
             self._joystick2.x().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv3))
             self._joystick2.b().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kAlgaeLv3))
             self._joystick2.y().onTrue(SC(self.elevatorSubsystem, ElevatorConstants.kCoralLv4))
 
-            self._joystick2.povLeft().onTrue(JS_left)
-            self._joystick2.povRight().onTrue(JS_right)
+            # self._joystick2.povLeft().onTrue(JS_left)
+            # self._joystick2.povRight().onTrue(JS_right)
 
             # *NEW* Elevator Increment
             def doDeadband(num):
@@ -400,13 +355,8 @@ class RobotContainer:
                 speed = (
                     (0.9 * (self._joystick2.getRightTriggerAxis() - self._joystick2.getLeftTriggerAxis())
                     + 0.3 * (-1 * doDeadband(self._joystick2.getLeftY()))
-                    # - 0.05 * (self._joystick2.getRightY())
                     ) * ElevatorConstants.kElevatorIncrementalStep
                 )
-                if (self.elevatorSubsystem.get_position() < ElevatorConstants.kLowEnoughToSlowDown
-                    and self.elevatorSubsystem.elevmotor_left.get_velocity().value < 0):
-                    # Lower speed if position is low enough and going down
-                    speed *= ElevatorConstants.kLowEnoughSpeedMultiplier
                 return speed
             
             self.continuousElevatorCommand = (
@@ -444,5 +394,5 @@ class RobotContainer:
 
             togggle_flippers = commands2.cmd.runOnce(self.pneumaticSubsystem.simple_toggle_all(), self.pneumaticSubsystem)
 
-            self._joystick2.povUp().onTrue((lambda: togggle_flippers)())
-            # self._joystick2.povUp().whileTrue(testPneumaticCommand)
+            # self._joystick2.povUp().onTrue(togggle_flippers)
+            self._joystick2.povUp().whileTrue(testPneumaticCommand)

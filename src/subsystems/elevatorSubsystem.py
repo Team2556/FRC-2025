@@ -202,6 +202,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         SmartDashboard.putNumber("Elevator/Target Value Adder", ElevatorConstants.kTargetValueAdder)
         
         SmartDashboard.putNumber("Elevator/Coral L3", ElevatorConstants.kCoralLv3)
+        SmartDashboard.putNumber("Elevator/Algae L3", ElevatorConstants.kAlgaeLv3)
         SmartDashboard.putNumber("Elevator/Coral L4", ElevatorConstants.kCoralLv4)
         
         SmartDashboard.putNumber("Elevator/Height To Slow Down", ElevatorConstants.kLowEnoughToSlowDown)
@@ -235,6 +236,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         
         # Setpoint Stuff
         ElevatorConstants.kCoralLv3 = SmartDashboard.getNumber("Elevator/Coral L3", ElevatorConstants.kCoralLv3)
+        ElevatorConstants.kAlgaeLv3 = SmartDashboard.getNumber("Elevator/Algae L3", ElevatorConstants.kAlgaeLv3)
         ElevatorConstants.kCoralLv4 = SmartDashboard.getNumber("Elevator/Coral L4", ElevatorConstants.kCoralLv4)   
         
         self.position_voltage.velocity = SmartDashboard.getNumber("Elevator/Velocity", ElevatorConstants.kElevatorSpeed)

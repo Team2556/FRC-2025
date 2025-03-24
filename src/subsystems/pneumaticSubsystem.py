@@ -21,14 +21,28 @@ class PneumaticSubsystem(commands2.Subsystem):
             for channel in range(16) # Number of solenoid channels in the hub
         ]
         self.solenoids_states = [sol.get for sol in self.solenoids]
-        SmartDashboard.putBooleanArray("Pneumatics/Compressor States", self.solenoids_states)
+        # SmartDashboard.putBooleanArray("Pneumatics/Compressor States", self.solenoids_states)
 
     def periodic(self):
         '''update solenoid states on smartdashboard'''
         self.solenoids_states = [sol.get() for sol in self.solenoids]
-        SmartDashboard.putBooleanArray("Pneumatics/Compressor Sates", self.solenoids_states)
-
+        # SmartDashboard.putBooleanArray("Pneumatics/Compressor Sates", self.solenoids_states)
         
+    def activateFlippers(self):
+        SmartDashboard.putBoolean("Coral/Pneumatics Activated", True)
+        self.enable_solenoid(PneumaticConstants.kRightScoreSolenoid)
+        self.enable_solenoid(PneumaticConstants.kLeftScoreSolenoid)
+        
+        self.disable_solenoid(PneumaticConstants.kRightRetractSolenoid)
+        self.disable_solenoid(PneumaticConstants.kLeftRetractSolenoid)
+    
+    def disableFlippers(self):
+        SmartDashboard.putBoolean("Coral/Pneumatics Activated", False)
+        self.disable_solenoid(PneumaticConstants.kLeftScoreSolenoid)
+        self.disable_solenoid(PneumaticConstants.kRightScoreSolenoid)
+        
+        self.enable_solenoid(PneumaticConstants.kLeftRetractSolenoid)
+        self.enable_solenoid(PneumaticConstants.kRightRetractSolenoid)
         
     def enable_solenoid(self, channel):
         """Enables a Solenoid based on channel."""

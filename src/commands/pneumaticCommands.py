@@ -23,38 +23,27 @@ class DefaultPneumaticCommand(Command):
         
         # For getting delay between coral leaving beam breaks and activating
         self.timer = Timer()
+        
+        SmartDashboard.putNumber("Coral/Pneumatics Delay", PneumaticConstants.kScoreDelay)
 
     def initialize(self):
         # self.disablePneumatics()
         pass
-        
-    def activatePneumatics(self):
-        SmartDashboard.putBoolean("Coral/Pneumatics Activated", True)
-        self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kRightScoreSolenoid)
-        self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kLeftScoreSolenoid)
-        
-        self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kRightRetractSolenoid)
-        self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kLeftRetractSolenoid)
-        
-    def disablePneumatics(self):
-        SmartDashboard.putBoolean("Coral/Pneumatics Activated", False)
-        self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kLeftScoreSolenoid)
-        self.pneumaticSubsystem.disable_solenoid(PneumaticConstants.kRightScoreSolenoid)
-        
-        self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kLeftRetractSolenoid)
-        self.pneumaticSubsystem.enable_solenoid(PneumaticConstants.kRightRetractSolenoid)
-        
+
     def execute(self):
-        if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 1 and not self.coralSubsystem.detect_coral()):
+        if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 3 
+            and not self.coralSubsystem.detect_coral() and self.coralSubsystem.coralFiring):
             if not self.timer.isRunning():
                 self.timer.start()
             if self.timer.get() >= PneumaticConstants.kScoreDelay:
-                self.activatePneumatics()
+                self.pneumaticSubsystem.activateFlippers()
             else:
-                self.disablePneumatics()
+                self.pneumaticSubsystem.disableFlippers()
         else:
             self.timer.reset()
-            self.disablePneumatics()
+            self.pneumaticSubsystem.disableFlippers()
+        SmartDashboard.putNumber("Coral/Pneumatics Timer", self.timer.get())
+        PneumaticConstants.kScoreDelay = SmartDashboard.getNumber("Coral/Pneumatics Delay", PneumaticConstants.kScoreDelay)
             
 
 class PulseFlippersCommand(Command):
@@ -76,8 +65,8 @@ class PulseFlippersCommand(Command):
         # if self.timer.get() < self.pulse_duration:
         SmartDashboard.putBoolean("Coral/Pneumatics Activated", True)
         # Extend the flippers
-        self.LeftFlippersUp
-        self.RightFlippersUp
+        self.LeftFlippersUp()
+        self.RightFlippersUp()
 
 
     # def isFinished(self):
@@ -85,8 +74,8 @@ class PulseFlippersCommand(Command):
     #     return True
 
     def end(self, interrupted):
-        self.LeftFlippersDown
-        self.RightFlippersDown
+        self.LeftFlippersDown()
+        self.RightFlippersDown()
         # self.timer.stop()
 
 

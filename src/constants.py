@@ -224,7 +224,7 @@ class ElevatorConstants:
     # kincrement_m_per_sec_held = 0.25
     
     # THIS ONE has a max apeed of 1, so 0.10 is 10% of elevator's max speed
-    kHomingRate = 0.15
+    kHomingRate = 0.2
     # So the robot doesn't slam into the ground
     kLowEnoughToSlowDown = 6
     kLowEnoughSpeedMultiplier = 0.25
@@ -241,10 +241,10 @@ class ElevatorConstants:
     kMaxElevatorHeight = 38 # 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
-    kCoralLv3 = 12.25 #14.25 #was 16, why different # 11.2
-    kAlgaeLv3 = 23
-    kCoralLv4 = 35.05 # 25.5 # All the elevator levels below aren't tuned
-    kCoralLv4_JumpScore = 37
+    kCoralLv3 = 15.75 #14.25 #was 16, why different # 11.2
+    kAlgaeLv3 = 25
+    kCoralLv4 = 36 # 25.5 # All the elevator levels below aren't tuned
+    # kCoralLv4_JumpScore = 37
 
     # Goes up of down by this much every 50th of a second
     kElevatorIncrementalStep = 0.1
