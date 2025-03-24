@@ -3,6 +3,9 @@ import math
 import phoenix6
 import wpilib
 from phoenix6.hardware import TalonFX
+import wpilib
+from wpilib import Timer, SmartDashboard
+from constants import ClimbConstants, CoralConstants
 
 from constants import ClimbConstants
 
@@ -38,14 +41,22 @@ class ClimbSubsystem():
         cfgs.motor_output.with_inverted(phoenix6.configs.config_groups.InvertedValue.CLOCKWISE_POSITIVE).with_neutral_mode(phoenix6.configs.config_groups.NeutralModeValue.BRAKE)
         cfgs.with_hardware_limit_switch(hardwareLimitSwitchConfig)
         cfgs.with_feedback(motorControllerFeedbackConfig)
+
         
         status = phoenix6.StatusCode.STATUS_CODE_NOT_INITIALIZED
         for _ in range(0, 5):
             status = self.climbMotor.configurator.apply(cfgs)
             if status.is_ok():
                 break
+        
+        # SmartDashboard.putString("Climb/Deploy Limit Switch", self.climbMotor.get_reverse_limit().value)
+        # SmartDashboard.putString("Climb/Climb Limit Switch", self.climbMotor.get_forward_limit().value)
+        
 
     def periodic(self):
+        
+        # SmartDashboard.putString("Climb/Deploy Limit Switch", self.climbMotor.get_reverse_limit().value)
+        # SmartDashboard.putString("Climb/Climb Limit Switch", self.climbMotor.get_forward_limit().value)
         ...
 
     def forward(self):

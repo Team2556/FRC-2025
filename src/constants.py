@@ -175,35 +175,35 @@ class ElevatorConstants:
     # kincrement_m_per_sec_held = 0.25
     
     # THIS ONE has a max apeed of 1, so 0.10 is 10% of elevator's max speed
-    kHomingRate = 0.10
-    # All the speed stuff (in rotations per second)
-    kElevatorSpeed = 2.5 # 10
+    kHomingRate = 0.2
+    # So the robot doesn't slam into the ground
+    kLowEnoughToSlowDown = 6
+    kLowEnoughSpeedMultiplier = 0.25
     
-    kElevatorKp = 0.6
+    # All the speed stuff (in rotations per second)
+    kElevatorSpeed = 1.5 # was too fast 2.5 # 10
+    
+    kElevatorKp = 0.4
     kElevatorKi = 0.0
     kElevatorKd = 0.0
     kElevatorKg = 0.4
-    
-    safetyFactor = 0.5
 
     kMinElevatorHeight = 0
-    kMaxElevatorHeight = 39.5 - safetyFactor # 35
+    kMaxElevatorHeight = 38 # 35
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
-    # So the robot doesn't slam into the ground
-    kLowEnoughToSlowDown = 6
-    kLowEnoughSpeedMultiplier = 0.3
-    
-    kCoralLv3 = 16 # 11.2
-    kAlgaeLv3 = 23
-    kCoralLv4 = 37 # 25.5 # All the elevator levels below aren't tuned
-    kCoralLv4_JumpScore = 39.49 - safetyFactor
+    kCoralLv3 = 15.75 #14.25 #was 16, why different # 11.2
+    kAlgaeLv3 = 25
+    kCoralLv4 = 36 # 25.5 # All the elevator levels below aren't tuned
+    # kCoralLv4_JumpScore = 37
 
-    kElevatorIncrementalStep = .071
+    # Goes up of down by this much every 50th of a second
+    kElevatorIncrementalStep = 0.1
+    
     # The command decides the position's close enough if it's within this range (in rotations of a sort)
     # This doesn't delete the setpoint, it just declared the command's finished
-    kTargetValueAccuracy = 1
-    kTargetValueAdder = 0 # If it setpoints to a value a bit more or less than you want to to
+    kTargetValueAccuracy = 0.65
+    kTargetValueAdder = 0.35 # If it setpoints to a value a bit more or less than you want to to
 
     kVVoltSecondPerMeter = 0 # 1.5
     kAVoltSecondSquaredPerMeter = 0 # 0.75
@@ -233,10 +233,10 @@ class AlgaeConstants:
     kPeakReverseTorqueCurrent = -20
     
     # All the following stuff are tunable in SmartDashboard
-    kPivotp = 2
+    kPivotp = 1.3
     kPivoti = 0
     kPivotd = 0
-    kPivotg = 0
+    kPivotg = 0.3
     
     # If the motor is stalled then it's trying to intake an algae more than it can
     # So this detects if it shouldn't spin anymore
@@ -250,12 +250,14 @@ class AlgaeConstants:
     kPivotMinHeight = 0
     
     # Values to set pivoting motor to
-    kPivotReefIntakingValue = 2.5 # Pivot position when grabbing algae
+    kPivotReefIntakingValue = 2.75 # Pivot position when grabbing algae
     kPivotGroundIntakingValue = 2 # Pivot position when grabbing algae from the FLOOR (not being used)
-    kPivotAfterGroundIntakingValue = 1.85
-    kPivotProcessingValue = 1.2 # Pivot position when about to send to processor
+    kPivotAfterGroundIntakingValue = 1.7
+    kPivotProcessingValue = 2 # Pivot position when about to send to processor
+    
     # The time it takes to switch between pivoting positions
     kPivotRotationsPerSecond = 2
+    kPivotHomingRate = -0.05
     
     # Intake wheels multiply by this speed
     kIntakeMultiplier = 0.5
@@ -274,7 +276,7 @@ class CoralConstants:
     kRightFlipper = 2
     
     kIntakeMultiplier = 0.15
-    kDischargeMultiplier = 0.25
+    kDischargeMultiplier = 0.30
     
     kFlipperPulseDuration = 1
     
@@ -282,6 +284,7 @@ class CoralConstants:
     kDelayBetweenLeavingBeamBreaksAndActivatingFlippers = 0.3
     
     kHighEnoughToActivateFlippers = 0.8 # I think it's in meters (where 0 is lowest physical point on elevator)
+    
 
 class ClimbConstants:
     kClimbMotorPort = CAN_Address.TWENTYSEVEN
@@ -301,15 +304,16 @@ class ClimbConstants:
 class PneumaticConstants:
     kHub = CAN_Address.FORTY
 
+    kLeftScoreSolenoid = 12
+    kLeftRetractSolenoid = 13
+    kRightScoreSolenoid = 14
+    kRightRetractSolenoid = 15
+    
+    # For getting delay between coral leaving beam breaks and activatings
+    kScoreDelay = 0.2
+
 class PowerDistributionConstants:
     kPDP = CAN_Address.FIFTY
-
-class UltrasonicConstants:
-    frontLeft = Rio_DIO.TWO
-    frontRight = Rio_DIO.THREE
-    # backLeft = Rio_DIO.FOUR
-    # backRight = Rio_DIO.THREE
-
 
 class LimelightConstants:
     # for field map replacr src with /home/lvuser/py/
