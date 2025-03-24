@@ -2,13 +2,8 @@
   "robotWidth": 0.712,
   "robotLength": 0.712,
   "holonomicMode": true,
-  "pathFolders": [
-    "OHIO ",
-    "Odo test paths"
-  ],
-  "autoFolders": [
-    "Odo tests"
-  ],
+  "pathFolders": [],
+  "autoFolders": [],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
