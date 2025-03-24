@@ -167,7 +167,8 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
                     break
 
     def getLimitBottom(self):
-        return not self.limit_bottomLeft.get() and not self.limit_bottomRight.get()
+        return not self.limit_bottomLeft.get() or not self.limit_bottomRight.get()
+    
     def getLimitTop(self):
         return not self.limit_top.get()
     
@@ -201,6 +202,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         SmartDashboard.putNumber("Elevator/Target Value Adder", ElevatorConstants.kTargetValueAdder)
         
         SmartDashboard.putNumber("Elevator/Coral L3", ElevatorConstants.kCoralLv3)
+        SmartDashboard.putNumber("Elevator/Algae L3", ElevatorConstants.kAlgaeLv3)
         SmartDashboard.putNumber("Elevator/Coral L4", ElevatorConstants.kCoralLv4)
         
         SmartDashboard.putNumber("Elevator/Height To Slow Down", ElevatorConstants.kLowEnoughToSlowDown)
@@ -234,6 +236,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         
         # Setpoint Stuff
         ElevatorConstants.kCoralLv3 = SmartDashboard.getNumber("Elevator/Coral L3", ElevatorConstants.kCoralLv3)
+        ElevatorConstants.kAlgaeLv3 = SmartDashboard.getNumber("Elevator/Algae L3", ElevatorConstants.kAlgaeLv3)
         ElevatorConstants.kCoralLv4 = SmartDashboard.getNumber("Elevator/Coral L4", ElevatorConstants.kCoralLv4)   
         
         self.position_voltage.velocity = SmartDashboard.getNumber("Elevator/Velocity", ElevatorConstants.kElevatorSpeed)
@@ -245,7 +248,7 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
     def periodic(self):
         self.updateSmartDashboard()
         
-        # Can do this all in motor config TODO: Update & Remove
+        # Can do this all in motor config maybe TODO: update & remove yay
         if self.getLimitBottom():
             # self.position_voltage.limit_forward_motion = True
             self.elevmotor_left.set_position(0) # To zero it

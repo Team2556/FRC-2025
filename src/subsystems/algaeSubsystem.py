@@ -175,6 +175,7 @@ class AlgaeSubsystem(Subsystem):
         SmartDashboard.putString("Algae/Intake Speed", self.intakeMotor.get().__str__())
         SmartDashboard.putBoolean("Algae/Bottom Limit Switch", self.getBottomLimitSwitchActive())
         SmartDashboard.putBoolean("Algae/Top Limit Switch", self.getTopLimitSwitchActive())
+        SmartDashboard.putNumber("Algae/Setpoint", self.setpoint)
         
         # Tuning values
         self.updatePIDvalues(
@@ -197,14 +198,6 @@ class AlgaeSubsystem(Subsystem):
     def periodic(self) -> None:
         # self.pivotMotor.set_control(self.positionVoltage.with_position(self.setpoint)) 
         # Sets setpoint to 0 if bottom limit switch active.
-
-        self.justHitLimitSwitch = False
-        if self.getBottomLimitSwitchActive() and not self.justHitLimitSwitch:
-            self.spinPivotMotor(0)
-            self.pivotMotor.set_position(0)
-            self.justHitLimitSwitch = True
-        else:
-            self.justHitLimitSwitch = False
         
         self.updateSmartDashboard()
         
