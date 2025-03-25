@@ -35,6 +35,7 @@ class PathOnTheFlyAutoAlign(Command):
         self.addRequirements(self.swerve)
         self.initial_offset = 0.5
         self.initialReached = False
+        self.tag_align_finished = False
 
         self.tagID = [17, 18 , 19, 20, 21, 22]
         #17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
@@ -79,6 +80,7 @@ class PathOnTheFlyAutoAlign(Command):
             self.y_pid.setTolerance(0.1)
 
     def execute(self):
+        self.tag_align_finished = False
         if not self.seen_tag_ID in self.tagID or self.seen_tag_ID is None:
             self.end(True)
             return
@@ -108,6 +110,7 @@ class PathOnTheFlyAutoAlign(Command):
         SmartDashboard.putNumber("rotationalPID set tolerance", 0.2)
         SmartDashboard.putNumber("xPID set tolerance", 0.025)
         SmartDashboard.putNumber("yPID set tolerance", 0.025)
+        SmartDashboard.putBoolean("Tag Aligned finished", False)
 
 
         self.swerve.set_control(
@@ -121,3 +124,6 @@ class PathOnTheFlyAutoAlign(Command):
 
     def end(self, interrupted: bool):
         self.swerve.set_control(self.align_request.with_velocity_x(0).with_velocity_y(0).with_rotational_rate(0))
+        self.tag_align_finished = True
+        SmartDashboard.putBoolean("Tag Aligned finished", self.tag_align_finished)
+        return

@@ -96,3 +96,9 @@ class VisionSubsystem(Subsystem):
                 return tag
 
         return None
+
+    def get_reef_fiducial(self):
+        reef = LimelightHelpers.get_raw_fiducials(self._cameras[1])
+        return reef
+
+
