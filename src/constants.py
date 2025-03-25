@@ -17,7 +17,7 @@ from wpimath.units import (
 class AprilTagConstants:
     kCompFieldType = apriltag.AprilTagField.k2025ReefscapeWelded
     kPoleOffset = inchesToMeters(inches(12.94)/2  )
-    kOrigStandoff = 1 # meter  inchesToMeters(inches(16) ) # 12.94
+    kOrigStandoff = 0.5 # meter  inchesToMeters(inches(16) ) # 12.94
 
 """ ID X Y Z Z-Rotation Y-Rotation (in inches)
  1 657.37 25.80 58.50 126 0

@@ -10,6 +10,9 @@ from robotUtils.limelight import LimelightHelpers
 from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 from subsystems.vison import VisionSubsystem
 
+from robotUtils.reefOffsets import ReefOffsets
+from constants import AprilTagConstants
+
 
 def get_fiducial_id(limelight_name):
     pass
@@ -33,7 +36,7 @@ class PathOnTheFlyAutoAlign(Command):
         self.endpose = Pose2d(0,0,0)
         self.addRequirements(self.vision)
         self.addRequirements(self.swerve)
-        self.initial_offset = 0.5
+        self.initial_offset = AprilTagConstants.kOrigStandoff#0.5 
         self.initialReached = False
         self.tag_align_finished = False
 
@@ -48,9 +51,21 @@ class PathOnTheFlyAutoAlign(Command):
             Pose2d(5.93, 3.96, Rotation2d.fromDegrees(94.58)),
             Pose2d(5.06, 2.96, Rotation2d.fromDegrees(33.84))
         ]
+        #only shooting from left side currently
+        calc_pose_dict = ReefOffsets(extra_left_offset=0,extra_right_offset=0).tag_alignment_poses['robot_left']
+        #this "inital pose" is offset in a direction perpendicular to the wall
+        calc_initial_pose_dict = ReefOffsets(extra_left_offset=0,extra_right_offset=0).tag_alignment_inital_poses['robot_left']
+        useCalcPoseList = [6, 7, 8, 9, 10, 11]
+        calc_reefWaypoints = {tag:calc_pose_dict['poleRight'][tag] for tag in useCalcPoseList}
+        #= [calc_pose_dict['poleRight'][tag][0] for tag in useCalcPoseList]
+        calc_initialReefWaypoints = {tag:calc_initial_pose_dict['poleRight'][tag] for tag in useCalcPoseList}
+        #[calc_initial_pose_dict['poleRight'][tag] for tag in useCalcPoseList]
+    
+
+
 
         initialPoseList = [
-            pose+(Transform2d(Translation2d(0, -self.initial_offset), Rotation2d()))
+            pose+(Transform2d(Translation2d(0, -self.initial_offset), Rotation2d())) #looks to shift all to the right (from blue perspective), Why?
             for pose in poseList
         ]
 
@@ -61,6 +76,10 @@ class PathOnTheFlyAutoAlign(Command):
         self.initialReefWaypoints = {
             i: j for i, j in zip(self.tagID, initialPoseList)
         }
+
+        #merge the dictionaries
+        self.reefWaypoints.update(calc_reefWaypoints)
+        self.initialReefWaypoints.update(calc_initialReefWaypoints)
 
 
     def initialize(self):

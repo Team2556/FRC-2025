@@ -28,6 +28,11 @@ class ReefOffsets:
                                         'poleRight':{tag.ID: self.getOffsetPathPoints(tag.ID, 'right', 'left') for tag in self.aprilTags}},
                           'robot_right':{'poleLeft':{tag.ID: self.getOffsetPathPoints(tag.ID, 'left', 'right') for tag in self.aprilTags},
                                          'poleRight':{tag.ID: self.getOffsetPathPoints(tag.ID, 'right', 'right') for tag in self.aprilTags}}}
+        
+        self.tag_alignment_inital_poses = {'robot_left':{'poleLeft':{tag.ID: self.getOffsetPathPoints(tag.ID, 'left', 'left', return_path_start=True) for tag in self.aprilTags},
+                                                         'poleRight':{tag.ID: self.getOffsetPathPoints(tag.ID, 'right', 'left', return_path_start=True) for tag in self.aprilTags}},
+                                            'robot_right':{'poleLeft':{tag.ID: self.getOffsetPathPoints(tag.ID, 'left', 'right', return_path_start=True) for tag in self.aprilTags},
+                                                        'poleRight':{tag.ID: self.getOffsetPathPoints(tag.ID, 'right', 'right', return_path_start=True) for tag in self.aprilTags}}}
         # , 'poleRight':{}}
     
     def pose_extract_array(self, pose):
@@ -45,7 +50,7 @@ class ReefOffsets:
             ]
             return array
  
-    def getOffsetPathPoints(self, reef_tag, pole_side, robot_side):
+    def getOffsetPathPoints(self, reef_tag, pole_side, robot_side, return_path_start=False):
         reef_tag_index = reef_tag-1
         transpose_steps =[]
         apriltag_center_pose = self.aprilTags[reef_tag_index].pose
@@ -83,5 +88,8 @@ class ReefOffsets:
         transpose_steps.append(self.pose_extract_array(robot_path_end_pose))
         # return (robot_path_start_pose,shooter_path_start, robot_path_end_pose,shooter_path_end, apriltag_translation, apriltag_rotation, self.sidePoleOffest)
         # return ( robot_path_end_pose, shooter_path_end, apriltag_translation, apriltag_rotation, self.sidePoleOffest, transpose_steps)
-        return ( robot_path_end_pose)
+        if return_path_start:
+            return (robot_path_start_pose)
+        else:
+            return ( robot_path_end_pose)
 
