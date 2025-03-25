@@ -134,13 +134,13 @@ class RobotContainer:
             self.dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
                 # self.elevatorSubsystem,
-                direction = -1,  # Left is -1, Right is 1
+                direction = -1,  
             )
 
             self.dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
                 self.coralSubsystem,
                 # self.elevatorSubsystem,
-                direction = 1,  # Left is -1, Right is 1
+                direction = 1, 
             )
 
         if self.ENABLE_CLIMB:
