@@ -251,7 +251,7 @@ class RobotContainer:
             algaeReefIntakeCommand = algaeCommands.AlgaeInstantCommand(
                 self.algaeSubsystem,
                 AlgaeConstants.kPivotReefIntakingValue,
-                1 * AlgaeConstants.kIntakeMultiplier,
+                -1 * AlgaeConstants.kIntakeMultiplier,
             )
 
             # ALGAE PROCESS COMMAND
@@ -379,7 +379,7 @@ class RobotContainer:
             # self._joystick2.povUp().whileTrue(testPneumaticCommand)
 
     def getHumanPlayerAngle(self)-> float:
-        offset = 180
+        offset = 0
         if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             offset = 70 + 180
         return (235 + offset) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset)
