@@ -134,11 +134,9 @@ class RobotContainer:
 
         if self.ENABLE_CLIMB:
             self.climbSubsystem = climbSubsystem.ClimbSubsystem()
-            # self.scheduler.registerSubsystem(self.climbSubsystem)
         
         if self.ENABLE_PNEUMATIC:
             self.pneumaticSubsystem = pneumaticSubsystem.PneumaticSubsystem()
-            # self.scheduler.registerSubsystem(self.pneumaticSubsystem)
 
         if self.ENABLE_VISON:
             self.vision = vison.VisionSubsystem(self.drivetrain)
