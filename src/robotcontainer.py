@@ -100,7 +100,7 @@ class RobotContainer:
                                          .with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)
                                          .with_deadband(self._max_speed * 0.1)
                                          )
-        self.slow_mode_multiplier = 1.0 # 1 or kSlowMode constant
+        # self.slow_mode_multiplier = 1.0 # 1 or kSlowMode constant
 
         self._logger = Telemetry(self._max_speed)
 
@@ -164,18 +164,10 @@ class RobotContainer:
         instantiating a :GenericHID or one of its subclasses (Joystick or XboxController),
         and then passing it to a JoystickButton.
         """
-        
-        # Slow Down on right bumper stuff
-        self.slowSpeedMultiplier = 1
-        self.slowRotationMultiplier = 1
-        
-        def changeSlowMultipliers(speed = 1, rotation = 1): 
-            self.slowSpeedMultiplier = speed
-            self.slowRotationMultiplier = rotation
 
         self._joystick.rightBumper().whileTrue(self.drivetrain.apply_request(lambda:(self._robot_centric_drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
-                        -adjust_jostick(self._joystick.getLeftY(), smooth=True)
+                        adjust_jostick(-self._joystick.getLeftY(), smooth=True)
                         * self._max_speed * Override_DriveConstant.kSlowMove
                     )  # Drive forward with negative Y (forward)
                     .with_velocity_y(
@@ -199,15 +191,15 @@ class RobotContainer:
                     self._field_centric_drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
                         -adjust_jostick(self._joystick.getLeftY(), smooth=True)
-                        * self._max_speed * self.slowSpeedMultiplier
+                        * self._max_speed
                     )  # Drive forward with negative Y (forward)
                     .with_velocity_y(
                         adjust_jostick(-self._joystick.getLeftX(), smooth=True)
-                        * self._max_speed * self.slowSpeedMultiplier
+                        * self._max_speed
                     )  # Drive left with negative X (left)
                     .with_rotational_rate(
                         adjust_jostick(-self._joystick.getRightX(), smooth=True)
-                        * self._max_angular_rate * self.slowRotationMultiplier
+                        * self._max_angular_rate
                     )  # Drive counterclockwise with negative X (left)
                 )
             )
@@ -216,8 +208,12 @@ class RobotContainer:
         self._joystick.leftBumper().whileTrue(
             self.drivetrain.apply_request(
                 lambda: self.field_centric_angle_lock
-                .with_velocity_x(-self._joystick.getLeftY() * self._max_speed * self.slow_mode_multiplier)
-                .with_velocity_y(-self._joystick.getLeftX() * self._max_speed * self.slow_mode_multiplier)
+                .with_velocity_x(
+                    adjust_jostick(-self._joystick.getLeftY()) * self._max_speed
+                )
+                .with_velocity_y(
+                    adjust_jostick(-self._joystick.getLeftX()) * self._max_speed
+                )
                 .with_target_direction(Rotation2d.fromDegrees(self.getHumanPlayerAngle()))
             )
         )
@@ -230,7 +226,7 @@ class RobotContainer:
         ))
 
 
-        # reset the field-centric heading on left bumper press
+        # reset the field-centric heading on left stick press
         self._joystick.leftStick().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
