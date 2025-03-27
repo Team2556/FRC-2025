@@ -198,7 +198,7 @@ class ElevatorConstants:
     # kCoralLv4_JumpScore = 37
 
     # Goes up of down by this much every 50th of a second
-    kElevatorIncrementalStep = 0.1
+    kElevatorIncrementalStep = 0.25
     
     # The command decides the position's close enough if it's within this range (in rotations of a sort)
     # This doesn't delete the setpoint, it just declared the command's finished
