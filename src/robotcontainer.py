@@ -353,7 +353,7 @@ class RobotContainer:
             # TODO: consider auto trigger when latched on (with debounce of course)
             # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
             self._joystick.povLeft().whileTrue(self.forwardCommand)
-            self._joystick.rightStick().whileTrue(self.backwardCommand)
+            self._joystick2.back().whileTrue(self.backwardCommand)
             
         if self.ENABLE_PNEUMATIC:
             defaultPneumaticCommand = pneumaticCommands.DefaultPneumaticCommand(

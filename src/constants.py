@@ -155,8 +155,8 @@ class CAN_Address(IntEnum):
     FIFTYONE = auto()
     
 class RobotDimensions:
-    WIDTH_w_bumpers = inches(28+2*3.25)  # inches inchesToMeters(36)#(26+2*3.25)
-    ROBOT_CENTER_FROM_LEFT_SHOOTER = Translation2d(inchesToMeters(inches(-9)), inchesToMeters(inches(-18.5)))
+    WIDTH_w_bumpers = inches(28+(2*3.25) + 1.375)  # inches inchesToMeters(36)#(26+2*3.25)
+    ROBOT_CENTER_FROM_LEFT_SHOOTER = Translation2d(inchesToMeters(inches(-9-2)), inchesToMeters(inches(-18.5)))
     ROBOT_CENTER_FROM_RIGHT_SHOOTER = Translation2d(inchesToMeters(inches(-9)), inchesToMeters(inches(18.5)))
     LEFT_SHOOTER_ROBOT_SPACE = Transform2d(ROBOT_CENTER_FROM_LEFT_SHOOTER, Rotation2d(degreesToRadians(90)))
     RIGHT_SHOOTER_ROBOT_SPACE = Transform2d(ROBOT_CENTER_FROM_RIGHT_SHOOTER, Rotation2d(degreesToRadians(-90)))
@@ -252,7 +252,7 @@ class AlgaeConstants:
     
     # Values to set pivoting motor to
     kPivotReefIntakingValue = 2.75 # Pivot position when grabbing algae
-    kPivotGroundIntakingValue = 2.3 # Pivot position when grabbing algae from the FLOOR (not being used)
+    kPivotGroundIntakingValue = 2 # Pivot position when grabbing algae from the FLOOR (not being used)
     kPivotAfterGroundIntakingValue = 1.7
     kPivotProcessingValue = 2 # Pivot position when about to send to processor
     
