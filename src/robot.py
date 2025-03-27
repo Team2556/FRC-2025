@@ -10,7 +10,7 @@ import typing
 import commands2
 
 from robotcontainer import RobotContainer
-
+from commands import coralCommands
 
 class MyRobot(commands2.TimedCommandRobot):
     """
@@ -53,13 +53,31 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
-        # Uncomment this when it actually works
-        # self.autonomousCommand = self.container.getAutonomousCommand()
+        self.autonomousCommand = self.container.getAutonomousCommand()
+
+        if self.autonomousCommand:
+            self.autonomousCommand.schedule()
             
+        # Backup auto movement just in case
+        # self.container.drivetrain.apply_request(
+        #     commands2.SequentialCommandGroup(
+        #         commands2.ParallelRaceGroup(
+        #             commands2.cmd.runOnce(lambda: (self.container._field_centric_drive.with_velocity_x(0.4))),
+        #             commands2.WaitCommand(8)
+        #         ),
+        #         commands2.ParallelRaceGroup(
+        #             commands2.cmd.runOnce(
+        #                 coralCommands.DischargeCoralCommand(
+        #                     self.container.coralSubsystem, 1
+        #                 )
+        #             ),
+        #             commands2.WaitCommand(5)
+        #         ),
+        #     )
+        # )
 
     def autonomousPeriodic(self) -> None:
         """This function is called periodically during autonomous"""
-        pass
 
     def teleopInit(self) -> None:
         # This makes sure that the autonomous stops running when
