@@ -40,13 +40,7 @@ from commands.path_on_the_fly_auto_align import PathOnTheFlyAutoAlign
 from constants import ElevatorConstants, AlgaeConstants, Override_DriveConstant
 from generated.tuner_constants import TunerConstants
 from robotUtils.adjustJoystick import adjust_jostick
-# NOTE: THIS IS THE OFFICIAL LOCATION FOR IMPORTING COMMANDS AND SUBSYSTEMS AND CONSTANTS
-from subsystems import (
-    algaeSubsystem,
-    coralSubsystem,
-    elevatorSubsystem,
-    climbSubsystem
-)
+
 from subsystems import vison
 from subsystems.vison import VisionSubsystem
 from telemetry import Telemetry
@@ -151,7 +145,7 @@ class RobotContainer:
 
         if self.ENABLE_VISON:
             self.vision = vison.VisionSubsystem(self.drivetrain)
-            self.auto_align = PathOnTheFlyAutoAlign(self.drivetrain, self.vision)
+            self.auto_align = PathOnTheFlyAutoAlign(self.drivetrain, self.vision, False)
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -299,8 +293,9 @@ class RobotContainer:
             # self._joystick.leftStick().onFalse()
 
 
+        self._joystick.y().whileTrue(PathOnTheFlyAutoAlign(self.drivetrain, self.vision, False))
+        self._joystick.x().whileTrue(PathOnTheFlyAutoAlign(self.drivetrain, self.vision, True))
 
-        self._joystick.y().whileTrue(self.auto_align)
 
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands
@@ -356,7 +351,7 @@ class RobotContainer:
             # Button detections:
             # TODO: consider auto trigger when latched on (with debounce of course)
             # sensing_cage_in_hand = commands2.button.Trigger(self.climbSubsystem.cageInGripSwitch.get())
-            self._joystick.x().whileTrue(self.forwardCommand)
+            self._joystick.povLeft().whileTrue(self.forwardCommand)
             self._joystick.rightStick().whileTrue(self.backwardCommand)
             
         if self.ENABLE_PNEUMATIC:

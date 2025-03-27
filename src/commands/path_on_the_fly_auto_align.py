@@ -5,6 +5,7 @@ from phoenix6.swerve.requests import FieldCentric
 from wpilib import SmartDashboard, DriverStation
 from wpimath._controls._controls.controller import PIDController
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d, Transform2d
+from wpimath.units import inchesToMeters
 
 from robotUtils.limelight import LimelightHelpers
 from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
@@ -12,6 +13,7 @@ from subsystems.vison import VisionSubsystem
 
 from robotUtils.reefOffsets import ReefOffsets
 from constants import AprilTagConstants
+import commands2
 
 
 def get_fiducial_id(limelight_name):
@@ -19,7 +21,7 @@ def get_fiducial_id(limelight_name):
 
 
 class PathOnTheFlyAutoAlign(Command):
-    def __init__(self, drivetrain: CommandSwerveDrivetrain, vision: VisionSubsystem, _joystick=None):
+    def __init__(self, drivetrain: CommandSwerveDrivetrain, vision: VisionSubsystem, leftPoleDesired):
         super().__init__()
 
         self.rotational_pid = PIDController(0.05000, 0.000000, 0.001000)
@@ -39,7 +41,12 @@ class PathOnTheFlyAutoAlign(Command):
         self.initial_offset = AprilTagConstants.kOrigStandoff #0.5 
         self.initialReached = False
         self.tag_align_finished = False
-        self.dist_between_poles = 12.94
+        self.dist_between_poles = inchesToMeters(12.94)
+        self._joystick = commands2.button.CommandXboxController(0)
+        self.leftPoleDesired = leftPoleDesired
+
+
+
 
 
         # 17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
@@ -83,7 +90,7 @@ class PathOnTheFlyAutoAlign(Command):
         }
 
         leftPolePoseList = [
-            pose + (Transform2d(Translation2d(self.dist_between_poles, 0), Rotation2d()))
+            pose + (Transform2d(Translation2d(-self.dist_between_poles, 0), Rotation2d()))
             for pose in self.reefWaypoints.values()
         ]
 
@@ -96,6 +103,7 @@ class PathOnTheFlyAutoAlign(Command):
         self.initialReached = False
         if utils.is_simulation():
             self.seen_tag_ID = SmartDashboard.getNumber("Seen Tag", 19)
+
         if self.seen_tag_ID is None or self.seen_tag_ID not in self.useCalcPoseList:
             SmartDashboard.putNumber("Seen Tag", 0)
         else:
@@ -126,24 +134,29 @@ class PathOnTheFlyAutoAlign(Command):
             self.end(True)
             return
 
+
         current_pose = self.swerve.get_state().pose
         self.rotational_rate = self.rotational_pid.calculate(current_pose.rotation().degrees(), self.endpose.rotation().degrees())
         self.velocity_y = self.alliance_drive_invert * self.y_pid.calculate(current_pose.y, self.endpose.y)
         self.velocity_x = self.alliance_drive_invert * self.x_pid.calculate(current_pose.x, self.endpose.x)
+        #for going to the initial pose
 
         if self.rotational_pid.atSetpoint() and self.y_pid.atSetpoint() and self.x_pid.atSetpoint():
-            if not self.initialReached:
-                self.initialReached = True
-                self.endpose = self.reefWaypoints[self.seen_tag_ID]
-                self.rotational_pid.setTolerance(SmartDashboard.getNumber("rotationalPID set tolerance", 0.2))
-                self.x_pid.setTolerance(SmartDashboard.getNumber("xPID set tolerance", 0.025))
-                self.y_pid.setTolerance(SmartDashboard.getNumber("yPID set tolerance", 0.025))
-                self.rotational_rate = self.rotational_pid.calculate(current_pose.rotation().degrees(),self.endpose.rotation().degrees())
-                self.velocity_y = self.y_pid.calculate(current_pose.y, self.endpose.y)
-                self.velocity_x = self.x_pid.calculate(current_pose.x, self.endpose.x)
-            else:
-                self.end(True)
-                return
+            self.initialReached = True
+
+        if  self.initialReached:
+            if self.leftPoleDesired:
+                self.endpose = self.leftPoleReefWaypoints[self.seen_tag_ID]
+            else: self.endpose = self.reefWaypoints[self.seen_tag_ID]
+            self.rotational_pid.setTolerance(SmartDashboard.getNumber("rotationalPID set tolerance", 0.2))
+            self.x_pid.setTolerance(SmartDashboard.getNumber("xPID set tolerance", 0.025))
+            self.y_pid.setTolerance(SmartDashboard.getNumber("yPID set tolerance", 0.025))
+            self.rotational_rate = self.rotational_pid.calculate(current_pose.rotation().degrees(),self.endpose.rotation().degrees())
+            self.velocity_y = self.y_pid.calculate(current_pose.y, self.endpose.y)
+            self.velocity_x = self.x_pid.calculate(current_pose.x, self.endpose.x)
+        # else:
+        #     self.end(True)
+        #     return
 
         SmartDashboard.putBoolean("initialReached", self.initialReached)
         SmartDashboard.putNumber("rotationalPidController", self.rotational_rate)
