@@ -30,6 +30,8 @@ class MyRobot(commands2.TimedCommandRobot):
         # autonomous chooser on the dashboard.
         self.container = RobotContainer()
 
+        self.doingAuto = False
+
     def robotPeriodic(self) -> None:
         """This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
         that you want ran during disabled, autonomous, teleoperated and test.
@@ -41,7 +43,8 @@ class MyRobot(commands2.TimedCommandRobot):
         # commands, running already-scheduled commands, removing finished or interrupted commands,
         # and running subsystem periodic() methods.  This must be called from the robot's periodic
         # block in order for anything in the Command-based framework to work.
-        commands2.CommandScheduler.getInstance().run()
+        if not self.doingAuto:
+            commands2.CommandScheduler.getInstance().run()
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
@@ -57,8 +60,13 @@ class MyRobot(commands2.TimedCommandRobot):
 
         if self.autonomousCommand:
             self.autonomousCommand.schedule()
+
+        # self.doingAuto = True
+        # self.container.drivetrain.apply_request(
+        #     commands2.cmd.runOnce(lambda: (self.container._field_centric_drive.with_velocity_x(0.4)))
+        # )
             
-        # Backup auto movement just in case
+        # Expirimental cool command
         # self.container.drivetrain.apply_request(
         #     commands2.SequentialCommandGroup(
         #         commands2.ParallelRaceGroup(
@@ -78,14 +86,19 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousPeriodic(self) -> None:
         """This function is called periodically during autonomous"""
+        self.container.drivetrain.apply_request(
+            commands2.cmd.runOnce(lambda: (self.container._field_centric_drive.with_velocity_x(0.4)))
+        )
 
     def teleopInit(self) -> None:
-        # This makes sure that the autonomous stops running when
+        # This makes sure that the autonomo,us stops running when
         # teleop starts running. If you want the autonomous to
         # continue until interrupted by another command, remove
         # this line or comment it out.
         if self.autonomousCommand:
             self.autonomousCommand.cancel()
+
+        self.doingAuto = False
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""

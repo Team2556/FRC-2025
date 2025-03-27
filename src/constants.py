@@ -252,7 +252,7 @@ class AlgaeConstants:
     
     # Values to set pivoting motor to
     kPivotReefIntakingValue = 2.75 # Pivot position when grabbing algae
-    kPivotGroundIntakingValue = 2 # Pivot position when grabbing algae from the FLOOR (not being used)
+    kPivotGroundIntakingValue = 2.3 # Pivot position when grabbing algae from the FLOOR (not being used)
     kPivotAfterGroundIntakingValue = 1.7
     kPivotProcessingValue = 2 # Pivot position when about to send to processor
     
@@ -261,7 +261,7 @@ class AlgaeConstants:
     kPivotHomingRate = -0.05
     
     # Intake wheels multiply by this speed
-    kIntakeMultiplier = 0.5
+    kIntakeMultiplier = 0.7
     
     # The code waits this many seconds between intaking/processing
     kTimeItTakesToIntake = 1
