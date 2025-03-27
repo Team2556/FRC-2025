@@ -19,7 +19,7 @@ def get_fiducial_id(limelight_name):
 
 
 class PathOnTheFlyAutoAlign(Command):
-    def __init__(self, drivetrain: CommandSwerveDrivetrain, vision: VisionSubsystem, _joystick=None):
+    def __init__(self, drivetrain: CommandSwerveDrivetrain, vision: VisionSubsystem):
         super().__init__()
 
         self.rotational_pid = PIDController(0.05000, 0.000000, 0.001000)
@@ -40,7 +40,6 @@ class PathOnTheFlyAutoAlign(Command):
         self.initialReached = False
         self.tag_align_finished = False
         self.dist_between_poles = 12.94
-
 
         # 17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
         self.tagID = [17,
