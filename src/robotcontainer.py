@@ -234,8 +234,8 @@ class RobotContainer:
         self._joystick.leftBumper().whileTrue(
             self.drivetrain.apply_request(
                 lambda: self.field_centric_angle_lock
-                .with_velocity_x(-self._joystick.getLeftY() * self._max_speed * self.slow_mode_multiplier)
-                .with_velocity_y(-self._joystick.getLeftX() * self._max_speed * self.slow_mode_multiplier)
+                .with_velocity_x((adjust_jostick(-self._joystick.getLeftY(), smooth=True)* self._max_speed))
+                .with_velocity_y(adjust_jostick(-self._joystick.getLeftX(), smooth=True)* self._max_speed)
                 .with_target_direction(Rotation2d.fromDegrees(self.getHumanPlayerAngle()))
             )
         )
@@ -317,7 +317,6 @@ class RobotContainer:
             
             # 0.53 0.27
             self.coralSubsystem.setDefaultCommand(defaultCoralCommand)
-            # Cayden said to invert these
             self._joystick2.rightBumper().whileTrue(self.dischargeCoralRightCommand)
             self._joystick2.leftBumper().whileTrue(self.dischargeCoralLeftCommand)
 
@@ -385,6 +384,6 @@ class RobotContainer:
 
     def getHumanPlayerAngle(self)-> float:
         offset = 0
-        if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            offset = 70 + 180
-        return (235 + offset) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset)
+        if DriverStation.getAlliance() and (DriverStation.getAlliance() == DriverStation.Alliance.kRed):
+            offset = 108
+        return (126 + offset) if self.drivetrain.get_state().pose.y >= 3.8  else (-126 - offset)

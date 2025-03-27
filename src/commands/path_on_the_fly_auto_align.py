@@ -2,7 +2,7 @@ from commands2 import Command
 from phoenix6 import utils
 from phoenix6.swerve import SwerveModule
 from phoenix6.swerve.requests import FieldCentric
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard, DriverStation
 from wpimath._controls._controls.controller import PIDController
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d, Transform2d
 
@@ -40,36 +40,46 @@ class PathOnTheFlyAutoAlign(Command):
         self.initialReached = False
         self.tag_align_finished = False
 
-        self.tagID = [17, 18 , 19, 20, 21, 22]
-        #17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
+        # if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
+        #     self.alliance_drive_invert = 1
+        # elif DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+        #     self.alliance_drive_invert = -1
+        # else: self.alliance_drive_invert = 1
+
+
+        # 17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
+        self.tagID = [17,
+                      18,
+                      # 19,
+                      # 20,
+                      # 21,
+                      22]
 
         poseList = [
             Pose2d(3.86, 2.9, Rotation2d.fromDegrees(-27)),
             Pose2d(3.26, 3.9, Rotation2d.fromDegrees(-88)),
-            Pose2d(3.9, 5.15, Rotation2d.fromDegrees(-145.79)),
-            Pose2d(5.1, 4.91, Rotation2d.fromDegrees(152.94)),
-            Pose2d(5.93, 3.96, Rotation2d.fromDegrees(94.58)),
+            # Pose2d(3.9, 5.15, Rotation2d.fromDegrees(-145.79)),
+            # Pose2d(5.1, 4.91, Rotation2d.fromDegrees(152.94)),
+            # Pose2d(5.93, 3.96, Rotation2d.fromDegrees(94.58)),
             Pose2d(5.06, 2.96, Rotation2d.fromDegrees(33.84))
         ]
+
         #only shooting from left side currently
         calc_pose_dict = ReefOffsets(extra_left_offset=0,extra_right_offset=0).tag_alignment_poses['robot_left']['poleRight']
         #this "inital pose" is offset in a direction perpendicular to the wall
-        useCalcPoseList = [6, 7, 8, 9, 10, 11, 17,18,19,20,21,22]
-        calc_reefWaypoints = {tag:calc_pose_dict[tag] for tag in useCalcPoseList}# if tag not in self.tagID}
+        self.useCalcPoseList = [6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22] #Must contain all values that are in self.tagID aswell
+        calc_reefWaypoints = {tag:calc_pose_dict[tag] for tag in self.useCalcPoseList if tag not in self.tagID}
         # calc_initialReefWaypoints = {tag:calc_initial_pose_dict['poleRight'][tag] for tag in useCalcPoseList}
-    
-
-
-
 
         self.reefWaypoints = {
             i:j for i,j in zip(self.tagID,poseList)
         }
+
         #merge the dictionaries
         self.reefWaypoints.update(calc_reefWaypoints)
-        # self.initialReefWaypoints.update(calc_initialReefWaypoints)
+
         initialPoseList = [
-            pose+(Transform2d(Translation2d(0, -self.initial_offset), Rotation2d())) #looks to shift all to the right (from blue perspective), Why?
+            pose+(Transform2d(Translation2d(0, -self.initial_offset), Rotation2d()))
             for pose in self.reefWaypoints.values()
         ]
 
@@ -77,33 +87,44 @@ class PathOnTheFlyAutoAlign(Command):
             i: j for i, j in zip(self.reefWaypoints.keys(), initialPoseList)
         }
 
-
-
     def initialize(self):
         self.seen_tag_ID = int(LimelightHelpers.get_fiducial_id("limelight-four"))
         self.initialReached = False
         if utils.is_simulation():
             self.seen_tag_ID = SmartDashboard.getNumber("Seen Tag", 19)
-        if not self.seen_tag_ID in self.tagID or self.seen_tag_ID is None:
+        if self.seen_tag_ID is None or self.seen_tag_ID not in self.useCalcPoseList:
             SmartDashboard.putNumber("Seen Tag", 0)
-            self.initialReached = True
-            self.end(True)
         else:
             SmartDashboard.putNumber("Seen Tag", self.seen_tag_ID)
             self.endpose = self.initialReefWaypoints[self.seen_tag_ID]
             self.rotational_pid.setTolerance(1)
-            self.x_pid.setTolerance(0.1)
-            self.y_pid.setTolerance(0.1)
+            self.x_pid.setTolerance(SmartDashboard.putNumber("xPID set tolerance", 0.025))
+            self.y_pid.setTolerance(SmartDashboard.putNumber("yPID set tolerance", 0.025))
+
+        #alliance_color = DriverStation.getAlliance()
+        #if alliance_color is not None:
+        #    self.set_operator_perspective_forward(
+        #        self._RED_ALLIANCE_PERSPECTIVE_ROTATION
+        #        if alliance_color == DriverStation.Alliance.kRed
+        #        else self._BLUE_ALLIANCE_PERSPECTIVE_ROTATION
+        #    )
+        alliance_color = DriverStation.getAlliance()
+        if alliance_color is not None:
+            self.alliance_drive_invert = -1 if alliance_color == DriverStation.Alliance.kRed else 1
+        else:
+            self.alliance_drive_invert = 1
 
     def execute(self):
         self.tag_align_finished = False
-        if not self.seen_tag_ID in self.tagID or self.seen_tag_ID is None:
+
+        if self.seen_tag_ID not in self.useCalcPoseList:
             self.end(True)
             return
+
         current_pose = self.swerve.get_state().pose
         self.rotational_rate = self.rotational_pid.calculate(current_pose.rotation().degrees(), self.endpose.rotation().degrees())
-        self.velocity_y = self.y_pid.calculate(current_pose.y, self.endpose.y)
-        self.velocity_x = self.x_pid.calculate(current_pose.x, self.endpose.x)
+        self.velocity_y = self.alliance_drive_invert * self.y_pid.calculate(current_pose.y, self.endpose.y)
+        self.velocity_x = self.alliance_drive_invert * self.x_pid.calculate(current_pose.x, self.endpose.x)
 
         if self.rotational_pid.atSetpoint() and self.y_pid.atSetpoint() and self.x_pid.atSetpoint():
             if not self.initialReached:
@@ -127,6 +148,8 @@ class PathOnTheFlyAutoAlign(Command):
         SmartDashboard.putNumber("xPID set tolerance", 0.025)
         SmartDashboard.putNumber("yPID set tolerance", 0.025)
         SmartDashboard.putBoolean("Tag Aligned finished", False)
+        SmartDashboard.putNumber("alliance drive invert", self.alliance_drive_invert)
+        # SmartDashboard.putString("Get alliance?", DriverStation.getAlliance().__str__())
 
 
         self.swerve.set_control(
@@ -142,4 +165,5 @@ class PathOnTheFlyAutoAlign(Command):
         self.swerve.set_control(self.align_request.with_velocity_x(0).with_velocity_y(0).with_rotational_rate(0))
         self.tag_align_finished = True
         SmartDashboard.putBoolean("Tag Aligned finished", self.tag_align_finished)
+        SmartDashboard.putBoolean("if changes ", self.tag_align_finished)
         return
