@@ -46,9 +46,6 @@ class PathOnTheFlyAutoAlign(Command):
         self.leftPoleDesired = leftPoleDesired
 
 
-
-
-
         # 17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
         self.tagID = [17,
                       18,
@@ -123,7 +120,10 @@ class PathOnTheFlyAutoAlign(Command):
 
         alliance_color = DriverStation.getAlliance()
         if alliance_color is not None:
-            self.alliance_drive_invert = -1 if alliance_color == DriverStation.Alliance.kRed else 1
+            if alliance_color == DriverStation.Alliance.kRed:
+                self.alliance_drive_invert = -1
+            else:
+                self.alliance_drive_invert = 1
         else:
             self.alliance_drive_invert = 1
 
@@ -152,8 +152,8 @@ class PathOnTheFlyAutoAlign(Command):
             self.x_pid.setTolerance(SmartDashboard.getNumber("xPID set tolerance", 0.025))
             self.y_pid.setTolerance(SmartDashboard.getNumber("yPID set tolerance", 0.025))
             self.rotational_rate = self.rotational_pid.calculate(current_pose.rotation().degrees(),self.endpose.rotation().degrees())
-            self.velocity_y = self.y_pid.calculate(current_pose.y, self.endpose.y)
-            self.velocity_x = self.x_pid.calculate(current_pose.x, self.endpose.x)
+            self.velocity_y = self.alliance_drive_invert * self.y_pid.calculate(current_pose.y, self.endpose.y)
+            self.velocity_x = self.alliance_drive_invert * self.x_pid.calculate(current_pose.x, self.endpose.x)
         # else:
         #     self.end(True)
         #     return
@@ -176,11 +176,6 @@ class PathOnTheFlyAutoAlign(Command):
             .with_velocity_y(self.velocity_y)
         )
 
-        self.swerve.set_control(
-            self.align_request.with_rotational_rate(self.rotational_rate)
-            .with_velocity_x(self.velocity_x)
-            .with_velocity_y(self.velocity_y)
-        )
 
     def isFinished(self):
         return self.rotational_pid.atSetpoint() and self.y_pid.atSetpoint() and self.x_pid.atSetpoint() and self.initialReached == True
