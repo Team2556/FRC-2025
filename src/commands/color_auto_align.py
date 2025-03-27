@@ -5,23 +5,22 @@ from phoenix6.swerve.requests import RobotCentric, Idle
 from wpilib import SmartDashboard
 from wpimath._controls._controls.controller import PIDController
 
+from lib.limelight import LimelightHelpers
 from robotUtils.limelight import RawFiducial
 from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 from subsystems.vison import VisionSubsystem
+
 
 
 class AutoAlign(Command):
     def __init__(self, drivetrain: CommandSwerveDrivetrain, vision: VisionSubsystem):
         super().__init__()
 
-        # self.printTimer = wpilib.Timer()
-        # self.printTimer.start()
         self.drivetrain = drivetrain
         self.vision = vision
-        self.tag_id = 22  # Default tag ID
 
         self.rotational_pid = PIDController(0.05000, 0.000000, 0.001000)
-        self.y_pid = PIDController(2.7, 0.004, 0.02)
+        self.x_pid = PIDController(2.7, 0.004, 0.02)
 
         self.align_request = RobotCentric().with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)
         self.idle_request = Idle()
@@ -33,25 +32,25 @@ class AutoAlign(Command):
         self.addRequirements(self.vision)
         self.addRequirements(self.drivetrain)
 
-        SmartDashboard.putNumber("Tag being tracked", 22)
-        SmartDashboard.setPersistent("Tag being tracked")
+        SmartDashboard.putBoolean("Seen Reef", False)
+
 
 
     def initialize(self):
         pass
 
 
-    def execute(self):
-        self.tag_id = SmartDashboard.getNumber("Tag being tracked", 22)
-        fiducial = self.vision.get_fiducial_with_id(self.tag_id)
+    def execute(self, *cameras: str):
+        LimelightHelpers.set_LED_to_force_on("limelight")
+        fiducial = self.vision.get_reef_fiducial()
 
         if fiducial is None:
             if not utils.is_simulation():
+                SmartDashboard.putBoolean("Seen Reef", False)
                 self.drivetrain.set_control(self.align_request.with_velocity_x(0).with_velocity_y(0).with_rotational_rate(0.0))
             else:
                 # Random sim values
                 fiducial = RawFiducial()
-                fiducial.id = 7
                 fiducial.txyc = 10
                 fiducial.tync = 1
                 fiducial.ta = 1.5
@@ -59,31 +58,31 @@ class AutoAlign(Command):
                 fiducial.dist_to_robot = 1
                 fiducial.ambiguity = 0.1
 
-        self.rotational_rate = self.rotational_pid.calculate(2 * -1 * fiducial.txyc, 0.0) * 0.675
-        self.velocity_y = self.y_pid.calculate(fiducial.dist_to_robot, 0.65) * -1 * 0.7 # Scaled speed factor
+        # self.rotational_rate = self.rotational_pid.calculate(2 * -1 * fiducial.txyc, 0.0)
+        self.velocity_x = self.x_pid.calculate(fiducial.dist_to_robot, 0.65) * -1
+        SmartDashboard.putBoolean("Seen Reef", True)
 
-        if self.rotational_pid.atSetpoint() and self.y_pid.atSetpoint():
+        if self.x_pid.atSetpoint():
+            LimelightHelpers.set_LED_to_force_off("limelight")
             self.end(True)
             return
 
         self.drivetrain.set_control(
-            self.align_request.with_rotational_rate(-self.rotational_rate)
-            .with_velocity_y(self.velocity_y)
+            # self.align_request.with_rotational_rate(-self.rotational_rate)
+            self.align_request.with_velocity_x(self.velocity_x)
         )
 
         SmartDashboard.putNumber("txyc", fiducial.txyc)
-        SmartDashboard.putNumber("rotationalPidController", self.rotational_rate)
+        # SmartDashboard.putNumber("rotationalPidController", self.rotational_rate)
         SmartDashboard.putNumber("xPidController", self.velocity_x)
 
-        self.drivetrain.set_control(
-            self.align_request.with_rotational_rate(-self.rotational_rate)
-            .with_velocity_x(-self.velocity_x)
-        )
+
+
 
 
     def isFinished(self):
-        return self.rotational_pid.atSetpoint() and self.y_pid.atSetpoint()
-
+        return self.x_pid.atSetpoint()
+3
 
     def end(self, interrupted: bool):
         self.drivetrain.set_control(self.align_request.with_velocity_x(0).with_velocity_y(0).with_rotational_rate(0))

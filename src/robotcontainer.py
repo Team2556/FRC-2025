@@ -26,7 +26,7 @@ from subsystems import (
     pneumaticSubsystem,
 )
 
-from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto
+from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto, NamedCommands
 from pathplannerlib.path import PathPlannerPath, PathConstraints
 
 from commands import (
@@ -131,6 +131,17 @@ class RobotContainer:
 
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
+            self.dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                # self.elevatorSubsystem,
+                direction = -1,  
+            )
+
+            self.dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                # self.elevatorSubsystem,
+                direction = 1, 
+            )
 
         if self.ENABLE_CLIMB:
             self.climbSubsystem = climbSubsystem.ClimbSubsystem()
@@ -140,6 +151,7 @@ class RobotContainer:
 
         if self.ENABLE_VISON:
             self.vision = vison.VisionSubsystem(self.drivetrain)
+            self.auto_align = PathOnTheFlyAutoAlign(self.drivetrain, self.vision)
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -152,7 +164,13 @@ class RobotContainer:
             ))
 
         # Path follower
-        self._auto_chooser = AutoBuilder.buildAutoChooser("Tests")
+        NamedCommands.registerCommand("dischargeCoralLeftCommand", self.dischargeCoralLeftCommand)
+        NamedCommands.registerCommand("dischargeCoralRightCommand", self.dischargeCoralRightCommand)
+        NamedCommands.registerCommand("AutoAlign", self.auto_align)
+
+
+        #After registering named commands, we can build the auto chooser
+        self._auto_chooser = AutoBuilder.buildAutoChooser()
         SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
     def getAutonomousCommand(self):
@@ -208,12 +226,8 @@ class RobotContainer:
         self._joystick.leftBumper().whileTrue(
             self.drivetrain.apply_request(
                 lambda: self.field_centric_angle_lock
-                .with_velocity_x(
-                    adjust_jostick(-self._joystick.getLeftY()) * self._max_speed
-                )
-                .with_velocity_y(
-                    adjust_jostick(-self._joystick.getLeftX()) * self._max_speed
-                )
+                .with_velocity_x((adjust_jostick(-self._joystick.getLeftY(), smooth=True)* self._max_speed))
+                .with_velocity_y(adjust_jostick(-self._joystick.getLeftX(), smooth=True)* self._max_speed)
                 .with_target_direction(Rotation2d.fromDegrees(self.getHumanPlayerAngle()))
             )
         )
@@ -284,7 +298,7 @@ class RobotContainer:
             self._joystick.leftTrigger().onFalse(algaeHomeCommand)
             # self._joystick.leftStick().onFalse()
 
-        self.auto_align = PathOnTheFlyAutoAlign(self.drivetrain, self.vision)
+
 
         self._joystick.y().whileTrue(self.auto_align)
 
@@ -292,23 +306,11 @@ class RobotContainer:
             # Declare Coral Sequential Commands
             defaultCoralCommand = coralCommands.CoralDefaultCommand(self.coralSubsystem)
 
-            dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
-                self.coralSubsystem,
-                # self.elevatorSubsystem,
-                direction = -1,  # Left is -1, Right is 1
-            )
-
-            dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
-                self.coralSubsystem,
-                # self.elevatorSubsystem,
-                direction = 1,  # Left is -1, Right is 1
-            )
             
             # 0.53 0.27
             self.coralSubsystem.setDefaultCommand(defaultCoralCommand)
-            # Cayden said to invert these
-            self._joystick2.rightBumper().whileTrue(dischargeCoralLeftCommand)
-            self._joystick2.leftBumper().whileTrue(dischargeCoralRightCommand)
+            self._joystick2.rightBumper().whileTrue(self.dischargeCoralRightCommand)
+            self._joystick2.leftBumper().whileTrue(self.dischargeCoralLeftCommand)
 
         if self.ENABLE_ELEVATOR:
             # Home elevator at the start
@@ -374,6 +376,6 @@ class RobotContainer:
 
     def getHumanPlayerAngle(self)-> float:
         offset = 0
-        if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            offset = 70 + 180
-        return (235 + offset) if self.drivetrain.get_state().pose.y <= 3.8 else (-235 - offset)
+        if DriverStation.getAlliance() and (DriverStation.getAlliance() == DriverStation.Alliance.kRed):
+            offset = 108
+        return (126 + offset) if self.drivetrain.get_state().pose.y >= 3.8  else (-126 - offset)
