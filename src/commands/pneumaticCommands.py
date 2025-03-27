@@ -4,7 +4,6 @@ from wpilib import Timer, SmartDashboard
 from subsystems import coralSubsystem, elevatorSubsystem, pneumaticSubsystem
 from constants import PneumaticConstants, ElevatorConstants
 
-
 class DefaultPneumaticCommand(Command):
     def __init__(
         self, 
@@ -31,7 +30,7 @@ class DefaultPneumaticCommand(Command):
         pass
 
     def execute(self):
-        if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 3 
+        if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 5 
             and not self.coralSubsystem.detect_coral() and self.coralSubsystem.coralFiring):
             if not self.timer.isRunning():
                 self.timer.start()
@@ -50,8 +49,6 @@ class PulseFlippersCommand(Command):
     def __init__(self, pneumaticSubsystem: pneumaticSubsystem.PneumaticSubsystem):
         self.pneumaticSubsystem = pneumaticSubsystem
         self.addRequirements(self.pneumaticSubsystem)
-
-        self.InterruptionBehavior = InterruptionBehavior.kCancelIncoming
         # self.timer = Timer()
 
         # self.pulse_duration = 0.5
@@ -65,48 +62,13 @@ class PulseFlippersCommand(Command):
         # if self.timer.get() < self.pulse_duration:
         SmartDashboard.putBoolean("Coral/Pneumatics Activated", True)
         # Extend the flippers
-        self.LeftFlippersUp()
-        self.RightFlippersUp()
-
+        self.pneumaticSubsystem.activateFlippers()
 
     # def isFinished(self):
     #     # return self.timer.get() > self.pulse_duration
     #     return True
 
     def end(self, interrupted):
-        self.LeftFlippersDown()
-        self.RightFlippersDown()
+        SmartDashboard.putBoolean("Coral/Pneumatics Activated", False)
+        self.pneumaticSubsystem.disableFlippers()
         # self.timer.stop()
-
-
-    def LeftFlippersUp(self):
-        self.pneumaticSubsystem.enable_solenoid(
-            PneumaticConstants.kLeftScoreSolenoid
-        )
-        self.pneumaticSubsystem.disable_solenoid(
-            PneumaticConstants.kLeftRetractSolenoid
-        )
-    def RightFlippersUp(self):
-
-        self.pneumaticSubsystem.enable_solenoid(
-            PneumaticConstants.kRightScoreSolenoid
-        )
-        self.pneumaticSubsystem.disable_solenoid(
-            PneumaticConstants.kRightRetractSolenoid
-        )
-
-    def LeftFlippersDown(self):
-        self.pneumaticSubsystem.disable_solenoid(
-            PneumaticConstants.kLeftScoreSolenoid
-        )
-        self.pneumaticSubsystem.enable_solenoid(
-            PneumaticConstants.kLeftRetractSolenoid
-        )
-
-    def RightFlippersDown(self):
-        self.pneumaticSubsystem.disable_solenoid(
-            PneumaticConstants.kRightScoreSolenoid
-        )
-        self.pneumaticSubsystem.enable_solenoid(
-            PneumaticConstants.kRightRetractSolenoid
-        )

@@ -9,7 +9,7 @@ class PneumaticSubsystem(commands2.Subsystem):
         self.hub = wpilib.PneumaticHub(PneumaticConstants.kHub)
         self.hub.clearStickyFaults()
 
-        self.hub.enableCompressorAnalog(50, 60)
+        self.hub.enableCompressorAnalog(50, 60) # Change these later
         # self.hub.enableCompressorDigital()
 
         self.solenoids = [

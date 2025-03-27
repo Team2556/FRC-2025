@@ -26,9 +26,6 @@ from subsystems import (
     pneumaticSubsystem,
 )
 
-from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto, NamedCommands
-from pathplannerlib.path import PathPlannerPath, PathConstraints
-
 from commands import (
     algaeCommands,
     coralCommands,
@@ -36,6 +33,10 @@ from commands import (
     climbCommands,
     pneumaticCommands
 )
+
+from pathplannerlib.auto import AutoBuilder, PathfindThenFollowPath, PathPlannerAuto, NamedCommands
+from pathplannerlib.path import PathPlannerPath, PathConstraints
+
 from commands.path_on_the_fly_auto_align import PathOnTheFlyAutoAlign
 from constants import ElevatorConstants, AlgaeConstants, Override_DriveConstant
 from generated.tuner_constants import TunerConstants
@@ -362,12 +363,13 @@ class RobotContainer:
             )
             
             # TODO: removed timer may need new command or time put on via factory here
-            # testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
 
             self.pneumaticSubsystem.setDefaultCommand(defaultPneumaticCommand)
             # self._joystick2.povUp().whileTrue(pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem))
             
-            # self._joystick2.povUp().whileTrue(testPneumaticCommand)
+            testPneumaticCommand = pneumaticCommands.PulseFlippersCommand(self.pneumaticSubsystem)
+            
+            self._joystick2.povUp().whileTrue(testPneumaticCommand)
 
     def getHumanPlayerAngle(self)-> float:
         offset = 0
