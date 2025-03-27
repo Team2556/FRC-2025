@@ -39,13 +39,7 @@ class PathOnTheFlyAutoAlign(Command):
         self.initial_offset = AprilTagConstants.kOrigStandoff #0.5 
         self.initialReached = False
         self.tag_align_finished = False
-
-        # if DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
-        #     self.alliance_drive_invert = 1
-        # elif DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-        #     self.alliance_drive_invert = -1
-        # else: self.alliance_drive_invert = 1
-
+        self.dist_between_poles = 12.94
 
         # 17 back right, 18 back, 19 back left, 20 front right, 21 front, 22 front right
         self.tagID = [17,
@@ -87,6 +81,15 @@ class PathOnTheFlyAutoAlign(Command):
             i: j for i, j in zip(self.reefWaypoints.keys(), initialPoseList)
         }
 
+        leftPolePoseList = [
+            pose + (Transform2d(Translation2d(self.dist_between_poles, 0), Rotation2d()))
+            for pose in self.reefWaypoints.values()
+        ]
+
+        self.leftPoleReefWaypoints = {
+            i: j for i, j in zip(self.reefWaypoints.keys(), leftPolePoseList)
+        }
+
     def initialize(self):
         self.seen_tag_ID = int(LimelightHelpers.get_fiducial_id("limelight-four"))
         self.initialReached = False
@@ -107,7 +110,8 @@ class PathOnTheFlyAutoAlign(Command):
         #        self._RED_ALLIANCE_PERSPECTIVE_ROTATION
         #        if alliance_color == DriverStation.Alliance.kRed
         #        else self._BLUE_ALLIANCE_PERSPECTIVE_ROTATION
-        #    )
+        #    ) q
+
         alliance_color = DriverStation.getAlliance()
         if alliance_color is not None:
             self.alliance_drive_invert = -1 if alliance_color == DriverStation.Alliance.kRed else 1
@@ -151,6 +155,12 @@ class PathOnTheFlyAutoAlign(Command):
         SmartDashboard.putNumber("alliance drive invert", self.alliance_drive_invert)
         # SmartDashboard.putString("Get alliance?", DriverStation.getAlliance().__str__())
 
+
+        self.swerve.set_control(
+            self.align_request.with_rotational_rate(self.rotational_rate)
+            .with_velocity_x(self.velocity_x)
+            .with_velocity_y(self.velocity_y)
+        )
 
         self.swerve.set_control(
             self.align_request.with_rotational_rate(self.rotational_rate)
