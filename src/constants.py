@@ -175,7 +175,7 @@ class ElevatorConstants:
     # kincrement_m_per_sec_held = 0.25
     
     # THIS ONE has a max apeed of 1, so 0.10 is 10% of elevator's max speed
-    kHomingRate = 0.2
+    kHomingRate = 0.3
     # So the robot doesn't slam into the ground
     kLowEnoughToSlowDown = 6
     kLowEnoughSpeedMultiplier = 0.39
@@ -193,8 +193,8 @@ class ElevatorConstants:
     # kElevatorDistanceMovedAfterContactWithLimitSwitch = 0.2 poor Jack
     
     kCoralLv3 = 15.75 #14.25 #was 16, why different # 11.2
-    kAlgaeLv3 = 25
-    kCoralLv4 = 36 # 25.5 # All the elevator levels below aren't tuned
+    kAlgaeLv3 = 26
+    kCoralLv4 = 36.4 # 25.5 # All the elevator levels below aren't tuned
     # kCoralLv4_JumpScore = 37
 
     # Goes up of down by this much every 50th of a second
@@ -218,6 +218,9 @@ class ElevatorConstants:
 class Override_DriveConstant:
     kSlowMove = 0.25 # Percent speed for slow mode movement
     kSlowRotate = 0.25 # Percent speed for slow mode rotation
+
+    kSuperSlowMove = 0.05 # Percent speed for slow mode movement
+    kSuperSlowRotate = 0.05 # Percent speed for slow mode rotation
 
 class AlgaeConstants:
     # Motor Channels
@@ -251,8 +254,8 @@ class AlgaeConstants:
     kPivotMinHeight = 0
     
     # Values to set pivoting motor to
-    kPivotReefIntakingValue = 2.75 # Pivot position when grabbing algae
-    kPivotGroundIntakingValue = 2 # Pivot position when grabbing algae from the FLOOR (not being used)
+    kPivotReefIntakingValue = 2.75 # Pivot position when grabbing algae (not being used often)
+    kPivotGroundIntakingValue = 1.8 # Pivot position when grabbing algae from the FLOOR
     kPivotAfterGroundIntakingValue = 1.7
     kPivotProcessingValue = 2 # Pivot position when about to send to processor
     
@@ -293,7 +296,7 @@ class ClimbConstants:
     kCaptureCageSwitchChannel = Rio_DIO.TWO
 
     kSpeedForwardIn = 0.30
-    kSpeedForwardIn_gripped = 0.99
+    kSpeedForwardIn_gripped = 1
     kSpeedBackOut = -0.20
     
 
