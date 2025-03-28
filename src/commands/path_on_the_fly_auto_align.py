@@ -21,7 +21,7 @@ def get_fiducial_id(limelight_name):
 
 
 class PathOnTheFlyAutoAlign(Command):
-    def __init__(self, drivetrain: CommandSwerveDrivetrain, vision: VisionSubsystem, leftPoleDesired):
+    def __init__(self, drivetrain: CommandSwerveDrivetrain, vision: VisionSubsystem, leftPoleDesired, endpose):
         super().__init__()
 
         self.rotational_pid = PIDController(0.05000, 0.000000, 0.001000)
@@ -35,7 +35,7 @@ class PathOnTheFlyAutoAlign(Command):
         self.swerve = drivetrain
         self.seen_tag_ID = 22
         self.align_request = FieldCentric().with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)
-        self.endpose = Pose2d(0,0,0)
+        self.endpose = endpose
         self.addRequirements(self.vision)
         self.addRequirements(self.swerve)
         self.initial_offset = AprilTagConstants.kOrigStandoff #0.5 

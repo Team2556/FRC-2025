@@ -240,12 +240,6 @@ class RobotContainer:
         )
 
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
-        self._joystick.b().onTrue(self.drivetrain.runOnce(
-            lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0)
-                                               if (DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kBlue)
-                                               else Pose2d(17.065,6.47, Rotation2d.fromDegrees(180.0)))
-        ))
-
 
         # reset the field-centric heading on left stick press
         self._joystick.leftStick().onTrue(
@@ -273,7 +267,7 @@ class RobotContainer:
             algaeProcessCommand = algaeCommands.AlgaeCommand(
                 self.algaeSubsystem,
                 AlgaeConstants.kPivotProcessingValue,
-                -1 * AlgaeConstants.kIntakeMultiplier,
+                -1 * AlgaeConstants.kIntakeMultiplier * 0.5, # The 0.5 is so it won't bounce out
             )
 
             # ALGAE GROUND INTAKE COMMAND
@@ -308,7 +302,7 @@ class RobotContainer:
 
         self._joystick.y().whileTrue(PathOnTheFlyAutoAlign(self.drivetrain, self.vision, False))
         self._joystick.x().whileTrue(PathOnTheFlyAutoAlign(self.drivetrain, self.vision, True))
-
+        self._joystick.b()
 
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands
