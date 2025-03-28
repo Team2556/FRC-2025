@@ -105,7 +105,6 @@ class RobotContainer:
         self.drivetrain = TunerConstants.create_drivetrain()
 
         self.vision = VisionSubsystem(self.drivetrain, "limelight-four")
-        #self.auto_align = AutoAlign(self.drivetrain, self.vision)
         # NOTE: HAVE ALL THE ENABLY THINGS HERE (and change them all to true when actually playing)
 
         self.ENABLE_ALGAE = True
@@ -120,23 +119,11 @@ class RobotContainer:
         if self.ENABLE_ALGAE:
             self.algaeSubsystem = algaeSubsystem.AlgaeSubsystem()
 
-
         if self.ENABLE_ELEVATOR:
             self.elevatorSubsystem = elevatorSubsystem.ElevatorSubsystem()
 
         if self.ENABLE_CORAL:
             self.coralSubsystem = coralSubsystem.CoralTrack()
-            self.dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
-                self.coralSubsystem,
-                # self.elevatorSubsystem,
-                direction = -1,  
-            )
-
-            self.dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
-                self.coralSubsystem,
-                # self.elevatorSubsystem,
-                direction = 1, 
-            )
 
         if self.ENABLE_CLIMB:
             self.climbSubsystem = climbSubsystem.ClimbSubsystem()
@@ -146,7 +133,6 @@ class RobotContainer:
 
         if self.ENABLE_VISON:
             self.vision = vison.VisionSubsystem(self.drivetrain)
-            self.auto_align = PathOnTheFlyAutoAlign(self.drivetrain, self.vision, False)
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -159,14 +145,40 @@ class RobotContainer:
             ))
 
         # Path follower
-        NamedCommands.registerCommand("dischargeCoralLeftCommand", self.dischargeCoralLeftCommand)
-        NamedCommands.registerCommand("dischargeCoralRightCommand", self.dischargeCoralRightCommand)
-        NamedCommands.registerCommand("AutoAlign", self.auto_align)
-
+        NamedCommands.registerCommand("dischargeCoralLeftCommand", 
+            coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                # self.elevatorSubsystem,
+                direction = -1,  
+            )
+        )
+        NamedCommands.registerCommand("dischargeCoralRightCommand", 
+            coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                # self.elevatorSubsystem,
+                direction = 1, 
+            )
+        )
+        NamedCommands.registerCommand("RightPoleAutoAlign", 
+            PathOnTheFlyAutoAlign(
+                self.drivetrain, 
+                self.vision, 
+                False
+            )
+        )
+        NamedCommands.registerCommand("LeftPoleAutoAlign", 
+            PathOnTheFlyAutoAlign(
+                self.drivetrain, 
+                self.vision, 
+                True
+            )
+        )
 
         #After registering named commands, we can build the auto chooser
         self._auto_chooser = AutoBuilder.buildAutoChooser()
         SmartDashboard.putData("Auto Mode", self._auto_chooser)
+
+        commands2.SequentialCommandGroup
 
     def getAutonomousCommand(self):
         return self._auto_chooser.getSelected()
@@ -228,12 +240,6 @@ class RobotContainer:
         )
 
         self._joystick.a().whileTrue(self.drivetrain.apply_request(lambda: self._brake))
-        self._joystick.b().onTrue(self.drivetrain.runOnce(
-            lambda: self.drivetrain.reset_pose(Pose2d(0.485676,1.585252,0.0)
-                                               if (DriverStation.getAlliance() and DriverStation.getAlliance() == DriverStation.Alliance.kBlue)
-                                               else Pose2d(17.065,6.47, Rotation2d.fromDegrees(180.0)))
-        ))
-
 
         # reset the field-centric heading on left stick press
         self._joystick.leftStick().onTrue(
@@ -261,7 +267,7 @@ class RobotContainer:
             algaeProcessCommand = algaeCommands.AlgaeCommand(
                 self.algaeSubsystem,
                 AlgaeConstants.kPivotProcessingValue,
-                -1 * AlgaeConstants.kIntakeMultiplier,
+                -1 * AlgaeConstants.kIntakeMultiplier * 0.5, # The 0.5 is so it won't bounce out
             )
 
             # ALGAE GROUND INTAKE COMMAND
@@ -296,12 +302,23 @@ class RobotContainer:
 
         self._joystick.y().whileTrue(PathOnTheFlyAutoAlign(self.drivetrain, self.vision, False))
         self._joystick.x().whileTrue(PathOnTheFlyAutoAlign(self.drivetrain, self.vision, True))
-
+        self._joystick.b()
 
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands
             defaultCoralCommand = coralCommands.CoralDefaultCommand(self.coralSubsystem)
+            
+            self.dischargeCoralRightCommand = coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                # self.elevatorSubsystem,
+                direction = -1,  
+            )
 
+            self.dischargeCoralLeftCommand = coralCommands.DischargeCoralCommand(
+                self.coralSubsystem,
+                # self.elevatorSubsystem,
+                direction = 1, 
+            )
             
             # 0.53 0.27
             self.coralSubsystem.setDefaultCommand(defaultCoralCommand)

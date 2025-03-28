@@ -61,6 +61,18 @@ class MyRobot(commands2.TimedCommandRobot):
         if self.autonomousCommand:
             self.autonomousCommand.schedule()
 
+        # commands2.CommandScheduler.getInstance().schedule(
+        #     commands2.SequentialCommandGroup(
+        #         commands2.WaitCommand(10),
+        #         commands2.ParallelRaceGroup(
+        #             commands2.WaitCommand(3),
+        #             coralCommands.DischargeCoralCommand(
+        #                 self.container.coralSubsystem, 1
+        #             )
+        #         )
+        #     )
+        # )
+        
         # self.doingAuto = True
         # self.container.drivetrain.apply_request(
         #     commands2.cmd.runOnce(lambda: (self.container._field_centric_drive.with_velocity_x(0.4)))
