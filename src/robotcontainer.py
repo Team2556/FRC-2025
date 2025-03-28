@@ -159,14 +159,14 @@ class RobotContainer:
                 direction = 1, 
             )
         )
-        NamedCommands.registerCommand("RightAutoAlign", 
+        NamedCommands.registerCommand("RightPoleAutoAlign", 
             PathOnTheFlyAutoAlign(
                 self.drivetrain, 
                 self.vision, 
                 False
             )
         )
-        NamedCommands.registerCommand("LeftAutoAlign", 
+        NamedCommands.registerCommand("LeftPoleAutoAlign", 
             PathOnTheFlyAutoAlign(
                 self.drivetrain, 
                 self.vision, 
