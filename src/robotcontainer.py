@@ -215,7 +215,7 @@ class RobotContainer:
                         adjust_jostick(self._joystick.getLeftX(), smooth=False)
                         * self._max_speed * Override_DriveConstant.kSuperSlowMove
                     )  # Drive forward with negative Y (forward)
-                    .with_velocity_y(adjust_jostick(self._joystick.getLeftY(), smooth=False)
+                    .with_velocity_y(-adjust_jostick(self._joystick.getLeftY(), smooth=False)
                         * self._max_speed * Override_DriveConstant.kSuperSlowMove)
                     .with_rotational_rate(
                         adjust_jostick(-self._joystick.getRightX(), smooth=False)

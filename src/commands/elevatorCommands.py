@@ -51,9 +51,10 @@ class HomeElevatorCommand(Command):
         
     def isFinished(self): return self.elevatorSubsystem.getLimitBottom()
     
-    def end(self, interrupted): 
-        self.elevatorSubsystem.setElevatorSpeed(0)
-        self.elevatorSubsystem.setpoint = 0 # Make PID actually think it's 0
+    def end(self, interrupted):
+        if not interrupted:
+            self.elevatorSubsystem.setElevatorSpeed(0)
+            self.elevatorSubsystem.setpoint = 0 # Make PID actually think it's 0
         
 class InstantSetElevatorCommand(Command):
     def __init__(self, elevatorSubsystem: elevatorSubsystem.ElevatorSubsystem, position):
