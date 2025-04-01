@@ -30,19 +30,22 @@ class DefaultPneumaticCommand(Command):
         pass
 
     def execute(self):
-        if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 5 
-            and not self.coralSubsystem.detect_coral() and self.coralSubsystem.coralFiring):
-            if not self.timer.isRunning():
-                self.timer.start()
-            if self.timer.get() >= PneumaticConstants.kScoreDelay:
-                self.pneumaticSubsystem.activateFlippers()
-            else:
-                self.pneumaticSubsystem.disableFlippers()
-        else:
-            self.timer.reset()
-            self.pneumaticSubsystem.disableFlippers()
-        SmartDashboard.putNumber("Coral/Pneumatics Timer", self.timer.get())
-        PneumaticConstants.kScoreDelay = SmartDashboard.getNumber("Coral/Pneumatics Delay", PneumaticConstants.kScoreDelay)
+        # Not doing automatic PID ...
+        self.pneumaticSubsystem.disableFlippers()
+
+        # if (self.elevatorSubsystem.get_position() > ElevatorConstants.kCoralLv4 - 5
+        #     and not self.coralSubsystem.detect_coral() and self.coralSubsystem.coralFiring):
+        #     if not self.timer.isRunning():
+        #         self.timer.start()
+        #     if self.timer.get() >= PneumaticConstants.kScoreDelay:
+        #         self.pneumaticSubsystem.activateFlippers()
+        #     else:
+        #         self.pneumaticSubsystem.disableFlippers()
+        # else:
+        #     self.timer.reset()
+        #     self.pneumaticSubsystem.disableFlippers()
+        # SmartDashboard.putNumber("Coral/Pneumatics Timer", self.timer.get())
+        # PneumaticConstants.kScoreDelay = SmartDashboard.getNumber("Coral/Pneumatics Delay", PneumaticConstants.kScoreDelay)
             
 
 class PulseFlippersCommand(Command):

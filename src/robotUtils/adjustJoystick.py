@@ -1,4 +1,4 @@
-def adjust_jostick(value: float, dead_band=0.05, smooth=False) -> float:
+def adjust_jostick(value: float, dead_band=0.15, smooth=False) -> float:
     joystick_value = value
     
     if abs(joystick_value) < dead_band:

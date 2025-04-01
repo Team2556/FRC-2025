@@ -8,9 +8,9 @@ from wpilib import Timer, SmartDashboard
 from constants import ClimbConstants, CoralConstants
 
 from constants import ClimbConstants
+from commands2 import Subsystem
 
-
-class ClimbSubsystem():
+class ClimbSubsystem(Subsystem):
     ''' Subsystem that handles the climb mechanic '''
 
     def __init__(self):
@@ -54,7 +54,15 @@ class ClimbSubsystem():
         
 
     def periodic(self):
-        
+        # Right now this is not working right now
+        # if not self.cageInGripSwitch.get():
+        #     SmartDashboard.putBoolean("READY TO CLIMB", True)
+        # else:
+        #     SmartDashboard.putBoolean("READY TO CLIMB", False)
+
+        # For testing to see if periodic even runs
+        SmartDashboard.putBoolean("READY TO CLIMB", True)
+
         # SmartDashboard.putString("Climb/Deploy Limit Switch", self.climbMotor.get_reverse_limit().value)
         # SmartDashboard.putString("Climb/Climb Limit Switch", self.climbMotor.get_forward_limit().value)
         ...

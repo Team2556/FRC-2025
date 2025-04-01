@@ -13,7 +13,7 @@ from pathplannerlib.auto import AutoBuilder
 from phoenix6 import swerve
 from phoenix6.swerve import Pose2d, SwerveModule
 from phoenix6.swerve.requests import FieldCentricFacingAngle
-from wpilib import SmartDashboard, DriverStation
+from wpilib import SmartDashboard, DriverStation, CameraServer
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 
@@ -50,6 +50,7 @@ from phoenix6 import swerve
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 from wpilib import SmartDashboard
+from wpilib.cameraserver import CameraServer
 
 
 class RobotContainer:
@@ -73,8 +74,8 @@ class RobotContainer:
         # Setting up bindings for necessary control of the swerve drive platform
         self._field_centric_drive = (
             swerve.requests.FieldCentric()
-            .with_deadband(0.1)
-            .with_rotational_deadband(0.1)  # Add a 10% deadband
+            .with_deadband(0.01)
+            .with_rotational_deadband(0.01)  # Add a 1% deadband
             .with_drive_request_type(
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )  # Use open-loop control for drive motors
@@ -83,8 +84,8 @@ class RobotContainer:
         self._point = swerve.requests.PointWheelsAt()
         self._robot_centric_drive = (
             swerve.requests.RobotCentric()
-            .with_deadband(0.1)
-            .with_rotational_deadband(0.1)  # Add a 10% deadband
+            .with_deadband(0.001)
+            .with_rotational_deadband(0.001)  # Add a 1% deadband
             .with_drive_request_type(
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )  # Use open-loop control for drive motors
@@ -93,7 +94,7 @@ class RobotContainer:
                                          .with_heading_pid(5, 0, 0)
                                          .with_max_abs_rotational_rate(2 * math.pi)
                                          .with_drive_request_type(SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE)
-                                         .with_deadband(self._max_speed * 0.1)
+                                         .with_deadband(0.01)
                                          )
         # self.slow_mode_multiplier = 1.0 # 1 or kSlowMode constant
 
@@ -178,7 +179,9 @@ class RobotContainer:
         self._auto_chooser = AutoBuilder.buildAutoChooser()
         SmartDashboard.putData("Auto Mode", self._auto_chooser)
 
-        commands2.SequentialCommandGroup
+        # commands2.SequentialCommandGroup
+
+        CameraServer().launch()
 
     def getAutonomousCommand(self):
         return self._auto_chooser.getSelected()
@@ -207,13 +210,38 @@ class RobotContainer:
                 )
            )
 
+        self._joystick.b().whileTrue(self.drivetrain.apply_request(lambda:(self._robot_centric_drive.with_velocity_x(
+                        # self._robot_centric_drive.with_velocity_x(
+                        adjust_jostick(self._joystick.getLeftX(), smooth=False)
+                        * self._max_speed * Override_DriveConstant.kSuperSlowMove
+                    )  # Drive forward with negative Y (forward)
+                    .with_velocity_y(-adjust_jostick(self._joystick.getLeftY(), smooth=False)
+                        * self._max_speed * Override_DriveConstant.kSuperSlowMove)
+                    .with_rotational_rate(
+                        adjust_jostick(-self._joystick.getRightX(), smooth=False)
+                        * self._max_angular_rate * Override_DriveConstant.kSuperSlowRotate
+                        )
+                    )
+                )
+           )
+
+        self.enableFastRobotCentric = False
+        SmartDashboard.putBoolean("ROBOT CENTRIC", self.enableFastRobotCentric)
+
+        def toggleRobotCentric():
+            self.enableFastRobotCentric = not self.enableFastRobotCentric
+            SmartDashboard.putBoolean("ROBOT CENTRIC", self.enableFastRobotCentric)
+
+        self._joystick.start().onTrue(commands2.cmd.runOnce(toggleRobotCentric))
+
         # Note that X is defined as forward according to WPILib convention,
         # and Y is defined as to the left according to WPILib convention.
         self.drivetrain.setDefaultCommand(
             # Drivetrain will execute this command periodically
             self.drivetrain.apply_request(
                 lambda: (
-                    self._field_centric_drive.with_velocity_x(
+                    # FIELD CENTRIC
+                    (self._field_centric_drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
                         -adjust_jostick(self._joystick.getLeftY(), smooth=True)
                         * self._max_speed
@@ -226,6 +254,22 @@ class RobotContainer:
                         adjust_jostick(-self._joystick.getRightX(), smooth=True)
                         * self._max_angular_rate
                     )  # Drive counterclockwise with negative X (left)
+                    ) if not self.enableFastRobotCentric else (
+                        # ROBOT CENTRIC
+                        self._robot_centric_drive.with_velocity_x(
+                            # self._robot_centric_drive.with_velocity_x(
+                            adjust_jostick(-self._joystick.getLeftY(), smooth=True)
+                            * self._max_speed
+                        )  # Drive forward with negative Y (forward)
+                        .with_velocity_y(
+                            adjust_jostick(-self._joystick.getLeftX(), smooth=True)
+                            * self._max_speed
+                        )  # Drive left with negative X (left)
+                        .with_rotational_rate(
+                            adjust_jostick(-self._joystick.getRightX(), smooth=True)
+                            * self._max_angular_rate
+                        )
+                    )
                 )
             )
         )
@@ -267,7 +311,7 @@ class RobotContainer:
             algaeProcessCommand = algaeCommands.AlgaeCommand(
                 self.algaeSubsystem,
                 AlgaeConstants.kPivotProcessingValue,
-                -1 * AlgaeConstants.kIntakeMultiplier * 0.5, # The 0.5 is so it won't bounce out
+                -1 * AlgaeConstants.kIntakeMultiplier * 0.7, # The 0.7 is so it won't bounce out
             )
 
             # ALGAE GROUND INTAKE COMMAND
@@ -302,7 +346,7 @@ class RobotContainer:
 
         self._joystick.y().whileTrue(PathOnTheFlyAutoAlign(self.drivetrain, self.vision, False))
         self._joystick.x().whileTrue(PathOnTheFlyAutoAlign(self.drivetrain, self.vision, True))
-        self._joystick.b()
+        # self._joystick.b() # B is being used for reef robot centric
 
         if self.ENABLE_CORAL:
             # Declare Coral Sequential Commands
