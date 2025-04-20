@@ -206,4 +206,57 @@ This contract outlines the expectations for all Radioactive Roaches members—st
 
 4. **Foster Inclusion** (FIRST Core Value: Inclusion):
    - Treat all teammates, mentors, and competitors with respect, regardless of skill level, background, or role. Everyone’s voice matters, from Observers to the Team Captain.
-   - Create a welcoming environment by listening, collaborating, and
+   - Create a welcoming environment by listening, collaborating, and helping peers (e.g., Buddies mentoring new members).
+
+5. **Commit to Teamwork** (FIRST Core Value: Teamwork):
+   - Work collaboratively within your sub-team (Programming, Mechanical, Strategy/Scouting, Outreach) and across projects led by Project Owners. Communicate clearly and meet deadlines.
+   - Support your teammates by sharing skills, cheering at competitions, or assisting with tasks like scouting or pit setup.
+
+6. **Prioritize Fun and Safety** (FIRST Core Value: Fun):
+   - Bring enthusiasm and a positive attitude to all team activities, from crash courses to competition cheering. Robotics is a journey—enjoy it!
+   - Follow safety protocols in the shop (e.g., wear safety glasses, handle tools properly) and at competitions to ensure everyone’s well-being.
+
+7. **Honor Commitments**:
+   - Attend scheduled meetings, build season work sessions, and competitions. Communicate absences in advance to the Team Captain or mentors.
+   - Fulfill your role’s responsibilities, whether shadowing as an Observer, coding as a Learner, leading as a Doer, or managing projects as a Responsible or Project Owner.
+
+### Expectations for Parents
+
+- **Support Participation**: Ensure your student attends team events and communicates absences. Provide transportation or coordinate with the team as needed.
+- **Engage with the Team**: Attend the Introduction Faire, parent meetings, and build events to stay informed and cheer on the Roaches.
+- **Reinforce Values**: Encourage your student to uphold the FIRST Core Values and team rules, fostering their growth in robotics and leadership.
+- **Communicate**: Reach out to mentors with questions or concerns to support your student’s experience.
+
+### Consequences for Non-Compliance
+
+- **Minor Infractions** (e.g., missing a meeting without notice, minor safety violations):
+  - Discussion with mentors and Team Captain to address the issue and set a plan for improvement.
+  - Potential pause in progression on the Experience Ladder until resolved.
+- **Repeated or Serious Infractions** (e.g., disrespect, repeated absences, unsafe behavior):
+  - Meeting with student, parents, and mentors to review the contract and determine next steps.
+  - Possible suspension from team activities or competitions, decided by mentors.
+- **Focus on Growth**: Consequences aim to reinforce the FIRST Core Values and help students realign with team expectations, not to exclude.
+
+### Commitment
+
+By signing below, we agree to uphold the Radioactive Roaches Team Rules, embody the FIRST Core Values, and contribute to a successful and fun season.
+
+**Student Name**: _______________________________  
+**Student Signature**: __________________________  
+**Date**: ________________  
+
+**Parent/Guardian Name**: _______________________  
+**Parent/Guardian Signature**: ___________________  
+**Date**: ________________  
+
+**Mentor Acknowledgment**: _______________________  
+**Mentor Signature**: ___________________________  
+**Date**: ________________  
+
+## Tracking and Evaluation
+
+- **Progression Tracking**: Mentors update a shared spreadsheet monthly, noting skills, contributions, and level changes for each student.
+- **Sample Layout**:
+
+| Student Name | Primary Sub-Team | Secondary Sub-Team | Current Level | Skills Mastered       | Contributions            | Next Goal                 | Last Check-In | Notes                |
+|
