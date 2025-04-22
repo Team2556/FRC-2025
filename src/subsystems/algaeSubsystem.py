@@ -6,7 +6,6 @@ from wpilib import SmartDashboard, DigitalInput
 
 from constants import AlgaeConstants
 
-
 class AlgaeSubsystem(Subsystem):
     '''This thing does algae intake and discharge.'''
     

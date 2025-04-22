@@ -193,7 +193,7 @@ class RobotContainer:
         and then passing it to a JoystickButton.
         """
 
-        self._joystick.rightBumper().whileTrue(self.drivetrain.apply_request(lambda:(self._robot_centric_drive.with_velocity_x(
+        self._joystick.rightBumper().whileTrue(self.drivetrain.apply_request(lambda:(self._field_centric_drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
                         adjust_jostick(-self._joystick.getLeftY(), smooth=True)
                         * self._max_speed * Override_DriveConstant.kSlowMove
