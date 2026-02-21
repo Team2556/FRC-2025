@@ -24,9 +24,10 @@ class ElevatorSubsystem(commands2.Subsystem):# .ProfiledPIDSubsystem):
         
         # Make the right motor follow the left (so moving the left one moves the right one in the opposite direction)
         # TODO: Actually make this work it's important we kinda need it
-        self.elevmotor_right.set_control(Follower(self.elevmotor_left.device_id, 
-                                                  #the motors ar configured such that positive id up on the motor when they act individually, therefore they do not oppose
-                                                  oppose_master_direction = True))
+        self.elevmotor_right.set_control(Follower(
+                self.elevmotor_left.device_id,                                 
+                motor_alignment = signals.spn_enums.MotorAlignmentValue.OPPOSED
+            ))
 
         self.elevmotor_right.setNeutralMode(NeutralModeValue.BRAKE)
         self.elevmotor_left.setNeutralMode(NeutralModeValue.BRAKE)

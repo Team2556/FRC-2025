@@ -41,22 +41,19 @@ testpaths = ["tests"]
 [tool.robotpy]
 
 # Version of robotpy this project depends on
-robotpy_version = "2025.3.2.0"#"2025.2.1.0"#"2025.1.1.1"#"2024.3.2.2"
+robotpy_version = "2026.2.1"
 
 # Which extra RobotPy components should be installed
 # -> equivalent to `pip install robotpy[extra1, ...]
 # fomr PyPi: Provides-Extra: apriltag, commands2, cscore, navx, pathplannerlib, phoenix6, rev, romi, sim, xrp, all
-robotpy_extras = [
+components = [
     # "all",
     "apriltag",
     "commands2",
     "cscore",
-    "navx",
-    "pathplannerlib",
     # "phoenix6", # conflicts with the version specifier below ~25.2
     # "photonvision",says doesnt have: WARNING: robotpy 2025.2.1.0 does not provide the extra 'photonvision'
     # "playingwithfusion",
-    "rev",
     # "romi",
     "sim",
     # "xrp",
@@ -71,20 +68,19 @@ robotpy_extras = [
 # Other pip packages to install on the roboRIO
 requires = [
     "phoenix6",#~=25.2",
-    "numpy==2.2.1.dev0; platform_machine == 'roborio'",#'numpy',
+    "numpy; platform_machine == 'roborio'",
     'limelightlib-python',
     'photonlibpy',
     'robotpy-apriltag',
+    'robotpy-navx',
+    'robotpy-rev',
     # 'opencv-python',
+    "robotpy-pathplannerlib",
     #'scipy'
     'pynetworktables',
     'pyfrc',
     # 'pyserial',
-    
-
-
     # 'robotpy-ctre',# conflicts with the version specifier below phoenix6~25.2
-    
     # 'robotpy-hal-sim',
     #'robotpy-wpilib',
     #'robotpy-wpiutil',

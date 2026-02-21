@@ -243,30 +243,30 @@ class RobotContainer:
                     # FIELD CENTRIC
                     (self._field_centric_drive.with_velocity_x(
                         # self._robot_centric_drive.with_velocity_x(
-                        -adjust_jostick(self._joystick.getLeftY(), smooth=True)
+                        -adjust_jostick(self._joystick.getLeftY(), smooth=False)
                         * self._max_speed
                     )  # Drive forward with negative Y (forward)
                     .with_velocity_y(
-                        adjust_jostick(-self._joystick.getLeftX(), smooth=True)
+                        adjust_jostick(-self._joystick.getLeftX(), smooth=False)
                         * self._max_speed
                     )  # Drive left with negative X (left)
                     .with_rotational_rate(
-                        adjust_jostick(-self._joystick.getRightX(), smooth=True)
+                        adjust_jostick(-self._joystick.getRightX(), smooth=False)
                         * self._max_angular_rate
                     )  # Drive counterclockwise with negative X (left)
                     ) if not self.enableFastRobotCentric else (
                         # ROBOT CENTRIC
                         self._robot_centric_drive.with_velocity_x(
                             # self._robot_centric_drive.with_velocity_x(
-                            adjust_jostick(-self._joystick.getLeftY(), smooth=True)
+                            adjust_jostick(-self._joystick.getLeftY(), smooth=False)
                             * self._max_speed
                         )  # Drive forward with negative Y (forward)
                         .with_velocity_y(
-                            adjust_jostick(-self._joystick.getLeftX(), smooth=True)
+                            adjust_jostick(-self._joystick.getLeftX(), smooth=False)
                             * self._max_speed
                         )  # Drive left with negative X (left)
                         .with_rotational_rate(
-                            adjust_jostick(-self._joystick.getRightX(), smooth=True)
+                            adjust_jostick(-self._joystick.getRightX(), smooth=False)
                             * self._max_angular_rate
                         )
                     )
